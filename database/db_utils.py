@@ -8,7 +8,7 @@ def get_event_points(year: int, event_type: str):
     breakdown = {}
     # Filter for region specific keys
     event_pattern = f"points:{year}:{event_type}:*"
-    all_keys  = list(r.scan_iter(event_pattern))
+    all_keys  = sorted(list(r.scan_iter(event_pattern)))
 
     for region_key in all_keys:
         # Avoid erros for keys that slipped through filter and aren't zset
@@ -17,7 +17,7 @@ def get_event_points(year: int, event_type: str):
             print(f"WARNING: {region_key} is not zset, it is a {key_type}. Skipping...")
             continue
 
-        region_name = region_key.split(":")[-1]  # -1 -> region name (EMEA, AMER, ...)        
+        region_name = region_key.split(":")[-1]  # -1 -> region name (EMEA, AMER, ...)
         players = r.zrevrange(region_key, 0, -1, withscores=True)
 
         for player, score in players:

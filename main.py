@@ -24,13 +24,13 @@ async def main():
     ]
 
     #i11
-    # for event in events:
-    #     an_event = f"{event['year']} {event['event']} {event['region']}"
-    #     try:
-    #         print(f"Scraping {an_event} ...")
-    #         get_points_for_a_region(event['year'], event['event'], event['region'], event['url'])
-    #     except Exception as e:
-    #         print(f"Error scrapping {an_event}: {e}")
+    for event in events:
+        an_event = f"{event['year']} {event['event']} {event['region']}"
+        try:
+            print(f"Scraping {an_event} ...")
+            get_points_for_a_region(event['year'], event['event'], event['region'], event['url'])
+        except Exception as e:
+            print(f"Error scrapping {an_event}: {e}")
     #i11
 
 
