@@ -10,6 +10,10 @@ from bot.bot_utils import EventYears, EventTypes, get_vct_emoji
 
 load_dotenv()
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
+# Other global variables
+BOT_NAME = "reobot"
+BOT_EMBED_COLOUR = discord.Colour.from_rgb(177,35,235)
+BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
 intents = discord.Intents.default()
@@ -40,14 +44,58 @@ async def vct(ctx, year: int, event: str):
     player_bullets = "\n".join(format_player_info(year, event))
 
     embed = discord.Embed(
-        colour=discord.Colour.from_rgb(177,35,235)
+        colour=BOT_EMBED_COLOUR
         , description=player_bullets
         , title=header
-        , url=""
+        # , url=""
     )
-    embed.set_author(name="reobot", url="https://x.com/marthastewart/status/463333915739316224?mx=2")
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
     await ctx.send(embed=embed)
 
+
+#i11
+@bot.command()
+async def test(ctx):
+    bracket = """
+```
+                    ─ PRX. ──┐
+    ┌─ BOOM ─┐               ├───────  T1  ──┐
+    │        ├───────  T1  ──┘               │
+    └─  T1  ─┘                               ├──────  T1  ──┐
+                    ─ TLN. ──┐               │              │
+    ┌─  GE  ─┐               ├─────── TLN. ──┘              │
+    │        ├───────  GE  ──┘                              │
+    └─  TS  ─┘                                              ├────  T1  ──┐
+                    ─ GENG ──┐                              │            │
+    ┌─ DFM. ─┐               ├─────── GENG ──┐              │            │
+    │        ├─────── RRQ. ──┘               │              │            │
+    └─ RRQ. ─┘                               ├────── DRX. ──┘            │
+                    ─ DRX. ──┐               │                           │
+    ┌─ ZETA ─┐               ├─────── DRX. ──┘                           │
+    │        ├───────  NS  ──┘                                           ├──  T1
+    └─  NS  ─┘                                                           │
+                                                                         │
+                                                                         │
+    ┌─  NS  ─┐              ─ TLN. ──┐                                   │
+    │        ├───  NS  ──┐           │              ─ DRX. ──┐           │
+    └─ BOOM ─┘           │           ├───  NS  ──┐           │           │
+                         ├───  NS  ──┘           │           ├───  NS  ──┘
+    ┌─ RRQ. ─┐           │                       │           │
+    │        ├─── RRQ. ──┘                       │           │
+    └─  TS  ─┘                                   ├───  NS  ──┘
+                                                 │
+    ┌─  GE  ─┐              ─ GENG ──┐           │
+    │        ├─── DFM. ──┐           ├─── GENG ──┘
+    └─ DFM. ─┘           │           │
+                         ├─── PRX. ──┘
+    ┌─ PRX. ─┐           │
+    │        ├─── PRX. ──┘
+    └─ ZETA ─┘
+```
+    """
+
+    await ctx.send(bracket)
+#i11
 
 bot.run(DISCORD_BOT_TOKEN)
