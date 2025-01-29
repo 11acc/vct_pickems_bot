@@ -3,16 +3,11 @@ import pycountry
 
 
 class EventYears:
-    VALID_YEARS = [
-        2025
-    ]
+    VALID_YEARS = {2025}
 
     @classmethod
-    def validate(self, year: int) -> int:
-        if year in self.VALID_YEARS:
-            return True
-        else:
-            return False
+    def validate(cls, year: int) -> bool:
+        return year in cls.VALID_YEARS
 
 
 class EventTypes:
@@ -22,16 +17,19 @@ class EventTypes:
         , "SPLIT 2": "SPLIT 2"
         , "MASTERS": "MASTERS"
         , "CHAMPIONS": "CHAMPIONS"
-        , "CHAMPS": "CHAMPIONS"
+    }
+    EVENT_ALIASES = {
+        "CHAMPS": "CHAMPIONS"
     }
     
     @classmethod
-    def validate(self, region: str) -> str:
-        region_upper = region.upper()
-        if region_upper in self.VALID_EVENTS:
+    def validate(cls, event: str) -> bool:
+        event_upper = event.upper()
+        if event_upper in cls.VALID_EVENTS or event_upper in cls.EVENT_ALIASES:
             return True
         else:
             return False
+
 
 REGION_EMOJIS = {
     "EMEA": "<:vct_emea:1332393237507346462>"
@@ -45,8 +43,13 @@ REGION_EMOJIS = {
 
 
 def local_to_emoji(local: str) -> str:
-    country = pycountry.countries.search_fuzzy(local)[0].alpha_2
-    return f":flag_{country.lower()}:"
+    try:
+        country = pycountry.countries.search_fuzzy(local)[0].alpha_2
+        return f":flag_{country.lower()}:"
+    except (LookupError, AttributeError) as e:
+        print(f"Something went wrong when converting local to emoji -> {e}")
+        return None
+
 
 def get_vct_emoji(region: str) -> str:
     return REGION_EMOJIS.get(region.upper(), "❓")
