@@ -54,48 +54,5 @@ async def vct(ctx, year: int, event: str):
     await ctx.send(embed=embed)
 
 
-#i11
-@bot.command()
-async def test(ctx):
-    bracket = """
-```
-                    ─ PRX. ──┐
-    ┌─ BOOM ─┐               ├───────  T1  ──┐
-    │        ├───────  T1  ──┘               │
-    └─  T1  ─┘                               ├──────  T1  ──┐
-                    ─ TLN. ──┐               │              │
-    ┌─  GE  ─┐               ├─────── TLN. ──┘              │
-    │        ├───────  GE  ──┘                              │
-    └─  TS  ─┘                                              ├────  T1  ──┐
-                    ─ GENG ──┐                              │            │
-    ┌─ DFM. ─┐               ├─────── GENG ──┐              │            │
-    │        ├─────── RRQ. ──┘               │              │            │
-    └─ RRQ. ─┘                               ├────── DRX. ──┘            │
-                    ─ DRX. ──┐               │                           │
-    ┌─ ZETA ─┐               ├─────── DRX. ──┘                           │
-    │        ├───────  NS  ──┘                                           ├──  T1
-    └─  NS  ─┘                                                           │
-                                                                         │
-                                                                         │
-    ┌─  NS  ─┐              ─ TLN. ──┐                                   │
-    │        ├───  NS  ──┐           │              ─ DRX. ──┐           │
-    └─ BOOM ─┘           │           ├───  NS  ──┐           │           │
-                         ├───  NS  ──┘           │           ├───  NS  ──┘
-    ┌─ RRQ. ─┐           │                       │           │
-    │        ├─── RRQ. ──┘                       │           │
-    └─  TS  ─┘                                   ├───  NS  ──┘
-                                                 │
-    ┌─  GE  ─┐              ─ GENG ──┐           │
-    │        ├─── DFM. ──┐           ├─── GENG ──┘
-    └─ DFM. ─┘           │           │
-                         ├─── PRX. ──┘
-    ┌─ PRX. ─┐           │
-    │        ├─── PRX. ──┘
-    └─ ZETA ─┘
-```
-    """
-
-    await ctx.send(bracket)
-#i11
 
 bot.run(DISCORD_BOT_TOKEN)

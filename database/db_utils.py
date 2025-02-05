@@ -52,6 +52,9 @@ def format_player_info(year: int, event: str):
             , "breakdown_points": per_region.get(player, {})  # Get or empty dict if missing
         }
 
+    # Add bet record
+
+
     # Return formatting
     player_format = []
     longest_player_name = max(map(len, player_vars))  # for buffering
@@ -69,7 +72,8 @@ def format_player_info(year: int, event: str):
             f"{" "*buffer}"
             f"{player_data['total_points']} points"
             f"`"
-            f"  ( {breakdown_txt} )"
+            f"  ( {breakdown_txt} "
+            # f"{bet_record[player_data['name']]} )"
         )
 
     return player_format
@@ -87,35 +91,47 @@ def generate_event_key(key_type: str, year: int, event=None, region=None) -> str
 
 # Styling functions
 def loop_print_keys(r, list_of_keys):
+    if not list_of_keys:
+        return None
+    
+    pipe = r.pipeline()
     for key in list_of_keys:
-        key_type = r.type(key)
+        pipe.type(key)
+    key_types = pipe.execute()
 
-        if key_type == "hash":
-            print(f"[{key}] (HASH)")
-            print(f"> {r.hgetall(key)}\n")
-        elif key_type == "zset":
-            print(f"[{key}] (SORTED SET)")
-            print(f"> {r.zrevrange(key, 0, -1, withscores=True)}\n")
-        
-        else:
-            print(f"[{key}] (UNKNOWN)\n")
+    key_operations = {
+        'hash': lambda k: f"> {r.hgetall(k)}"
+        , 'zset': lambda k: f"> {r.zrevrange(k, 0, -1, withscores=True)}"
+    }
+
+    for key, key_type in zip(list_of_keys, key_types):
+        key_str = f"[{key}] ({key_type.upper()})"
+        print(key_str)
+        print(key_operations.get(key_type, lambda k: "")(key), "\n")
 
 
 def print_keys(r):
-    # Get all keys
     keys = r.keys("*")
     print(f"All Keys in Redis: {keys}\n")
 
-    # Sort by event and type (metadata/points)
-    metadata_keys = []
-    point_keys = []
+    key_categories = {
+        "/// METADATA ///": []
+        , "/// POINTS ///": []
+        , "/// BETS ///": []
+        , "/// OTHER ///": []
+    }
     for key in keys:
-        if ':player:' in key:  # metadata
-            metadata_keys.append(key)
+        if 'metadata:' in key:
+            key_categories["/// METADATA ///"].append(key)
+        elif 'points:' in key:
+            key_categories["/// POINTS ///"].append(key)
+        elif 'bets:' in key:
+            key_categories["/// BETS ///"].append(key)
         else:
-            point_keys.append(key)
+            key_categories["/// OTHER ///"].append(key)
 
-    print(f"/// METADATA ///")
-    loop_print_keys(r, metadata_keys)
-    print(f"/// POINTS ///")
-    loop_print_keys(r, point_keys)
+    for category, keys in key_categories.items():
+        if not keys:
+            break
+        print(category)
+        loop_print_keys(r, keys)
