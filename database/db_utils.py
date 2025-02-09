@@ -1,14 +1,28 @@
 
+import sys
+
 from database.redis_db import r
 from bot.bot_utils import local_to_emoji, get_vct_emoji
 
-# Redis get functions
+
+# /// KEY
+def generate_event_key(key_type: str, year: int, event=None, region=None) -> str:
+    # Return with or without region depending on the type
+    # of event_key necessary, for reference vlr_scrapper.py
+    if key_type == "metadata":
+        return f"{key_type}:{year}"
+    else:
+        return f"{key_type}:{year}:{event}:{region}"
+
+
+
+# /// GET
 def get_event_points(year: int, event_type: str):
     total_scores = {}
     breakdown = {}
     # Filter for region specific keys
     event_pattern = f"points:{year}:{event_type}:*"
-    all_keys  = sorted(list(r.scan_iter(event_pattern)))
+    all_keys = sorted(list(r.scan_iter(event_pattern)))
 
     for region_key in all_keys:
         # Avoid erros for keys that slipped through filter and aren't zset
@@ -36,10 +50,36 @@ def get_event_points(year: int, event_type: str):
     return total_scores, breakdown
 
 
-def format_player_info(year: int, event: str):
-    total_points, per_region = get_event_points(year, event.upper())
-    metad_event_key = generate_event_key("metadata", year)
+# def get_active_players(year:int, event=None) -> list:
+#     pass
 
+
+# def get_bet_record_event(year: int, event: str) -> list:
+#     print("hi")
+#     past_bets_key = r.keys(f"bets:past:{year}:{event}:*")
+#     past_bets = {"player_name": 0}
+#     for key in past_bets_key:
+#         bets = r.zrevrange(key, 0, -1)
+        
+#         sys.exit()
+#         # if player_name not in past_bets:
+#         #     # add player as new key
+#         #     pass
+#         # past_bets[player_name] += bet_amount
+
+#     print(past_bets)
+#     sys.exit()
+
+
+
+# /// STYLING
+def format_player_info(year: int, event: str) -> list:
+    # List of points and bets
+    total_points, per_region = get_event_points(year, event)
+    # bet_record = get_bet_record_event(year, event)
+
+    # Redis key for metadata
+    metad_event_key = generate_event_key("metadata", year)
     # Add player variables
     player_vars = {}
     for player in total_points.keys():
@@ -52,13 +92,11 @@ def format_player_info(year: int, event: str):
             , "breakdown_points": per_region.get(player, {})  # Get or empty dict if missing
         }
 
-    # Add bet record
-
-
     # Return formatting
     player_format = []
     longest_player_name = max(map(len, player_vars))  # for buffering
     for player_data in player_vars.values():
+        
         breakdown_txt = " ".join(
             f"{get_vct_emoji(region)} `{points}`"
             for region, points in player_data['breakdown_points'].items()
@@ -79,17 +117,8 @@ def format_player_info(year: int, event: str):
     return player_format
 
 
-def generate_event_key(key_type: str, year: int, event=None, region=None) -> str:
-    # Return with or without region depending on the type
-    # of event_key necessary, for reference vlr_scrapper.py
-    if key_type == "metadata":
-        return f"{key_type}:{year}"
-    else:
-        return f"{key_type}:{year}:{event}:{region}"
 
-
-
-# Styling functions
+# /// HELPER
 def loop_print_keys(r, list_of_keys):
     if not list_of_keys:
         return None
@@ -110,7 +139,12 @@ def loop_print_keys(r, list_of_keys):
         print(key_operations.get(key_type, lambda k: "")(key), "\n")
 
 
-def print_keys(r):
+def print_set_keys(r, category):
+    keys = r.keys(f"{category}:*")
+    print(f"[{category}] Keys: {keys}")
+
+
+def print_all_keys(r):
     keys = r.keys("*")
     print(f"All Keys in Redis: {keys}\n")
 
