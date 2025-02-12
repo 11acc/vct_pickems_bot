@@ -1,6 +1,6 @@
 
 import sqlite3
-from vct_sql_class_tables import Event, Team, Match, Player, Bet
+from database.sql_table_classes import Event
 
 conn = sqlite3.connect(':memory:')  # fresh db on every run, for testing
 
@@ -9,6 +9,7 @@ cursor.execute("""
     CREATE TABLE events(
                kind text,
                loc text,
+               intl bool,
                year integer,
                nr_teams integer,
                buyin_teams integer
@@ -16,8 +17,8 @@ cursor.execute("""
 
 def insert_event(event):
     with conn:
-        cursor.execute("INSERT INTO events VALUES (:kind, :loc, :year, :nr_teams, :buyin_teams)"
-                , {'kind': event.kind, 'loc': event.loc, 'year': event.year
+        cursor.execute("INSERT INTO events VALUES (:kind, :loc, :intl, :year, :nr_teams, :buyin_teams)"
+                , {'kind': event.kind, 'loc': event.loc, 'intl': event.intl, 'year': event.year
                     , 'nr_teams': event.nr_teams, 'buyin_teams': event.buyin_teams})
 
 def get_event(event_kind):
@@ -36,9 +37,9 @@ def remove_event(event):
                        , {'kind': event.kind, 'loc': event.loc})
 
 
-event1 = Event('Masters', 'Toronto', 2025, 12, 4)
-event2 = Event('Champions', 'Paris', 2025, 16, 0)
-event3 = Event('Champions', 'Glasgow', 2026, 42, 0)
+event1 = Event('Masters', 'Toronto', True, 2025, 12, 4)
+event2 = Event('Champions', 'Paris', True, 2025, 16, 0)
+event3 = Event('Champions', 'Glasgow', True, 2026, 42, 0)
 
 insert_event(event1)
 insert_event(event2)
