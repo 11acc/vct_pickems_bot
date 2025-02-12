@@ -1,6 +1,6 @@
 
 import sqlite3
-from pickem_classes import Event
+from vct_sql_class_tables import Event, Team, Match, Player, Bet
 
 conn = sqlite3.connect(':memory:')  # fresh db on every run, for testing
 
