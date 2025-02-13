@@ -12,15 +12,15 @@ conn.commit()
 
 # /// Classes
 class Player():
-    def __init__(self, player_id: int, name: str, vlr_user: str, stars: int) -> None:
+    def __init__(self, player_id: int, name: str, vlr_user: str, stars: int, local: str) -> None:
         self.player_id = player_id
         self.name = name
         self.vlr_user = vlr_user
         self.stars = stars
-        # self.local = local
+        self.local = local
     
     def __repr__(self):
-        return f'{self.name}'
+        return f'{self.local} {self.name}'
 
 class Team():
     def __init__(self, team_id: int, name: str, short_name: str) -> None:
@@ -127,6 +127,14 @@ def fetch_all_from_db(query: str, variables: tuple) -> list:
         c.execute(query, variables)
         return c.fetchall()
 
+def modify_entry(table: str, entity: str, entity_id: int, column, new_val) -> None:
+    with conn:
+        c.execute(f"UPDATE {table} SET {column}='{new_val}' WHERE {entity}=?", (entity_id,))
+
+def del_entry(table: str, entity: str, entity_id: int) -> None:
+    with conn:
+        c.execute(f"DELETE FROM {table} WHERE {entity}=?", (entity_id,))
+
 # players
 def add_player_entry(object: Player) -> None:
     try:
@@ -135,11 +143,6 @@ def add_player_entry(object: Player) -> None:
                     , object.__dict__)
     except sqlite3.IntegrityError as e:
         print(e)
-
-def del_player_entry(player_id: int) -> None:
-    with conn:
-        c.execute("DELETE FROM players WHERE player_id=:player_id"
-                  , {'player_id': player_id})
 
 def get_player_by_id(player_id: int) -> Player:
     with conn:
@@ -160,11 +163,6 @@ def add_team_entry(object: Team) -> None:
     except sqlite3.IntegrityError as e:
         print(e)
 
-def del_team_entry(team_id: int) -> None:
-    with conn:
-        c.execute("DELETE FROM teams WHERE team_id=:team_id"
-                  , {'team_id': team_id})
-
 def get_team_id(name=None, short_name=None) -> int:
     with conn:
         c.execute("SELECT team_id FROM teams WHERE name=:name OR short_name=:short_name", {'name': name, 'short_name': short_name})
@@ -179,17 +177,11 @@ def add_event_entry(object: Event) -> None:
     except sqlite3.IntegrityError as e:
         print(e)
 
-def del_event_entry(event_id) -> None:
-    with conn:
-        c.execute("DELETE FROM events WHERE event_id=:event_id"
-                  , {'event_id': event_id, 'loc': event_id})
-
 def get_event_from_name(event_name: str, year: int) -> any:
     # Fetch all event names from DB
     query = "SELECT kind, loc FROM events WHERE year = ?"
     event_rows = fetch_all_from_db(query, (year,))
     all_event_names = {name.lower(): name for row in event_rows for name in row if name}
-    print(all_event_names)
     # Find best match with fuzzy
     best_match, score = process.extractOne(event_name, all_event_names.keys())
 
@@ -221,11 +213,6 @@ def add_match_entry(object: Match) -> None:
     except sqlite3.IntegrityError as e:
         print(e)
 
-def del_match_entry(match_id) -> None:
-    with conn:
-        c.execute("DELETE FROM events WHERE match_id=:match_id"
-                  , {'match_id': match_id})
-
 # points
 def add_points_entry(object: Points) -> None:
     try:
@@ -234,11 +221,6 @@ def add_points_entry(object: Points) -> None:
                     , object.__dict__)
     except sqlite3.IntegrityError as e:
         print(e)
-
-def del_points_entry(points_id) -> None:
-    with conn:
-        c.execute("DELETE FROM points WHERE points_id=:points_id"
-                  , {'points_id': points_id})
 
 def get_points_from_event(pt_event_id: int) -> any:
     with conn:
@@ -261,7 +243,6 @@ def get_points_from_event(pt_event_id: int) -> any:
 # !vct points split2
 # !vct points champs
 # !vct points paris
-
 # test_names = [
 #     "Bangkok", "kickoff", "SPLIT1", "sPlIt2", "toronto", "PARIS",
 #     "ban", "kick", "tor", "par", "spl",
@@ -280,11 +261,14 @@ ChosenEvent = get_event_from_name(t_event_name, t_year)  # Event class
 # "massive whiff on that event selection brosky, it doesn't exist"
 print(ChosenEvent)
 
-PointsForEvent = get_points_from_event(ChosenEvent.event_id)  # Points class
+PointsInEvent = get_points_from_event(ChosenEvent.event_id)  # Points class
 # "no point set exists, @reoken you fucked something up loser"
-print(PointsForEvent)
+print(PointsInEvent)
 # [(1, 1, 5, 0, 'dcdde13e'), (2, 2, 5, 0, '8ba2e7a9'), (3, 3, 5, 0, 'dd6b6c9f')]
 
+from utils import points_from_event
+
+print(points_from_event(PointsInEvent))
 
 # send event information to formatter so we get point info:
 # description of embed -> format_player_info
@@ -292,7 +276,7 @@ print(PointsForEvent)
 
 
 print()
-print_all_values("points")
+print_all_values("players")
 print_all_tables()
 
 
