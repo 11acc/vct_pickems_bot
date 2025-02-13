@@ -7,8 +7,7 @@ import discord
 from discord.ext import commands
 from discord.ui import Select, View
 
-from database.db_utils import format_player_info
-from bot.bot_utils import EventYears, EventTypes, get_vct_emoji
+from database.sql_tables import tuple_event_into_class, get_event, get_points_from_event
 
 
 load_dotenv()
@@ -34,7 +33,7 @@ async def hello(ctx):
 
 # /// POINTS
 @bot.command()
-async def points(ctx, year: int, event: str):
+async def points(ctx, kind: str, loc:str, year: int):
     pass
 
 
