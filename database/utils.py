@@ -4,16 +4,17 @@
 
 def points_from_event(PointsInEvent: list) -> str:
     """
-        self.player_id = player_id
-        self.name = name
-        self.vlr_user = vlr_user
-        self.stars = stars
-        self.local = local
+        PointSetList = [
+            [Kazakhstan Alex, 0 points, event id: 5]
+            , [Afghanistan Oliver, 0 points, event id: 5]
+            , [Hong Kong Qiff, 0 points, event id: 5]
+        ]
+
+        PointSetList = [
+            [Kazakhstan Alex, 55+ points, event ids: 1,2,4,6]
+        ]
+
     """
-    # PointsInEvent = [
-    #   [Kazakhstan Alex, 0 points, event id: 5]
-    #   , [Afghanistan Oliver, 0 points, event id: 5]
-    #   , [Hong Kong Qiff, 0 points, event id: 5] ]
 
     # Return formatting
     points_formatted = []

@@ -177,33 +177,6 @@ def add_event_entry(object: Event) -> None:
     except sqlite3.IntegrityError as e:
         print(e)
 
-def get_event_from_name(event_name: str, year: int) -> any:
-    # Fetch all event names from DB
-    query = "SELECT kind, loc FROM events WHERE year = ?"
-    event_rows = fetch_all_from_db(query, (year,))
-    all_event_names = {name.lower(): name for row in event_rows for name in row if name}
-    # Find best match with fuzzy
-    best_match, score = process.extractOne(event_name, all_event_names.keys())
-
-    if score > 80:
-        matched_name = all_event_names[best_match]
-
-        # intl check
-        query = "SELECT * FROM events WHERE loc=? AND year=?"
-        intl_event = fetch_one_from_db(query, (matched_name, year))
-        if intl_event:
-            return tuple_into_class(Event, intl_event)
-
-        # regional check
-        query = "SELECT * FROM events WHERE kind=? AND year=?"
-        reg_events = fetch_all_from_db(query, (matched_name, year))
-        if reg_events:
-            return [tuple_into_class(Event, ev) for ev in reg_events]
-
-    # or not
-    print(f"Event: {event_name} {year}, doesn't exist")
-    return None
-
 # matches
 def add_match_entry(object: Match) -> None:
     try:
@@ -236,118 +209,89 @@ def get_points_from_event(pt_event_id: int) -> any:
 
 # -----------------------------------------------------------------------------------------------------------
 
-# !vct points kickoff
-# !vct points bangkok
-# !vct points split1
-# !vct points toronto
-# !vct points split2
-# !vct points champs
-# !vct points paris
-# test_names = [
-#     "Bangkok", "kickoff", "SPLIT1", "sPlIt2", "toronto", "PARIS",
-#     "ban", "kick", "tor", "par", "spl",
-#     "bangok", "banok", "tornto", "prias", "chmpions", "splut1", "splt2",
-#     "champ", "mast", "regionals", " ", "123"
-# ]
-# for name in test_names:
-#     result = get_event_from_name(name, 2025)
-#     print(f"Input: {name} -> Output: {result}")
 
-t_event_name = "bangkok"
-t_year = 2025  # if no year is given assuming current
+c.execute("""
+    CREATE TABLE events(
+        event_id integer PRIMARY KEY,
+        kind text NOT NULL,
+        loc text NOT NULL,
+        year integer NOT NULL
+    )
 
-#i11
-ChosenEvent = get_event_from_name(t_event_name, t_year)  # Event class
-# "massive whiff on that event selection brosky, it doesn't exist"
-print(ChosenEvent)
+    CREATE TABLE points(
+        points_id integer PRIMARY KEY,
+        pt_player_id integer NOT NULL,
+        pt_event_id integer NOT NULL,
+        nr_points integer NOT NULL,
 
-PointsInEvent = get_points_from_event(ChosenEvent.event_id)  # Points class
-# "no point set exists, @reoken you fucked something up loser"
-print(PointsInEvent)
-# [(1, 1, 5, 0, 'dcdde13e'), (2, 2, 5, 0, '8ba2e7a9'), (3, 3, 5, 0, 'dd6b6c9f')]
+        FOREIGN KEY (pt_player_id) REFERENCES players(player_id),
+        FOREIGN KEY (pt_event_id) REFERENCES events(event_id)
+    )
+    
+    CREATE TABLE breakdown_pts(
+        breakdown_pts_id integer PRIMARY KEY,
+        bd_parent_points_id integer NOT NULL,
+        bd_nr_points integer NOT NULL,
+        vlr_handle text NOT NULL,
+        region text,
 
-from utils import points_from_event
-
-print(points_from_event(PointsInEvent))
-
-# send event information to formatter so we get point info:
-# description of embed -> format_player_info
-#i11
+        FOREIGN KEY (bd_parent_points_id) REFERENCES points(points_id),
+    )
+""")
 
 
 print()
-print_all_values("players")
+print_all_values("points")
 print_all_tables()
 
 
 
 """
     CREATE TABLE players(
-          player_id integer PRIMARY KEY AUTOINCREMENT,
-          name text NOT NULL UNIQUE,
-          vlr_user text NOT NULL UNIQUE,
-          stars integer NOT NULL
-        )
+        player_id integer PRIMARY KEY AUTOINCREMENT,
+        name text NOT NULL UNIQUE,
+        vlr_user text NOT NULL UNIQUE,
+        stars integer NOT NULL
+    )
 
     CREATE TABLE teams(
-          team_id integer PRIMARY KEY,
-          name text NOT NULL UNIQUE,
-          short_name text NOT NULL UNIQUE
-        )
-
-    CREATE TABLE events(
-          event_id integer PRIMARY KEY,
-          kind text NOT NULL,
-          loc text NOT NULL,
-          intl boolean NOT NULL,
-          year integer NOT NULL,
-          nr_teams integer NOT NULL,
-          buyin_teams integer NOT NULL
-        )
-
-    CREATE TABLE matches(
-          match_id integer PRIMARY KEY,
-          team1_id integer NOT NULL,
-          team2_id integer NOT NULL,
-          bracket text NOT NULL,
-          kind text NOT NULL,
-          worth integer NOT NULL,
-
-          FOREIGN KEY (team1_id) REFERENCES teams(team_id),
-          FOREIGN KEY (team2_id) REFERENCES teams(team_id)
-        )
-
-    CREATE TABLE points(
-          points_id integer PRIMARY KEY,
-          pt_player_id integer NOT NULL,
-          pt_event_id integer NOT NULL,
-          nr_points dictionary NOT NULL,
-          vlr_pt_id text NOT NULL,
-
-          FOREIGN KEY (pt_player_id) REFERENCES players(player_id),
-          FOREIGN KEY (pt_event_id) REFERENCES events(event_id)
+        team_id integer PRIMARY KEY,
+        name text NOT NULL UNIQUE,
+        short_name text NOT NULL UNIQUE
     )
 
     ---
 
-    CREATE TABLE bets(
-          bet_id integer PRIMARY KEY,
-          active boolean NOT NULL,
-          player1_id integer NOT NULL,
-          player2_id integer NOT NULL,
-          amount integer NOT NULL,
-          bet_match_id integer NOT NULL,
-          p1_choice_id integer NOT NULL
-          p2_choice_id integer NOT NULL
-          winner_id integer NOT NULL,
+    CREATE TABLE matches(
+        match_id integer PRIMARY KEY,
+        team1_id integer NOT NULL,
+        team2_id integer NOT NULL,
+        bracket text NOT NULL,
+        kind text NOT NULL,
+        worth integer NOT NULL,
 
-          FOREIGN KEY (player1_id) REFERENCES players(player_id),
-          FOREIGN KEY (player2_id) REFERENCES players(player_id),
-          FOREIGN KEY (bet_match_id) REFERENCES matches(match_id),
-          FOREIGN KEY (p1_choice_id) REFERENCES teams(team_id),
-          FOREIGN KEY (p1_choice_id) REFERENCES teams(team_id),
-          FOREIGN KEY (winner_id) REFERENCES players(player_id)
-        )
+        FOREIGN KEY (team1_id) REFERENCES teams(team_id),
+        FOREIGN KEY (team2_id) REFERENCES teams(team_id)
+    )
+
+    CREATE TABLE bets(
+        bet_id integer PRIMARY KEY,
+        active boolean NOT NULL,
+        player1_id integer NOT NULL,
+        player2_id integer NOT NULL,
+        amount integer NOT NULL,
+        bet_match_id integer NOT NULL,
+        p1_choice_id integer NOT NULL
+        p2_choice_id integer NOT NULL
+        winner_id integer NOT NULL,
+
+        FOREIGN KEY (player1_id) REFERENCES players(player_id),
+        FOREIGN KEY (player2_id) REFERENCES players(player_id),
+        FOREIGN KEY (bet_match_id) REFERENCES matches(match_id),
+        FOREIGN KEY (p1_choice_id) REFERENCES teams(team_id),
+        FOREIGN KEY (p1_choice_id) REFERENCES teams(team_id),
+        FOREIGN KEY (winner_id) REFERENCES players(player_id)
+    )
 """
 
 
