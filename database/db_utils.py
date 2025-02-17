@@ -1,12 +1,9 @@
 
 from fuzzywuzzy import process
 
-from sql_tables import db
+from database.sql_tables import db
 from reobot.bot_utils import local_to_emoji, get_vct_emoji
 
-
-def tuple_into_class(class_table, sql_obj: tuple) -> any:
-    return class_table(*sql_obj)
 
 def find_best_event_match(input_event: str, year: int) -> any:
     events_in_year = db.fetch_all("SELECT loc FROM events WHERE year=?", (year,))
@@ -17,20 +14,10 @@ def find_best_event_match(input_event: str, year: int) -> any:
         return best_match
     return None
 
-def event_id_from_name(matched_name: str) -> int:
-    pass
-
-def point_sets_from_event_id(event_id: int) -> list:
-    # c.execute("SELECT * FROM points WHERE pt_event_id=?", (2,))
-    # list_of_things = c.fetchall()
-    # PlayerPointsFromEvent = [tuple_into_class(Points, player_points) for player_points in list_of_things]
-    # points_from_event(PlayerPointsFromEvent)
-    pass
-
 def points_from_event(matched_name: str) -> str | None:
     # Get all point sets for target event
-    match_ev_id = event_id_from_name(matched_name)
-    PlayerPointsFromEvent = point_sets_from_event_id(match_ev_id)
+    match_ev_id = db.event_id_from_name(matched_name)
+    PlayerPointsFromEvent = db.point_sets_from_event_id(match_ev_id)
 
     points_formatted = []
     len_longest_name = max(len(p.player.name) for p in PlayerPointsFromEvent)  # for buffering

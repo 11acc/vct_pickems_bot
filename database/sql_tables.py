@@ -5,8 +5,6 @@ import os
 from dotenv import load_dotenv
 import sqlite3
 
-from db_utils import tuple_into_class
-
 
 load_dotenv()
 DB_PATH = os.getenv('DB_PATH')
@@ -128,7 +126,7 @@ class DBInstance():
             self.conn = None
             self.cursor = None
     
-    def execute(self, query: str, vars=()) -> None:
+    def º(self, query: str, vars=()) -> None:
         try:
             self.connect()
             self.cursor.execute(query, vars)
@@ -167,7 +165,7 @@ class DBInstance():
     def print_all_values(self, table: str) -> None:
         if not table.isidentifier():
             print(f"Invalid table name: {table}")
-            return
+            return None
         try:
             row_vals = self.fetch_all(f"SELECT * FROM {table}")
             print(row_vals)
@@ -178,7 +176,7 @@ class DBInstance():
         # Prevent invalid input table names
         if not table.isidentifier():
             print(f"Invalid input table: {table}")
-            return
+            return None
         # Remove the first key -> id
         data = object.__dict__.copy()
         id_col = next(iter(data), None)
@@ -193,16 +191,19 @@ class DBInstance():
     def modify_entry(self, table: str, column: str, new_val: str, entity: str, entity_id: int) -> None:
         if not table.isidentifier() or not column.isidentifier() or not entity.isidentifier():
             print(f"Invalid input table: {table}, col: {column}, or entity: {entity}")
-            return
+            return None
         query = f"UPDATE {table} SET {column}=? WHERE {entity}=?"
         self.execute(query, (new_val, entity_id))
 
     def del_entry(self, table: str, entity: str, entity_id: int) -> None:
         if not table.isidentifier() or not entity.isidentifier():
             print(f"Invalid input table: {table} or entity: {entity}")
-            return
+            return None
         query = f"DELETE FROM {table} WHERE {entity}=?"
         self.execute(query, (entity_id,))
+
+    def tuple_into_class(self, class_table, sql_obj: tuple) -> any:
+        return class_table(*sql_obj)
 
     # /// Table specific util methods
     def get_player_by_id(self, player_id: int) -> Player | None:
@@ -211,7 +212,7 @@ class DBInstance():
         if not sql_player:
             print(f"Player with id {player_id} doesn't exist")
             return None
-        return tuple_into_class(Player, sql_player)
+        return self.tuple_into_class(Player, sql_player)
 
     def get_breakdown_by_self_id(self, points_id: int) -> list[Player] | None:
         query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=?"
@@ -219,8 +220,22 @@ class DBInstance():
         if not bd_set:
             print(f"No points set found for id {points_id}")
             return None
-        return [tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
+        return [self.tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
 
+    def event_id_from_name(self, matched_name: str) -> int | None:
+        query = "SELECT event_id FROM events WHERE loc=?"
+        ev_id = self.fetch_one(query, (matched_name,))
+        if not ev_id:
+            print(f"No event with name: {matched_name}")
+        return int(ev_id[0])
+    
+    def point_sets_from_event_id(self, event_id: int) -> list[Points] | None:
+        query = "SELECT * FROM points WHERE pt_event_id=?"
+        point_sets = self.fetch_all(query, (event_id,))
+        if not point_sets:
+            print(f"No point sets found for event_id: {event_id}")
+            return None
+        return [self.tuple_into_class(Points, ply_pts) for ply_pts in point_sets]
 
 
 # Create a global instance
