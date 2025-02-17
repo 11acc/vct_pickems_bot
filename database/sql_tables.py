@@ -1,16 +1,48 @@
 
 # :purpose: Establish the groundwork tables for the basis of the db
 
+import os
+from dotenv import load_dotenv
 import sqlite3
 from fuzzywuzzy import process
 
-conn = sqlite3.connect('vct_pickems.db')
-c = conn.cursor()
-c.execute("PRAGMA foreign_keys = ON")
-conn.commit()
 
+load_dotenv()
+DB_PATH = os.getenv('DB_PATH')
 
 # /// Classes
+class DBInstance():
+    def __init__(self, db_path):
+        self.db_path = db_path
+        self.conn = None
+        self.cursor = None
+
+    def connect(self):
+        if self.conn is None:
+            self.conn = sqlite3.connect(self.db_path)
+            self.cursor = self.conn.cursor()
+    
+    def execute(self, query, vars=()):
+        self.connect()
+        self.cursor.execute(query, vars)
+        self.conn.commit()
+    
+    def fetch_one(self, query, vars=()):
+        self.connect()
+        self.cursor.execute(query, vars)
+        return self.cursor.fetchone()
+    
+    def fetch_all(self, query, vars=()):
+        self.connect()
+        self.cursor.execute(query, vars)
+        return self.cursor.fetchall()
+    
+    def close(self):
+        if self.conn:
+            self.conn.close()
+            self.conn = None
+            self.cursor = None
+
 class Player():
     def __init__(self, player_id: int, name: str, vlr_user: str, stars: int, local: str) -> None:
         self.player_id = player_id
@@ -36,14 +68,11 @@ class Team():
         return self.name
 
 class Event():
-    def __init__(self, event_id: int, kind: str, loc: str, intl: bool, year: int, nr_teams: int, buyin_teams: int) -> None:
+    def __init__(self, event_id: int, kind: str, loc: str, year: int) -> None:
         self.event_id = event_id
         self.kind = kind
         self.loc = loc
-        self.intl = intl
         self.year = year
-        self.nr_teams = nr_teams
-        self.buyin_teams = buyin_teams
 
     def __repr__(self) -> str:
         return f'{self.kind} {self.loc} {self.year}'
@@ -61,13 +90,13 @@ class Match():
     #     return f'{self.bracket}: {self.kind} · {self.team1} vs {self.team2}'
 
 class Points():
-    def __init__(self, point_id: int, pt_player_id: int, pt_event_id: int, nr_points: int, vlr_pt_id: str) -> None:
+    def __init__(self, point_id: int, pt_player_id: int, pt_event_id: int, nr_points: int) -> None:
         self.point_id = point_id
         self.pt_player_id = pt_player_id
         self._player = None  # Player obj class, loaded on demand
         self.pt_event_id = pt_event_id
         self.nr_points = nr_points
-        self.vlr_pt_id = vlr_pt_id
+        self._breakdown = None  # Breakdown obj class, loaded on demand
 
     def __repr__(self):
         return f'[{self.player}, {self.nr_points} points, event id: {self.pt_event_id}]'
@@ -77,6 +106,20 @@ class Points():
         if self._player is None:
             self._player = get_player_by_id(self.pt_player_id)
         return self._player
+
+    @property
+    def breakdown(self):
+        if self._breakdown is None:
+            self._breakdown = get_breakdown_by_self_id(self.point_id)
+        return self._breakdown
+
+class BreakdownPts():
+    def __init__(self, breakdown_pts_id: int, bd_parent_points_id: int, bd_nr_points: int, vlr_handle: str, region: str) -> None:
+        self.breakdown_pts_id = breakdown_pts_id
+        self.bd_parent_points_id = bd_parent_points_id
+        self.bd_nr_points = bd_nr_points
+        self.vlr_handle = vlr_handle
+        self.region = region
 
 class Bet():
     def __init__(self, bet_id: int, active: bool, player1: Player, player2: Player, amount: int
@@ -172,7 +215,7 @@ def get_team_id(name=None, short_name=None) -> int:
 def add_event_entry(object: Event) -> None:
     try:
         with conn:
-            c.execute("INSERT INTO events (kind, loc, intl, year, nr_teams, buyin_teams) VALUES (:kind, :loc, :intl, :year, :nr_teams, :buyin_teams)"
+            c.execute("INSERT INTO events (kind, loc, year) VALUES (:kind, :loc, :year)"
                     , object.__dict__)
     except sqlite3.IntegrityError as e:
         print(e)
@@ -190,109 +233,34 @@ def add_match_entry(object: Match) -> None:
 def add_points_entry(object: Points) -> None:
     try:
         with conn:
-            c.execute("INSERT INTO points (pt_player_id, pt_event_id, nr_points, vlr_pt_id) VALUES (:pt_player_id, :pt_event_id, :nr_points, :vlr_pt_id)"
+            c.execute("INSERT INTO points (pt_player_id, pt_event_id, nr_points) VALUES (:pt_player_id, :pt_event_id, :nr_points)"
                     , object.__dict__)
     except sqlite3.IntegrityError as e:
         print(e)
 
-def get_points_from_event(pt_event_id: int) -> any:
+def get_breakdown_by_self_id(points_id: int) -> any:
     with conn:
-        c.execute("SELECT * FROM points WHERE pt_event_id=:pt_event_id"
-                  , {'pt_event_id': pt_event_id})
-        pt_set = c.fetchall()
-    if not pt_set:
-        print(f"No points set found for event {pt_event_id}")
+        c.execute("SELECT * FROM breakdown_pts WHERE bd_parent_points_id=:bd_parent_points_id"
+                  , {'bd_parent_points_id': points_id})
+        bd_set = c.fetchall()
+    if not bd_set:
+        print(f"No points set found for id {points_id}")
         return None
-    return [tuple_into_class(Points, pts) for pts in pt_set]
+    return [tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
 
+# breakdown
+def add_breakdown_entry(object: BreakdownPts) -> None:
+    try:
+        with conn:
+            c.execute("INSERT INTO breakdown_pts (bd_parent_points_id, bd_nr_points, vlr_handle, region) VALUES (:bd_parent_points_id, :bd_nr_points, :vlr_handle, :region)"
+                    , object.__dict__)
+    except sqlite3.IntegrityError as e:
+        print(e)
 
 
 # -----------------------------------------------------------------------------------------------------------
 
 
-c.execute("""
-    CREATE TABLE events(
-        event_id integer PRIMARY KEY,
-        kind text NOT NULL,
-        loc text NOT NULL,
-        year integer NOT NULL
-    )
+# Create a global instance
+db = DBInstance()
 
-    CREATE TABLE points(
-        points_id integer PRIMARY KEY,
-        pt_player_id integer NOT NULL,
-        pt_event_id integer NOT NULL,
-        nr_points integer NOT NULL,
-
-        FOREIGN KEY (pt_player_id) REFERENCES players(player_id),
-        FOREIGN KEY (pt_event_id) REFERENCES events(event_id)
-    )
-    
-    CREATE TABLE breakdown_pts(
-        breakdown_pts_id integer PRIMARY KEY,
-        bd_parent_points_id integer NOT NULL,
-        bd_nr_points integer NOT NULL,
-        vlr_handle text NOT NULL,
-        region text,
-
-        FOREIGN KEY (bd_parent_points_id) REFERENCES points(points_id),
-    )
-""")
-
-
-print()
-print_all_values("points")
-print_all_tables()
-
-
-
-"""
-    CREATE TABLE players(
-        player_id integer PRIMARY KEY AUTOINCREMENT,
-        name text NOT NULL UNIQUE,
-        vlr_user text NOT NULL UNIQUE,
-        stars integer NOT NULL
-    )
-
-    CREATE TABLE teams(
-        team_id integer PRIMARY KEY,
-        name text NOT NULL UNIQUE,
-        short_name text NOT NULL UNIQUE
-    )
-
-    ---
-
-    CREATE TABLE matches(
-        match_id integer PRIMARY KEY,
-        team1_id integer NOT NULL,
-        team2_id integer NOT NULL,
-        bracket text NOT NULL,
-        kind text NOT NULL,
-        worth integer NOT NULL,
-
-        FOREIGN KEY (team1_id) REFERENCES teams(team_id),
-        FOREIGN KEY (team2_id) REFERENCES teams(team_id)
-    )
-
-    CREATE TABLE bets(
-        bet_id integer PRIMARY KEY,
-        active boolean NOT NULL,
-        player1_id integer NOT NULL,
-        player2_id integer NOT NULL,
-        amount integer NOT NULL,
-        bet_match_id integer NOT NULL,
-        p1_choice_id integer NOT NULL
-        p2_choice_id integer NOT NULL
-        winner_id integer NOT NULL,
-
-        FOREIGN KEY (player1_id) REFERENCES players(player_id),
-        FOREIGN KEY (player2_id) REFERENCES players(player_id),
-        FOREIGN KEY (bet_match_id) REFERENCES matches(match_id),
-        FOREIGN KEY (p1_choice_id) REFERENCES teams(team_id),
-        FOREIGN KEY (p1_choice_id) REFERENCES teams(team_id),
-        FOREIGN KEY (winner_id) REFERENCES players(player_id)
-    )
-"""
-
-
-conn.close()
