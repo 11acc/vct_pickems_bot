@@ -1,5 +1,6 @@
 
 import pycountry
+from fuzzywuzzy import process
 
 
 VCT_EMOJIS = {
@@ -64,8 +65,12 @@ VCT_EMOJIS = {
     , "vct_masters": "<:vct_masters:1332393227101143083>"
 }
 
-def get_vct_emoji(emoji_name):
-    return VCT_EMOJIS.get(emoji_name.lower(), "❓")
+def get_vct_emoji(input_name):
+    best_match, score = process.extractOne(input_name, VCT_EMOJIS.keys())
+    if score >= 80:
+        matched_emoji = VCT_EMOJIS[best_match]
+        return matched_emoji
+    return "❓"
 
 def local_to_emoji(local: str) -> str:
     try:
