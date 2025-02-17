@@ -1,7 +1,7 @@
 
 from fuzzywuzzy import process
 
-from database.sql_tables import db
+from database.modules import db
 from reobot.bot_utils import local_to_emoji, get_vct_emoji
 
 
