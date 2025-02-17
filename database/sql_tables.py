@@ -11,36 +11,98 @@ DB_PATH = os.getenv('DB_PATH')
 
 # /// Classes
 class DBInstance():
-    def __init__(self, db_path):
+    def __init__(self, db_path: str) -> None:
         self.db_path = db_path
         self.conn = None
         self.cursor = None
 
-    def connect(self):
+    def connect(self) -> None:
         if self.conn is None:
             self.conn = sqlite3.connect(self.db_path)
             self.cursor = self.conn.cursor()
     
-    def execute(self, query, vars=()):
-        self.connect()
-        self.cursor.execute(query, vars)
-        self.conn.commit()
-    
-    def fetch_one(self, query, vars=()):
-        self.connect()
-        self.cursor.execute(query, vars)
-        return self.cursor.fetchone()
-    
-    def fetch_all(self, query, vars=()):
-        self.connect()
-        self.cursor.execute(query, vars)
-        return self.cursor.fetchall()
-    
-    def close(self):
+    def close(self) -> None:
         if self.conn:
             self.conn.close()
             self.conn = None
             self.cursor = None
+    
+    def execute(self, query: str, vars=()) -> None:
+        try:
+            self.connect()
+            self.cursor.execute(query, vars)
+            self.conn.commit()
+        except sqlite3.Error as e:
+            print(f"SQL error: {e}")
+        except Exception as e:
+            print(f"@reoken smth fucked happened: {e}")
+    
+    def fetch_one(self, query: str, vars=()) -> any:
+        try:
+            self.connect()
+            self.cursor.execute(query, vars)
+            return self.cursor.fetchone()
+        except sqlite3.Error as e:
+            print(f"SQL error: {e}")
+            return None
+    
+    def fetch_all(self, query: str, vars=()) -> any:
+        try:
+            self.connect()
+            self.cursor.execute(query, vars)
+            return self.cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"SQL error: {e}")
+            return []
+
+    # /// Utility methods
+    def print_all_tables(self) -> None:
+        try:
+            tables = self.fetch_all("SELECT name FROM sqlite_master WHERE type='table'")
+            print(tables)
+        except Exception as e:
+            print(f"Error retrieving tables: {e}")
+
+    def print_all_values(self, table: str) -> None:
+        if not table.isidentifier():
+            print(f"Invalid table name: {table}")
+            return
+        try:
+            row_vals = self.fetch_all(f"SELECT * FROM {table}")
+            print(row_vals)
+        except Exception as e:
+            print(f"Error retrieving data from {table}: {e}")
+
+    def add_entry(self, table: str, object) -> None:
+        # Prevent invalid input table names
+        if not table.isidentifier():
+            print(f"Invalid input table: {table}")
+            return
+        # Remove the first key -> id
+        data = object.__dict__.copy()
+        id_col = next(iter(data), None)
+        if id_col:
+            data.pop(id_col, None)
+        # SQL query and params
+        params = ", ".join(data.keys())
+        placeholders = ", ".join(f":{key}" for key in params.keys())
+        query = f"INSERT INTO {table} ({params}) VALUES ({placeholders})"
+        self.execute(query, data)
+
+    def modify_entry(self, table: str, column: str, new_val: str, entity: str, entity_id: int) -> None:
+        if not table.isidentifier() or not column.isidentifier() or not entity.isidentifier():
+            print(f"Invalid input table: {table}, col: {column}, or entity: {entity}")
+            return
+        query = f"UPDATE {table} SET {column}=? WHERE {entity}=?"
+        self.execute(query, (new_val, entity_id))
+
+    def del_entry(self, table: str, entity: str, entity_id: int) -> None:
+        if not table.isidentifier() or not entity.isidentifier():
+            print(f"Invalid input table: {table} or entity: {entity}")
+            return
+        query = f"DELETE FROM {table} WHERE {entity}=?"
+        self.execute(query, (entity_id,))
+
 
 class Player():
     def __init__(self, player_id: int, name: str, vlr_user: str, stars: int, local: str) -> None:
@@ -142,49 +204,10 @@ class Bet():
         return self.amount / self.match.worth
 
 
-# /// SQL util methods
-def print_all_tables() -> None:
-    with conn:
-        c.execute("SELECT name FROM sqlite_master WHERE type = 'table'")
-        print(c.fetchall())
-
-def print_all_values(table: str) -> None:
-    with conn:
-        c.execute(f"SELECT * FROM {table}")
-        print(c.fetchall())
+# Create a global instance
+db = DBInstance(DB_PATH)
 
 
-# /// Table util methods
-# global
-def tuple_into_class(class_table, sql_obj: tuple) -> any:
-    return class_table(*sql_obj)
-
-def fetch_one_from_db(query: str, variables: tuple) -> any:
-    with conn:
-        c.execute(query, variables)
-        return c.fetchone()
-
-def fetch_all_from_db(query: str, variables: tuple) -> list:
-    with conn:
-        c.execute(query, variables)
-        return c.fetchall()
-
-def modify_entry(table: str, entity: str, entity_id: int, column, new_val) -> None:
-    with conn:
-        c.execute(f"UPDATE {table} SET {column}='{new_val}' WHERE {entity}=?", (entity_id,))
-
-def del_entry(table: str, entity: str, entity_id: int) -> None:
-    with conn:
-        c.execute(f"DELETE FROM {table} WHERE {entity}=?", (entity_id,))
-
-# players
-def add_player_entry(object: Player) -> None:
-    try:
-        with conn:
-            c.execute("INSERT INTO players (name, vlr_user, stars) VALUES (:name, :vlr_user, :stars)"
-                    , object.__dict__)
-    except sqlite3.IntegrityError as e:
-        print(e)
 
 def get_player_by_id(player_id: int) -> Player:
     with conn:
@@ -196,46 +219,10 @@ def get_player_by_id(player_id: int) -> Player:
         return None
     return tuple_into_class(Player, sql_player)
 
-# teams
-def add_team_entry(object: Team) -> None:
-    try:
-        with conn:
-            c.execute("INSERT INTO teams (name, short_name) VALUES (:name, :short_name)"
-                    , object.__dict__)
-    except sqlite3.IntegrityError as e:
-        print(e)
-
 def get_team_id(name=None, short_name=None) -> int:
     with conn:
         c.execute("SELECT team_id FROM teams WHERE name=:name OR short_name=:short_name", {'name': name, 'short_name': short_name})
         return int(c.fetchone()[0])
-
-# event
-def add_event_entry(object: Event) -> None:
-    try:
-        with conn:
-            c.execute("INSERT INTO events (kind, loc, year) VALUES (:kind, :loc, :year)"
-                    , object.__dict__)
-    except sqlite3.IntegrityError as e:
-        print(e)
-
-# matches
-def add_match_entry(object: Match) -> None:
-    try:
-        with conn:
-            c.execute("INSERT INTO matches (team1_id, team2_id, bracket, kind, worth) VALUES (:team1_id, :team2_id, :bracket, :kind, :worth)"
-                    , object.__dict__)
-    except sqlite3.IntegrityError as e:
-        print(e)
-
-# points
-def add_points_entry(object: Points) -> None:
-    try:
-        with conn:
-            c.execute("INSERT INTO points (pt_player_id, pt_event_id, nr_points) VALUES (:pt_player_id, :pt_event_id, :nr_points)"
-                    , object.__dict__)
-    except sqlite3.IntegrityError as e:
-        print(e)
 
 def get_breakdown_by_self_id(points_id: int) -> any:
     with conn:
@@ -246,20 +233,4 @@ def get_breakdown_by_self_id(points_id: int) -> any:
         print(f"No points set found for id {points_id}")
         return None
     return [tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
-
-# breakdown
-def add_breakdown_entry(object: BreakdownPts) -> None:
-    try:
-        with conn:
-            c.execute("INSERT INTO breakdown_pts (bd_parent_points_id, bd_nr_points, vlr_handle, region) VALUES (:bd_parent_points_id, :bd_nr_points, :vlr_handle, :region)"
-                    , object.__dict__)
-    except sqlite3.IntegrityError as e:
-        print(e)
-
-
-# -----------------------------------------------------------------------------------------------------------
-
-
-# Create a global instance
-db = DBInstance()
 

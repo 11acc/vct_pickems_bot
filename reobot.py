@@ -7,7 +7,8 @@ import discord
 from discord.ext import commands
 from discord.ui import Select, View
 
-from database.sql_tables import tuple_event_into_class, get_event, get_points_from_event
+from database.db_utils import find_best_event_match, points_from_event
+from reobot.bot_utils import get_vct_emoji
 
 
 load_dotenv()
@@ -24,47 +25,35 @@ bot = commands.Bot(command_prefix="!vct ", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"🐙 {bot.user} online")
+    print(f"🪸 {bot.user} online")
 
 @bot.command()
 async def hello(ctx):
     await ctx.send(f"hello {ctx.author.name}")
 
-
 # /// POINTS
 @bot.command()
-async def points(ctx, kind: str, loc:str, year: int):
-    pass
+async def points(ctx, loc:str, year: int):
+    # Check input year is valid
+    input_event = find_best_event_match(loc, year)
+    if not input_event:
+        await ctx.send(f"massive whiff on that event selection brosky, no event with that name and year combo")
 
+    # Set the header and obtain the appropriate user information
+    header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {loc.capitalize()} ] Leaderboard"
+    player_bullets = "\n".join(points_from_event(input_event))
 
+    embed = discord.Embed(
+        colour=BOT_EMBED_COLOUR
+        , description=player_bullets
+        , title=header
+        # , url=""
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
-# @bot.command()
-# async def points(ctx, year: int, event: str):
-#     # Check input year is valid
-#     if not EventYears.validate(year):
-#         await ctx.send(f"massive whiff on that year brosky\nvalid years: [{', '.join(EventYears.VALID_YEARS)}]")
+    await ctx.send(embed=embed)
 
-#     # Check input event is valid
-#     event = event.upper()
-#     if not EventTypes.validate(event):
-#         await ctx.send(f"massive whiff on that event selection\nvalid events: [{', '.join(EventTypes.VALID_EVENTS.keys()).lower()}]")
-#         return None
-    
-#     # Set the header and obtain the appropriate user information
-#     header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {event.capitalize()} ] Leaderboard"
-#     player_bullets = "\n".join(format_player_info(year, event))
-
-#     embed = discord.Embed(
-#         colour=BOT_EMBED_COLOUR
-#         , description=player_bullets
-#         , title=header
-#         # , url=""
-#     )
-#     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
-
-#     await ctx.send(embed=embed)
-
-
+# /// BETS
 
 # class Bet_Select_View(View):
 #     @discord.ui.select()
@@ -124,21 +113,6 @@ async def points(ctx, kind: str, loc:str, year: int):
 #     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
 #     await ctx.send(embed=embed)
-
-
-# @bets.command(name="history")
-# async def history_bets(ctx):
-#     # Receive all past bets
-
-#     # 
-
-#     await ctx.send(embed=embed)
-
-
-
-# /// TEST
-
-
 
 
 
