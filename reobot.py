@@ -1,51 +1,59 @@
 
+# :purpose: Main script to run discord bot
+
 import os
 from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from discord.ui import Select, View
 
-from database.db_utils import format_player_info
-from bot.bot_utils import EventYears, EventTypes, get_vct_emoji
+from database.modules import db
+from database.db_utils import find_best_event_match, points_from_event
+from reobot.bot_utils import get_vct_emoji
 
 
 load_dotenv()
+REO_DEV_USER_ID = 229174776634015744
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
-# Other global variables
 BOT_NAME = "reobot"
 BOT_EMBED_COLOUR = discord.Colour.from_rgb(177,35,235)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
 intents = discord.Intents.default()
-intents.message_content = True  # needed for msg commands
+intents.message_content = True
 bot = commands.Bot(command_prefix="!vct ", intents=intents)
+
 
 @bot.event
 async def on_ready():
-    print(f"🐙 {bot.user} online")
+    print(f"🪸  {bot.user} online")
+    db.connect()
+
+@bot.event
+async def on_disconnect():
+    print(f"🪸  {bot.user} shutting down...")
+    db.close()
 
 @bot.command()
 async def hello(ctx):
     await ctx.send(f"hello {ctx.author.name}")
 
-
 # /// POINTS
 @bot.command()
-async def points(ctx, year: int, event: str):
+async def points(ctx, loc:str, year: int):
     # Check input year is valid
-    if not EventYears.validate(year):
-        await ctx.send(f"massive whiff on that year brosky\nvalid years: [{', '.join(EventYears.VALID_YEARS)}]")
+    input_event = find_best_event_match(loc, year)
+    if not input_event:
+        await ctx.send(f"massive whiff on that event selection brosky, no event with that name and year combo")
 
-    # Check input event is valid
-    event = event.upper()
-    if not EventTypes.validate(event):
-        await ctx.send(f"massive whiff on that event selection\nvalid events: [{', '.join(EventTypes.VALID_EVENTS.keys()).lower()}]")
-        return None
-    
     # Set the header and obtain the appropriate user information
-    header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {event.capitalize()} ] Leaderboard"
-    player_bullets = "\n".join(format_player_info(year, event))
+    header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {loc.capitalize()} ] Leaderboard"
+    event_points = points_from_event(input_event)
+    if not event_points:
+        await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
+        return
+    player_bullets = "\n".join(event_points)
 
     embed = discord.Embed(
         colour=BOT_EMBED_COLOUR
@@ -58,7 +66,7 @@ async def points(ctx, year: int, event: str):
     await ctx.send(embed=embed)
 
 
-
+# /// BETS
 # class Bet_Select_View(View):
 #     @discord.ui.select()
 #     async def callback(self, interaction):
@@ -117,21 +125,6 @@ async def points(ctx, year: int, event: str):
 #     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
 #     await ctx.send(embed=embed)
-
-
-# @bets.command(name="history")
-# async def history_bets(ctx):
-#     # Receive all past bets
-
-#     # 
-
-#     await ctx.send(embed=embed)
-
-
-
-# /// TEST
-
-
 
 
 
