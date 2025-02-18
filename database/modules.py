@@ -228,7 +228,7 @@ class DBInstance():
         vals = tuple(filters.values())
         where_filt = f"WHERE {conditions}" if filters else ""
         # Construct query and fetch
-        query = f"SELECT * FROM points {where_filt}"
+        query = f"SELECT * FROM points {where_filt} ORDER BY nr_points DESC"
         point_sets = self.fetch_all(query, vals)
         if not point_sets:
             print(f"No point sets found for filters: {filters}")
