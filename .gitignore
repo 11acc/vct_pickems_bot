@@ -171,6 +171,6 @@ cython_debug/
 .pypirc
 
 td.txt
+repo_testing.py
 archive/
 db_sensitive/
-test.py
