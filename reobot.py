@@ -13,6 +13,7 @@ from reobot.bot_utils import get_vct_emoji
 
 
 load_dotenv()
+REO_DEV_USER_ID = 229174776634015744
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 BOT_NAME = "reobot"
 BOT_EMBED_COLOUR = discord.Colour.from_rgb(177,35,235)
@@ -48,7 +49,11 @@ async def points(ctx, loc:str, year: int):
 
     # Set the header and obtain the appropriate user information
     header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {loc.capitalize()} ] Leaderboard"
-    player_bullets = "\n".join(points_from_event(input_event))
+    event_points = points_from_event(input_event)
+    if not event_points:
+        await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
+        return
+    player_bullets = "\n".join(event_points)
 
     embed = discord.Embed(
         colour=BOT_EMBED_COLOUR
