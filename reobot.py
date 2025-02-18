@@ -45,7 +45,7 @@ async def points(ctx, loc:str, year: int):
     # Check input year is valid
     input_event = find_best_event_match(loc, year)
     if not input_event:
-        await ctx.send(f"massive whiff on that event selection brosky, no event with that name and year combo")
+        await ctx.send("massive whiff on that event selection brosky, no event with that name and year combo")
 
     # Set the header and obtain the appropriate user information
     header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {loc.capitalize()} ] Leaderboard"
@@ -54,12 +54,15 @@ async def points(ctx, loc:str, year: int):
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
     player_bullets = "\n".join(event_points)
+    event_link = db.event_vlr_link_from_name(input_event)
+    if not event_link:
+        event_link = ""
 
     embed = discord.Embed(
         colour=BOT_EMBED_COLOUR
         , description=player_bullets
         , title=header
-        # , url=""
+        , url=event_link
     )
     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 

@@ -35,11 +35,12 @@ class Team():
         return self.name
 
 class Event():
-    def __init__(self, event_id: int, kind: str, loc: str, year: int) -> None:
+    def __init__(self, event_id: int, kind: str, loc: str, year: int, vlr_pickem_link: str) -> None:
         self.event_id = event_id
         self.kind = kind
         self.loc = loc
         self.year = year
+        self.vlr_pickem_link = vlr_pickem_link
 
     def __repr__(self) -> str:
         return f'{self.kind} {self.loc} {self.year}'
@@ -276,6 +277,10 @@ class DBInstance():
             for a_breakdown in pt_set.breakdown:
                 running_total += a_breakdown.bd_nr_points
             db.modify_entry("points", "nr_points", running_total, "points_id", pt_set.point_id)
+
+    def event_vlr_link_from_name(self, input_event: str) -> str | None:
+        query = "SELECT vlr_pickem_link FROM events WHERE loc=?"
+        return self.fetch_one(query, (input_event,))[0]
 
 # Create a global instance
 db = DBInstance(DB_PATH)

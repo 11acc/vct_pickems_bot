@@ -173,3 +173,4 @@ cython_debug/
 td.txt
 archive/
 db_sensitive/
+test.py
