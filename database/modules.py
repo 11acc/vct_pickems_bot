@@ -126,7 +126,7 @@ class DBInstance():
             self.conn = None
             self.cursor = None
     
-    def º(self, query: str, vars=()) -> None:
+    def execute(self, query: str, vars=()) -> None:
         try:
             self.connect()
             self.cursor.execute(query, vars)
@@ -177,14 +177,21 @@ class DBInstance():
         if not table.isidentifier():
             print(f"Invalid input table: {table}")
             return None
+
         # Remove the first key -> id
         data = object.__dict__.copy()
         id_col = next(iter(data), None)
         if id_col:
             data.pop(id_col, None)
+        # Remove any key that starts with "_", references to objs which aren't necessary
+        data = {k: v for k, v in data.items() if not k.startswith("_")}
+        if not data:
+            print("No valid cols to insert")
+            return None
+
         # SQL query and params
         params = ", ".join(data.keys())
-        placeholders = ", ".join(f":{key}" for key in params.keys())
+        placeholders = ", ".join(f":{key}" for key in data.keys())
         query = f"INSERT INTO {table} ({params}) VALUES ({placeholders})"
         self.execute(query, data)
 
@@ -214,13 +221,41 @@ class DBInstance():
             return None
         return self.tuple_into_class(Player, sql_player)
 
+    def point_sets_from_filters(self, **filters) -> list[Points] | None:
+        # Construct filter clauses
+        conditions = " AND ".join(f"{key}=?" for key in filters.keys())
+        vals = tuple(filters.values())
+        where_filt = f"WHERE {conditions}" if filters else ""
+        # Construct query and fetch
+        query = f"SELECT * FROM points {where_filt}"
+        point_sets = self.fetch_all(query, vals)
+        if not point_sets:
+            print(f"No point sets found for filters: {filters}")
+            return None
+        return [self.tuple_into_class(Points, ply_pts) for ply_pts in point_sets]
+
     def get_breakdown_by_self_id(self, points_id: int) -> list[Player] | None:
         query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=?"
         bd_set = self.fetch_all(query, (points_id,))
         if not bd_set:
-            print(f"No points set found for id {points_id}")
+            print(f"No breakdown pts set found for id {points_id}")
             return None
         return [self.tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
+
+    def breakdown_from_points_n_region(self, parent_pts_id: int, region: str) -> BreakdownPts | None:
+        query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=? AND region=?"
+        bd_set = self.fetch_one(query, (parent_pts_id, region))
+        if not bd_set:
+            print(f"No breakdown pts set found for parent_pts_id: {parent_pts_id} and region: {region}")
+            return None
+        return self.tuple_into_class(BreakdownPts, bd_set)
+
+    def player_id_from_vlr_name(self, vlr_user: str) -> int | None:
+        query = "SELECT player_id FROM players WHERE vlr_user=?"
+        ply_id = self.fetch_one(query, (vlr_user,))
+        if not ply_id:
+            print(f"No player with vlr_user: {vlr_user}")
+        return int(ply_id[0])
 
     def event_id_from_name(self, matched_name: str) -> int | None:
         query = "SELECT event_id FROM events WHERE loc=?"
@@ -228,15 +263,19 @@ class DBInstance():
         if not ev_id:
             print(f"No event with name: {matched_name}")
         return int(ev_id[0])
-    
-    def point_sets_from_event_id(self, event_id: int) -> list[Points] | None:
-        query = "SELECT * FROM points WHERE pt_event_id=?"
-        point_sets = self.fetch_all(query, (event_id,))
-        if not point_sets:
-            print(f"No point sets found for event_id: {event_id}")
-            return None
-        return [self.tuple_into_class(Points, ply_pts) for ply_pts in point_sets]
 
+    def is_player_in_db(self, player_name: str) -> bool | None:
+        query = "SELECT vlr_user FROM players WHERE vlr_user=?"
+        return self.fetch_one(query, (player_name,))
+
+    def update_total_point_sets(self) -> None:
+        # Cycle all point sets and compute new total nr points from all respective breakdowns
+        AllPtSets = self.point_sets_from_filters()
+        for pt_set in AllPtSets:
+            running_total = 0
+            for a_breakdown in pt_set.breakdown:
+                running_total += a_breakdown.bd_nr_points
+            db.modify_entry("points", "nr_points", running_total, "points_id", pt_set.point_id)
 
 # Create a global instance
 db = DBInstance(DB_PATH)

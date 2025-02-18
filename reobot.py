@@ -7,6 +7,7 @@ import discord
 from discord.ext import commands
 from discord.ui import Select, View
 
+from database.modules import db
 from database.db_utils import find_best_event_match, points_from_event
 from reobot.bot_utils import get_vct_emoji
 
@@ -25,7 +26,13 @@ bot = commands.Bot(command_prefix="!vct ", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"🪸 {bot.user} online")
+    print(f"🪸  {bot.user} online")
+    db.connect()
+
+@bot.event
+async def on_disconnect():
+    print(f"🪸  {bot.user} shutting down...")
+    db.close()
 
 @bot.command()
 async def hello(ctx):
@@ -53,8 +60,8 @@ async def points(ctx, loc:str, year: int):
 
     await ctx.send(embed=embed)
 
-# /// BETS
 
+# /// BETS
 # class Bet_Select_View(View):
 #     @discord.ui.select()
 #     async def callback(self, interaction):

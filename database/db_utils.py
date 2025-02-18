@@ -14,11 +14,13 @@ def find_best_event_match(input_event: str, year: int) -> any:
         return best_match
     return None
 
-def points_from_event(matched_name: str) -> str | None:
-    # Get all point sets for target event
+def point_sets_from_matched_event(matched_name: str) -> list | None:
+    # Get event id and return the corresponding point sets associated
     match_ev_id = db.event_id_from_name(matched_name)
-    PlayerPointsFromEvent = db.point_sets_from_event_id(match_ev_id)
+    return db.point_sets_from_filters(event_id=match_ev_id)
 
+def points_from_event(matched_name: str) -> str | None:
+    PlayerPointsFromEvent = point_sets_from_matched_event(matched_name)
     points_formatted = []
     len_longest_name = max(len(p.player.name) for p in PlayerPointsFromEvent)  # for buffering
     for point_set in PlayerPointsFromEvent:
