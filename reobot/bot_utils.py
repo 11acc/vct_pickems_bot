@@ -57,7 +57,7 @@ VCT_EMOJIS = {
     , "boom": "<:boom:1337074947581194144>"
 
     , "vct_logo": "<:vct_logo:1333491883007021086>"
-    , "vct_champs": "<:vct_champs:1332393227387921000>"
+    , "vct_champs": "<:vct_champs:1332393272378921000>"
     , "vct_americas": "<:vct_americas:1332393264526921808>"
     , "vct_china": "<:vct_china:1332393256004354068>"
     , "vct_pacific": "<:vct_pacific:1332393245489238057>"
