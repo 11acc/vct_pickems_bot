@@ -43,6 +43,11 @@ class Team():
         return self.name
 
 class Event():
+    _tier_mapping = {
+        "Champions": 1,
+        "Masters": 2,
+    }
+
     def __init__(self, event_id: int, kind: str, loc: str, year: int, vlr_pickem_link: str) -> None:
         self.event_id = event_id
         self.kind = kind
@@ -51,7 +56,11 @@ class Event():
         self.vlr_pickem_link = vlr_pickem_link
 
     def __repr__(self) -> str:
-        return f'{self.kind} {self.loc} {self.year}'
+        return f'VCT {self.year} : {self.kind} {self.loc}'
+
+    @property
+    def kind_tier(self) -> int:
+        return self._tier_mapping.get(self.kind, 3)
 
 class Points():
     def __init__(self, point_id: int, pt_player_id: int, pt_event_id: int, nr_points: int) -> None:
@@ -334,19 +343,20 @@ class DBInstance():
             return None
         return [p_id for (p_id,) in sql_stars]
 
-    def player_star_counts_by_id(self, player_id: int) -> dict | None:
-        # query = "SELECT s_player_id, category, COUNT(*) AS star_count FROM stars GROUP BY s_player_id, category ORDER BY category ASC"
-        query = "SELECT * FROM player_star_counts WHERE s_player_id=? ORDER BY category ASC"
+    def get_player_star_info(self, player_id: int) -> tuple[dict, list] | None:
+        query = "SELECT s_player_id, s_event_id, category, COUNT(*) AS star_count FROM stars WHERE s_player_id=? GROUP BY s_player_id, category ORDER BY category ASC"
         sql_stars = self.fetch_all(query, (player_id,))
         if not sql_stars:
             print(f"No star sets found")
             return None
-        
-        player_star_count = {}
-        for _, category, count in sql_stars:
-            player_star_count[category] = count
 
-        return player_star_count
+        star_category_count = {}
+        star_event_objs = []
+        for _, event_id, category, count in sql_stars:
+            star_category_count[category] = count
+            star_event_objs.append(db.get_event_by_id(event_id))
+
+        return star_category_count, star_event_objs
 
 
 # Create a global instance

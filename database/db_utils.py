@@ -53,34 +53,41 @@ def format_star_emojis(player_star_counts: dict) -> str:
     
     return ' '.join(emojis_formatted)
 
+def md_format_event_kind(AnEvent) -> str:
+    md_prefix = ""
+    bold = "**"
+    underline = "__"
+
+    if AnEvent.kind_tier == 1:
+        md_prefix = bold + underline
+    elif AnEvent.kind_tier == 2:
+        md_prefix = bold
+
+    return f"{md_prefix}{AnEvent}{md_prefix}"
+
+def format_event_breakdown(player_star_events: list) -> str:
+    return "\n".join(f"  - {md_format_event_kind(ev)}" for ev in player_star_events)
+
 # Format the amount of stars and events won for players who have
 def star_leaderboard() -> str | None:
-    # Players and star category counts
     player_ids_with_stars = db.player_ids_with_stars()
-    PlayerStarSets = {}
-    for player_id in player_ids_with_stars:
-        PlayerStarSets[db.get_player_by_id(player_id)] = db.player_star_counts_by_id(player_id)
-    # Format so that we have -> Player obj: {star category: n, ...}
+    # Define 2 dict by Player objs with respective star category counts and events
+    PlayerStarCategoryCount = {}
+    PlayerStarEvents = {}
+    for p_id in player_ids_with_stars:
+        PlayerObj = db.get_player_by_id(p_id)
+        PlayerStarCategoryCount[PlayerObj], PlayerStarEvents[PlayerObj] = db.get_player_star_info(p_id)
 
-    # Event star breakdown
-    # eventually...
-
+    # Format output
     stars_formatted = []
-    for player in PlayerStarSets:
+    for player in PlayerStarCategoryCount:
         stars_formatted.append(
             f"- {local_to_emoji(player.local)} "
             f" **{player.name}** "
-            f"{format_star_emojis(PlayerStarSets[player])}"
-            # f"{event_breakdown}"
+            f"{format_star_emojis(PlayerStarCategoryCount[player])}"
+            f"\n"
+            f"{format_event_breakdown(PlayerStarEvents[player])}"
+            f"\n"
         )
 
     return "\n".join(stars_formatted)
-
-    desc = f"""
-- :flag_kz:  Alex {get_vct_emoji('sparkle_1')} {get_vct_emoji('champs_sparkle_1')}
-- VCT 2024 : Kickoff
-- __**VCT 2024 : Champions Seoul**__
-
-- :flag_hk:  Qiff {get_vct_emoji('masters_sparkle_1')}
-- **VCT 2024 : Masters Shanghai**
-    """
