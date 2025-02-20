@@ -11,15 +11,23 @@ DB_PATH = os.getenv('DB_PATH')
 
 # /// Classes
 class Player():
-    def __init__(self, player_id: int, name: str, vlr_user: str, stars: int, local: str) -> None:
+    def __init__(self, player_id: int, name: str, vlr_user: str, local: str) -> None:
         self.player_id = player_id
         self.name = name
         self.vlr_user = vlr_user
-        self.stars = stars
         self.local = local
     
     def __repr__(self):
         return f'{self.local} {self.name}'
+
+    def __eq__(self, other):
+        if isinstance(other, Player):
+            return (self.player_id, self.name, self.vlr_user, self.local) == \
+                   (other.player_id, other.name, other.vlr_user, other.local)
+        return False
+    
+    def __hash__(self):
+        return hash((self.player_id, self.name, self.vlr_user, self.local))
 
 class Team():
     def __init__(self, team_id: int, name: str, short_name: str) -> None:
@@ -35,6 +43,11 @@ class Team():
         return self.name
 
 class Event():
+    _tier_mapping = {
+        "Champions": 1,
+        "Masters": 2,
+    }
+
     def __init__(self, event_id: int, kind: str, loc: str, year: int, vlr_pickem_link: str) -> None:
         self.event_id = event_id
         self.kind = kind
@@ -43,19 +56,11 @@ class Event():
         self.vlr_pickem_link = vlr_pickem_link
 
     def __repr__(self) -> str:
-        return f'{self.kind} {self.loc} {self.year}'
+        return f'VCT {self.year} : {self.kind} {self.loc}'
 
-class Match():
-    def __init__(self, match_id: int, team1_id: int, team2_id: int, bracket: str, kind: str, worth: int) -> None:
-        self.match_id = match_id
-        self.team1_id = team1_id
-        self.team2_id = team2_id
-        self.bracket = bracket
-        self.kind = kind
-        self.worth = worth
-
-    # def __repr__(self) -> str:
-    #     return f'{self.bracket}: {self.kind} · {self.team1} vs {self.team2}'
+    @property
+    def kind_tier(self) -> int:
+        return self._tier_mapping.get(self.kind, 3)
 
 class Points():
     def __init__(self, point_id: int, pt_player_id: int, pt_event_id: int, nr_points: int) -> None:
@@ -88,6 +93,40 @@ class BreakdownPts():
         self.bd_nr_points = bd_nr_points
         self.vlr_handle = vlr_handle
         self.region = region
+
+class Star():
+    def __init__(self, star_id: int, s_player_id: int, s_event_id: int, category: str) -> None:
+        self.star_id = star_id
+        self.s_player_id = s_player_id
+        self._player = None  # Player obj class, loaded on demand
+        self.s_event_id = s_event_id
+        self._event = None  # Event obj class, loaded on demand
+        self.category = category
+
+    @property
+    def player(self):
+        if self._player is None:
+            self._player = db.get_player_by_id(self.s_player_id)
+        return self._player
+    
+    @property
+    def event(self):
+        if self._event is None:
+            self._event = db.get_event_by_id(self.s_event_id)
+        return self._event
+
+
+class Match():
+    def __init__(self, match_id: int, team1_id: int, team2_id: int, bracket: str, kind: str, worth: int) -> None:
+        self.match_id = match_id
+        self.team1_id = team1_id
+        self.team2_id = team2_id
+        self.bracket = bracket
+        self.kind = kind
+        self.worth = worth
+
+    # def __repr__(self) -> str:
+    #     return f'{self.bracket}: {self.kind} · {self.team1} vs {self.team2}'
 
 class Bet():
     def __init__(self, bet_id: int, active: bool, player1: Player, player2: Player, amount: int
@@ -222,6 +261,14 @@ class DBInstance():
             return None
         return self.tuple_into_class(Player, sql_player)
 
+    def get_event_by_id(self, event_id: int) -> Event | None:
+        query = f"SELECT * FROM events WHERE event_id=?"
+        sql_event = self.fetch_one(query, (event_id,))
+        if not sql_event:
+            print(f"Event with id {event_id} doesn't exist")
+            return None
+        return self.tuple_into_class(Event, sql_event)
+
     def point_sets_from_filters(self, **filters) -> list[Points] | None:
         # Construct filter clauses
         conditions = " AND ".join(f"{key}=?" for key in filters.keys())
@@ -243,11 +290,17 @@ class DBInstance():
             return None
         return [self.tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
 
-    def breakdown_from_points_n_region(self, parent_pts_id: int, region: str) -> BreakdownPts | None:
-        query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=? AND region=?"
-        bd_set = self.fetch_one(query, (parent_pts_id, region))
+    def breakdown_from_points_n_region(self, parent_points_id: int, region=None) -> BreakdownPts | None:
+        # Check if we need to filter by region or not
+        region_filter = "AND region=?"
+        values = (parent_points_id, region)
+        if not region:
+            values = (parent_points_id,)
+            region_filter = ""
+        query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=? {region_filter}"
+        bd_set = self.fetch_one(query, values)
         if not bd_set:
-            print(f"No breakdown pts set found for parent_pts_id: {parent_pts_id} and region: {region}")
+            print(f"No breakdown pts set found for values: {values}")
             return None
         return self.tuple_into_class(BreakdownPts, bd_set)
 
@@ -281,6 +334,30 @@ class DBInstance():
     def event_vlr_link_from_name(self, input_event: str) -> str | None:
         query = "SELECT vlr_pickem_link FROM events WHERE loc=?"
         return self.fetch_one(query, (input_event,))[0]
+
+    def player_ids_with_stars(self) -> list[int] | None:
+        query = "SELECT DISTINCT s_player_id FROM stars ORDER BY s_player_id ASC"
+        sql_stars = self.fetch_all(query)
+        if not sql_stars:
+            print(f"No player_ids found in stars table")
+            return None
+        return [p_id for (p_id,) in sql_stars]
+
+    def get_player_star_info(self, player_id: int) -> tuple[dict, list] | None:
+        query = "SELECT s_player_id, s_event_id, category, COUNT(*) AS star_count FROM stars WHERE s_player_id=? GROUP BY s_player_id, category ORDER BY category ASC"
+        sql_stars = self.fetch_all(query, (player_id,))
+        if not sql_stars:
+            print(f"No star sets found")
+            return None
+
+        star_category_count = {}
+        star_event_objs = []
+        for _, event_id, category, count in sql_stars:
+            star_category_count[category] = count
+            star_event_objs.append(db.get_event_by_id(event_id))
+
+        return star_category_count, star_event_objs
+
 
 # Create a global instance
 db = DBInstance(DB_PATH)

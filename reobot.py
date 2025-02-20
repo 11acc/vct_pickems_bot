@@ -8,7 +8,7 @@ from discord.ext import commands
 from discord.ui import Select, View
 
 from database.modules import db
-from database.db_utils import find_best_event_match, points_from_event
+from database.db_utils import find_best_event_match, points_from_event, star_leaderboard
 from reobot.bot_utils import get_vct_emoji
 
 
@@ -16,7 +16,8 @@ load_dotenv()
 REO_DEV_USER_ID = 229174776634015744
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 BOT_NAME = "reobot"
-BOT_EMBED_COLOUR = discord.Colour.from_rgb(177,35,235)
+BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(177,35,235)
+BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(255,68,85)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
@@ -26,22 +27,22 @@ bot = commands.Bot(command_prefix="!vct ", intents=intents)
 
 
 @bot.event
-async def on_ready():
+async def on_ready() -> None:
     print(f"🪸  {bot.user} online")
     db.connect()
 
 @bot.event
-async def on_disconnect():
+async def on_disconnect() -> None:
     print(f"🪸  {bot.user} shutting down...")
     db.close()
 
 @bot.command()
-async def hello(ctx):
+async def hello(ctx) -> None:
     await ctx.send(f"hello {ctx.author.name}")
 
 # /// POINTS
 @bot.command()
-async def points(ctx, loc:str, year: int):
+async def points(ctx, loc:str, year: int) -> None:
     # Check input year is valid
     input_event = find_best_event_match(loc, year)
     if not input_event:
@@ -59,7 +60,7 @@ async def points(ctx, loc:str, year: int):
         event_link = ""
 
     embed = discord.Embed(
-        colour=BOT_EMBED_COLOUR
+        colour=BOT_EMBED_POINTS_COLOUR
         , description=player_bullets
         , title=header
         , url=event_link
@@ -67,6 +68,26 @@ async def points(ctx, loc:str, year: int):
     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
     await ctx.send(embed=embed)
+
+# /// LEADERBOARD
+@bot.command()
+async def leaderboard(ctx) -> None:
+    # Set the header and obtain the appropriate user information
+    header = f":trophy: VCT Pickem' Global Leaderboard"
+    leaderboard = star_leaderboard()
+    if not leaderboard:
+        await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
+        return
+    
+    embed = discord.Embed(
+        colour=BOT_EMBED_LEADERBOARD_COLOUR
+        , description=leaderboard
+        , title=header
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+
+    await ctx.send(embed=embed)
+
 
 
 # /// BETS
