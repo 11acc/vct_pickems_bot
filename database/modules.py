@@ -281,11 +281,17 @@ class DBInstance():
             return None
         return [self.tuple_into_class(BreakdownPts, bd_pts) for bd_pts in bd_set]
 
-    def breakdown_from_points_n_region(self, parent_pts_id: int, region: str) -> BreakdownPts | None:
-        query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=? AND region=?"
-        bd_set = self.fetch_one(query, (parent_pts_id, region))
+    def breakdown_from_points_n_region(self, parent_points_id: int, region=None) -> BreakdownPts | None:
+        # Check if we need to filter by region or not
+        region_filter = "AND region=?"
+        values = (parent_points_id, region)
+        if not region:
+            values = (parent_points_id,)
+            region_filter = ""
+        query = f"SELECT * FROM breakdown_pts WHERE bd_parent_points_id=? {region_filter}"
+        bd_set = self.fetch_one(query, values)
         if not bd_set:
-            print(f"No breakdown pts set found for parent_pts_id: {parent_pts_id} and region: {region}")
+            print(f"No breakdown pts set found for values: {values}")
             return None
         return self.tuple_into_class(BreakdownPts, bd_set)
 
