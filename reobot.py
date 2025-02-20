@@ -89,6 +89,25 @@ async def leaderboard(ctx) -> None:
     await ctx.send(embed=embed)
 
 
+@bot.command()
+async def easter_egg(ctx) -> None:
+    header = f"{get_vct_emoji("miku")} testin"
+    asd = """
+- :flag_es:  **A** <a:champs_sparkle_1:1342202573498880115> <a:champs_sparkle_2:1342202584936747111> <a:champs_sparkle_3_6:1342202595640610997>
+  - **__VCT 2049 : Champions Almeria__**
+
+- :flag_ge:  **K** <:masters_sparkle_1:1342206382698397787> <:masters_sparkle_2:1342206390403600405> <:masters_sparkle_3:1342206396808171562>
+  - **VCT 2049 : Masters Los Angeles**
+    """
+
+    embed = discord.Embed(
+        colour=discord.Colour.from_rgb(19,122,127)
+        , description=asd
+        , title=header
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+
+    await ctx.send(embed=embed)
 
 # /// BETS
 # class Bet_Select_View(View):
