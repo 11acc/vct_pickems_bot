@@ -63,6 +63,19 @@ VCT_EMOJIS = {
     , "vct_pacific": "<:vct_pacific:1332393245489238057>"
     , "vct_emea": "<:vct_emea:1332393237507346462>"
     , "vct_masters": "<:vct_masters:1332393227101143083>"
+
+    , "regular_sparkle_1": "<:sparkle_1:1341779010849341552>"
+    , "regular_sparkle_2": "<:sparkle_2:1341779023436583045>"
+    , "regular_sparkle_3": "<:sparkle_3:1341779037705736234>"
+    , "regular_sparkle_4": "<:sparkle_4:1341779048908460133>"
+    , "regular_sparkle_5": "<:sparkle_5:1341779065232818217>"
+    , "regular_sparkle_6": "<:sparkle_6:1341779074971992175>"
+    , "masters_sparkle_1": "<:masters_sparkle_1:1341775635504431225>"
+    , "masters_sparkle_2": "<:masters_sparkle_2:1341775644958392330>"
+    , "masters_sparkle_3": "<:masters_sparkle_3:1341776007904104660>"
+    , "champs_sparkle_1": "<:champs_sparkle_1:1341776609614757888>"
+    , "champs_sparkle_2": "<:champs_sparkle_2:1341776618485448705>"
+    , "champs_sparkle_3": "<:champs_sparkle_3:1341776628145197087>"
 }
 
 def get_vct_emoji(input_name):
