@@ -54,16 +54,18 @@ def format_star_emojis(player_star_counts: dict) -> str:
     return ' '.join(emojis_formatted)
 
 def md_format_event_kind(AnEvent) -> str:
-    md_prefix = ""
+    md_prefix = md_suffix = ""
     bold = "**"
     underline = "__"
 
     if AnEvent.kind_tier == 1:
         md_prefix = bold + underline
+        md_suffix = underline + bold
     elif AnEvent.kind_tier == 2:
         md_prefix = bold
+        md_suffix = bold
 
-    return f"{md_prefix}{AnEvent}{md_prefix}"
+    return f"{md_prefix}{AnEvent}{md_suffix}"
 
 def format_event_breakdown(player_star_events: list) -> str:
     return "\n".join(f"  - {md_format_event_kind(ev)}" for ev in player_star_events)
