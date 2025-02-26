@@ -66,9 +66,7 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
     db.update_total_point_sets()
 
 
-def scrape_vlr_matches() -> None:
-    event_id = 2
-    url = "https://www.vlr.gg/event/matches/2281/champions-tour-2025-masters-bangkok/?series_id=all"
+def scrape_vlr_matches(event_id: int, url: str) -> None:
     response = request_response(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
