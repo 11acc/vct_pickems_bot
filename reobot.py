@@ -109,6 +109,32 @@ async def easter_egg(ctx) -> None:
 
     await ctx.send(embed=embed)
 
+# @bot.command()
+# async def test(ctx) -> None:
+#     header = f"{get_vct_emoji('vct_masters')} Masters Bangkok - Swiss [ Day 2 ] - Who Voted Who"
+#     desc = f"""
+# - **Swiss Stage: Round 1  ·**  {get_vct_emoji('vit')} vs {get_vct_emoji('t1')}
+#   - {get_vct_emoji('vit')}   `Alex`  `Ting`
+#   - {get_vct_emoji('t1')}   `Qiff`  `Oliver`  `Maka`
+# - **Swiss Stage: Round 1  ·**  {get_vct_emoji('g2')} vs {get_vct_emoji('te')}
+#   - {get_vct_emoji('g2')}   `Alex`  `Ting`  `Qiff`
+#   - {get_vct_emoji('te')}   `Oliver`  `Maka`
+#     """
+
+#     embed = discord.Embed(
+#         colour=discord.Colour.from_rgb(184,180,228)
+#         , description=desc
+#         , title=header
+#     )
+#     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+#     embed.set_image(url="https://i.ytimg.com/vi/FA3f5TGNj7s/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBt2kHJKriLP0D5XXptHurNnd7a1Q")
+#     embed.set_footer(
+#         text="Fri, February 21, 2025"
+#     )
+
+#     await ctx.send(embed=embed)
+
+
 # /// BETS
 # class Bet_Select_View(View):
 #     @discord.ui.select()

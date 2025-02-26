@@ -1,9 +1,17 @@
 
 import requests
 from bs4 import BeautifulSoup
+from datetime import datetime
 
-from database.modules import db, Player, Points, BreakdownPts
+from database.modules import db, Player, Points, BreakdownPts, Match
 
+
+def request_response(url) -> str:
+    response = requests.get(url)
+    if response.status_code != 200:
+        print(f"Failed to fetch {url}")
+        return None
+    return response
 
 def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
     if url == "":
@@ -11,10 +19,7 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
         return None
 
     # Get html content for a url
-    response = requests.get(url)
-    if response.status_code != 200:
-        print(f"Failed to fetch {url}")
-        return None
+    response = request_response(url)
     
     soup = BeautifulSoup(response.content, 'html.parser')
     # Loop through each player row
@@ -59,3 +64,65 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
 
     # Update total point sets when done updating all players
     db.update_total_point_sets()
+
+
+def scrape_vlr_matches() -> None:
+    event_id = 2
+    url = "https://www.vlr.gg/event/matches/2281/champions-tour-2025-masters-bangkok/?series_id=all"
+    response = request_response(url)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    for date_tag in soup.find_all("div", class_="wf-label mod-large"):
+        # Extract date first
+        date_text = date_tag.find(text=True).strip()
+
+        # Get the next sibling that is the match card
+        match_card = date_tag.find_next_sibling('div', class_='wf-card')
+        if match_card:
+            for a_tag_match in match_card.find_all('a', class_='wf-module-item'):
+                skip_match = False  # Flag in case of existing match in db or TBD matches
+                team_ids = []
+                winner_id = None
+
+                for team in a_tag_match.find_all("div", class_="match-item-vs-team"):
+                    # Scrape team name
+                    text_div = team.find("div", class_="text-of")
+                    if text_div is None:
+                        print("No text detected, skipping")
+                        skip_match = True
+                        break
+                    
+                    team_name = text_div.get_text(strip=True)
+                    team_id = db.get_team_id_by_name(team_name)
+                    if team_id is None:
+                        print("No team detected, skipping")
+                        skip_match = True
+                        break
+
+                    if "mod-winner" in team.get("class", []):
+                        winner_id = team_id
+                    
+                    team_ids.append(team_id)
+                
+                # If no detected team, skip a_tag_match
+                if skip_match:
+                    continue
+
+                # Obtain time of match and join with date
+                match_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
+                match_datetime = datetime.strptime(date_text+", "+match_time, '%a, %B %d, %Y, %I:%M %p')
+                match_date = match_datetime.strftime("%a, %B %d, %Y, %I:%M %p")
+
+                # Obtain match bracket and kind
+                match_type_raw = a_tag_match.find("div", class_="match-item-event").text.split("\n")
+                match_type_split = [vlr_text.replace("\t", "") for vlr_text in match_type_raw if vlr_text]
+                match_kind = match_type_split[0]
+                match_bracket = match_type_split[1]
+
+                # Create match class obj & check if it already exists
+                new_match = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date)
+                if db.check_match_in_db(new_match):
+                    print("Match exists in db, skipping")
+                    continue
+                # Add to db
+                db.add_entry("matches", new_match)

@@ -53,6 +53,7 @@ def format_star_emojis(player_star_counts: dict) -> str:
     
     return ' '.join(emojis_formatted)
 
+# Add bold or underline or both depending on event
 def md_format_event_kind(AnEvent) -> str:
     md_prefix = md_suffix = ""
     bold = "**"
@@ -67,6 +68,7 @@ def md_format_event_kind(AnEvent) -> str:
 
     return f"{md_prefix}{AnEvent}{md_suffix}"
 
+# Format events for star breakdown
 def format_event_breakdown(player_star_events: list) -> str:
     return "\n".join(f"  - {md_format_event_kind(ev)}" for ev in player_star_events)
 
