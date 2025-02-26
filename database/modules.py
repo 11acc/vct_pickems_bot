@@ -44,8 +44,8 @@ class Team():
 
 class Event():
     _tier_mapping = {
-        "Champions": 1,
-        "Masters": 2,
+        "Champions": 1
+        , "Masters": 2
     }
 
     def __init__(self, event_id: int, kind: str, loc: str, year: int, vlr_pickem_link: str) -> None:
@@ -117,16 +117,18 @@ class Star():
 
 
 class Match():
-    def __init__(self, match_id: int, team1_id: int, team2_id: int, bracket: str, kind: str, worth: int) -> None:
+    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, bracket: str, kind: str, date: str) -> None:
         self.match_id = match_id
         self.team1_id = team1_id
         self.team2_id = team2_id
+        self.winner_id = winner_id
+        self.m_event_id = m_event_id
         self.bracket = bracket
         self.kind = kind
-        self.worth = worth
+        self.date = date
 
     # def __repr__(self) -> str:
-    #     return f'{self.bracket}: {self.kind} · {self.team1} vs {self.team2}'
+    #     return f'{self.bracket}: {self.kind} · {self.team1_id} vs {self.team2_id}'
 
 class Bet():
     def __init__(self, bet_id: int, active: bool, player1: Player, player2: Player, amount: int
@@ -358,6 +360,36 @@ class DBInstance():
 
         return star_category_count, star_event_objs
 
+    def get_match_by_id(self, match_id: int) -> Match | None:
+        query = "SELECT * FROM matches WHERE match_id=?"
+        sql_match = self.fetch_one(query, (match_id,))
+        if not sql_match:
+            print(f"No match with id: {match_id}")
+            return None
+        return self.tuple_into_class(Match, sql_match)
+
+    def check_match_in_db(self, new_match: Match) -> bool | None:
+        query = "SELECT match_id FROM matches WHERE team1_id=? AND team2_id=? AND m_event_id=? AND bracket=? AND kind=? AND date=?"
+        params = (
+            new_match.team1_id
+            , new_match.team2_id
+            , new_match.m_event_id
+            , new_match.bracket
+            , new_match.kind
+            , new_match.date
+        )
+        sql_match = self.fetch_one(query, params)
+        if not sql_match:
+            return False
+        return True
+
+    def get_team_id_by_name(self, full_name: str) -> int | None:
+        query = "SELECT team_id from teams WHERE name=?"
+        sql_team = self.fetch_one(query, (full_name,))
+        if not sql_team:
+            print(f"No team with name: {full_name}")
+            return None
+        return int(sql_team[0])
 
 # Create a global instance
 db = DBInstance(DB_PATH)
