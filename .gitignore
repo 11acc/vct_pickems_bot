@@ -172,5 +172,5 @@ cython_debug/
 
 td.txt
 repo_testing.py
-archive/
 db_sensitive/
+tests/

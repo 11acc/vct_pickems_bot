@@ -1,9 +1,13 @@
 
+# :: Scraping methods for vlr.gg
+
 import requests
 from bs4 import BeautifulSoup
 from datetime import datetime
 
-from database.modules import db, Player, Points, BreakdownPts, Match
+from db.db_instance import db
+from db.queries import db_logic
+from db.entity_classes import Player, Points, BreakdownPts, Match
 
 
 def request_response(url) -> str:
@@ -18,10 +22,9 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
         print("Empty url, no event pickems for now, skipping")
         return None
 
-    # Get html content for a url
     response = request_response(url)
-    
     soup = BeautifulSoup(response.content, 'html.parser')
+
     # Loop through each player row
     for player in soup.select('.event-container .event-content .wf-card a'):
         # Clean text and extract info
@@ -43,8 +46,8 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
             db.add_entry("players", new_ply)
         
         # Obtain the point sets for the current player and event
-        player_id = db.player_id_from_vlr_name(player_name)
-        PointsOfPlayer = db.point_sets_from_filters(pt_player_id=player_id, pt_event_id=event_id)[0]
+        player_id = db.get_player_id_from_vlr_name(player_name)
+        PointsOfPlayer = db_logic.point_sets_from_filters(pt_player_id=player_id, pt_event_id=event_id)[0]
         
         # If no point set, create a global points row
         if not PointsOfPlayer:
@@ -59,11 +62,11 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
             db.add_entry("breakdown_pts", new_bd_set)
 
         # Modify the specific breakdown points based on new scrapping
-        PlayerBreakdownPts = db.breakdown_from_points_n_region(PointsOfPlayer.point_id, region)
+        PlayerBreakdownPts = db_logic.breakdown_from_points_n_region(PointsOfPlayer.point_id, region)
         db.modify_entry("breakdown_pts", "bd_nr_points", player_points, "breakdown_pts_id", PlayerBreakdownPts.breakdown_pts_id)
 
     # Update total point sets when done updating all players
-    db.update_total_point_sets()
+    db_logic.update_total_point_sets()
 
 
 def scrape_vlr_matches(event_id: int, url: str) -> None:
@@ -119,7 +122,7 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
 
                 # Create match class obj & check if it already exists
                 new_match = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date)
-                if db.check_match_in_db(new_match):
+                if db.is_match_in_db(new_match):
                     print("Match exists in db, skipping")
                     continue
                 # Add to db

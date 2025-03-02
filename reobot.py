@@ -7,9 +7,11 @@ import discord
 from discord.ext import commands
 from discord.ui import Select, View
 
-from database.modules import db
-from database.db_utils import find_best_event_match, points_from_event, star_leaderboard
-from reobot.bot_utils import get_vct_emoji
+from db.db_instance import db
+from utils.emojis import get_vct_emoji
+from utils.matching import find_best_event_match
+from services.points_for_event import points_from_event
+from services.leaderboard import star_leaderboard
 
 
 load_dotenv()
@@ -43,7 +45,7 @@ async def hello(ctx) -> None:
 # /// POINTS
 @bot.command()
 async def points(ctx, loc:str, year: int) -> None:
-    # Check input year is valid
+    # Check if the input is valid
     input_event = find_best_event_match(loc, year)
     if not input_event:
         await ctx.send("massive whiff on that event selection brosky, no event with that name and year combo")
@@ -55,7 +57,7 @@ async def points(ctx, loc:str, year: int) -> None:
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
     player_bullets = "\n".join(event_points)
-    event_link = db.event_vlr_link_from_name(input_event)
+    event_link = db.get_event_vlr_link_from_name(input_event)
     if not event_link:
         event_link = ""
 
@@ -133,68 +135,6 @@ async def easter_egg(ctx) -> None:
 #     )
 
 #     await ctx.send(embed=embed)
-
-
-# /// BETS
-# class Bet_Select_View(View):
-#     @discord.ui.select()
-#     async def callback(self, interaction):
-#         await interaction.response.send_message(f"You chose: {self.values[0]}")
-
-# class Bet_Select(Select):
-#     def __init__(self, placeholder, min_values, max_values, options, row) -> None:
-#         super().__init__(
-#             placeholder=placeholder
-#             , min_values=min_values
-#             , max_values=max_values
-#             , options=options
-#             , row=row)
-
-# @bot.command()
-# async def test(ctx):
-
-#     # getting matches
-
-#     matches = [
-#         {"match": "Upper Final", "team1": "VIT", "team2": "TH"}
-#         , {"match": "Lower Round 4", "team1": "FUT", "team2": "TL"}
-#     ]
-
-#     select = Bet_Select(
-#         placeholder="Choose match"
-#         , min_values=1
-#         , max_values=1
-#         , options=[
-#             discord.SelectOption(label=f"{m['team1']} vs {m['team2']} : {m['match']}") for m in matches
-#         ]
-#         , row=1
-#     )
-#     view = View()
-#     view.add_item(select)
-
-#     await ctx.send(f"hello {ctx.author.name}", view=view)
-
-
-# /// BETS
-# @bot.group()
-# async def bets(ctx):
-#     pass
-
-# @bets.command(name="active")
-# async def active_bets(ctx):
-#     # Receive all active bets
-#     asd
-
-#     embed = discord.Embed(
-#         colour=BOT_EMBED_COLOUR
-#         , description=player_bullets
-#         , title=header
-#         # , url=""
-#     )
-#     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
-
-#     await ctx.send(embed=embed)
-
 
 
 bot.run(DISCORD_BOT_TOKEN)
