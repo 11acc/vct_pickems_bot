@@ -63,7 +63,7 @@ class Points():
         self._breakdown = None  # Breakdown obj class, loaded on demand
 
     def __repr__(self):
-        return f'[{self.player}, {self.nr_points} points, event id: {self.pt_event_id}]'
+        return f'Points({self.player}, {self.nr_points} points, event id: {self.pt_event_id})'
     
     @property
     def player(self):

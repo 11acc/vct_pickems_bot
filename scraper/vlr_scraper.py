@@ -47,17 +47,27 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
         
         # Obtain the point sets for the current player and event
         player_id = db.get_player_id_from_vlr_name(player_name)
-        PointsOfPlayer = db_logic.point_sets_from_filters(pt_player_id=player_id, pt_event_id=event_id)[0]
+        PointsOfPlayer = db_logic.get_single_point_set(pt_player_id=player_id, pt_event_id=event_id)
         
         # If no point set, create a global points row
         if not PointsOfPlayer:
             print(f"No points set for: {player_name}, creating...")
             new_point_set = Points(None, player_id, event_id, 0)
             db.add_entry("points", new_point_set)
+            # Re-fetch the points object after creation
+            PointsOfPlayer = db_logic.get_single_point_set(pt_player_id=player_id, pt_event_id=event_id)
         
         # If no breakdown, create it
         if not PointsOfPlayer.breakdown:
             print(f"No breakdown pts set for: {player_name}, creating...")
+            new_bd_set = BreakdownPts(None, PointsOfPlayer.point_id, player_points, player_vlr_id, region)
+            db.add_entry("breakdown_pts", new_bd_set)
+
+        # Check if they don't have the {region} breakdown
+        has_region_bd = any(bd.region == region for bd in PointsOfPlayer.breakdown)
+        # If not create it
+        if not has_region_bd:
+            print(f"No breakdown pts set for: {player_name} in region: {region}, creating...")
             new_bd_set = BreakdownPts(None, PointsOfPlayer.point_id, player_points, player_vlr_id, region)
             db.add_entry("breakdown_pts", new_bd_set)
 

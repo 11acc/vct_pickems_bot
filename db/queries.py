@@ -52,6 +52,13 @@ class Query_DB():
             return None
         return [self.tuple_into_class(Points, ply_pts) for ply_pts in point_sets]
 
+    def get_single_point_set(self, pt_player_id: int, pt_event_id: int) -> Points | None:
+        # Get a single point set for a specific player and event.
+        results = self.point_sets_from_filters(pt_player_id=pt_player_id, pt_event_id=pt_event_id)
+        if results and len(results) > 0:
+            return results[0]
+        return None
+
     def update_total_point_sets(self) -> None:
         # Cycle all point sets and compute new total nr points from all respective breakdowns
         AllPtSets = self.point_sets_from_filters()
