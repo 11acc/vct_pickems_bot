@@ -122,8 +122,24 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
 
                 # Create match class obj & check if it already exists
                 new_match = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date)
-                if db.is_match_in_db(new_match):
-                    print("Match exists in db, skipping")
+
+                # Check if match already exists but without a winner
+                existing_match_id = db.get_match_without_winner(new_match)
+                if existing_match_id:
+                    if winner_id:
+                        db.update_match_winner(existing_match_id, winner_id)
+                        print(f"Updated match {existing_match_id} with winner {winner_id}")
+                    else:
+                        print("Match exists in db with no winner change, skipping")
                     continue
+
+                # Check if exact match (including winner) already exists
+                if db.is_match_in_db(new_match):
+                    print("Match exists in db, with no change, skipping")
+                    continue
+
                 # Add to db
                 db.add_entry("matches", new_match)
+
+                import sys
+                sys.exit()

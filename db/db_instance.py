@@ -137,7 +137,7 @@ class DBInstance():
             return None
         return [p_id for (p_id,) in sql_stars]
 
-    # Specific fetch queries
+    # /// Specific fetch queries
     def get_event_id_from_name(self, matched_name: str) -> int | None:
         query = "SELECT event_id FROM events WHERE loc=?"
         ev_id = self.fetch_one(query, (matched_name,))
@@ -171,6 +171,22 @@ class DBInstance():
     def get_event_vlr_link_from_name(self, input_event: str) -> str | None:
         query = "SELECT vlr_pickem_link FROM events WHERE loc=?"
         return self.fetch_one(query, (input_event,))[0]
+
+    def get_match_without_winner(self, new_match) -> int | None:
+        query = "SELECT match_id FROM matches WHERE team1_id=? AND team2_id=? AND winner_id IS NULL AND m_event_id=? AND bracket=? AND kind=?"
+        params = (
+            new_match.team1_id
+            , new_match.team2_id
+            , new_match.m_event_id
+            , new_match.bracket
+            , new_match.kind
+        )
+        sql_match = self.fetch_one(query, params)
+        return int(sql_match[0]) if sql_match else None
+
+    # /// Update specific row properties
+    def update_match_winner(self, match_id: int, winner_id: int) -> None:
+        self.modify_entry("matches", "winner_id", winner_id, "match_id", match_id)
 
 
 
