@@ -150,6 +150,3 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
 
                 # Add to db
                 db.add_entry("matches", new_match)
-
-                import sys
-                sys.exit()
