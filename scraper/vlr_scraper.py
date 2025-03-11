@@ -85,7 +85,7 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
 
     for date_tag in soup.find_all("div", class_="wf-label mod-large"):
         # Extract date first
-        date_text = date_tag.find(text=True).strip()
+        match_date = date_tag.find(text=True).strip()
 
         # Get the next sibling that is the match card
         match_card = date_tag.find_next_sibling('div', class_='wf-card')
@@ -119,10 +119,8 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
                 if skip_match:
                     continue
 
-                # Obtain time of match and join with date
+                # Obtain time of match
                 match_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
-                match_datetime = datetime.strptime(date_text+", "+match_time, '%a, %B %d, %Y, %I:%M %p')
-                match_date = match_datetime.strftime("%a, %B %d, %Y, %I:%M %p")
 
                 # Obtain match bracket and kind
                 match_type_raw = a_tag_match.find("div", class_="match-item-event").text.split("\n")
@@ -131,7 +129,7 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
                 match_bracket = match_type_split[1]
 
                 # Create match class obj & check if it already exists
-                new_match = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date)
+                new_match = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date, match_time)
 
                 # Check if match already exists but without a winner
                 existing_match_id = db.get_match_without_winner(new_match)

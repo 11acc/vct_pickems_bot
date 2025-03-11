@@ -111,7 +111,7 @@ class Star():
         return self._event
 
 class Match():
-    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, bracket: str, kind: str, date: str) -> None:
+    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, bracket: str, kind: str, date: str, time: str) -> None:
         self.match_id = match_id
         self.team1_id = team1_id
         self.team2_id = team2_id
@@ -120,6 +120,7 @@ class Match():
         self.bracket = bracket
         self.kind = kind
         self.date = date
+        self.time = time
 
     # def __repr__(self) -> str:
     #     return f'{self.bracket}: {self.kind} · {self.team1_id} vs {self.team2_id}'
