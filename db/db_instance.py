@@ -143,6 +143,7 @@ class DBInstance():
         ev_id = self.fetch_one(query, (matched_name,))
         if not ev_id:
             print(f"No event with name: {matched_name}")
+            return None
         return int(ev_id[0])
     
     def get_events_in_year(self, year: int) -> list | None:
@@ -158,6 +159,7 @@ class DBInstance():
         ply_id = self.fetch_one(query, (vlr_user,))
         if not ply_id:
             print(f"No player with vlr_user: {vlr_user}")
+            return None
         return int(ply_id[0])
     
     def get_team_id_by_name(self, full_name: str) -> int | None:

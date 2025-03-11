@@ -49,12 +49,14 @@ async def points(ctx, loc:str, year: int) -> None:
     input_event = find_best_event_match(loc, year)
     if not input_event:
         await ctx.send("massive whiff on that event selection brosky, no event with that name and year combo")
+        return
 
     # Set the header and obtain the appropriate user information
     header = f"{get_vct_emoji("logo")} VCT {year} Pickem' [ {loc.capitalize()} ] Leaderboard"
     event_points = points_from_event(input_event)
     if not event_points:
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
+        await ctx.send(f"")  # the error msg from point_sets_from_filters()
         return
     player_bullets = "\n".join(event_points)
     event_link = db.get_event_vlr_link_from_name(input_event)
