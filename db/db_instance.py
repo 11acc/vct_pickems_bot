@@ -110,11 +110,11 @@ class DBInstance():
         self.execute(query, (entity_id,))
 
     # /// Is x in DB
-    def is_player_in_db(self, player_name: str) -> bool | None:
+    def is_player_in_db(self, player_name: str) -> bool:
         query = "SELECT vlr_user FROM players WHERE vlr_user=?"
         return self.fetch_one(query, (player_name,))
 
-    def is_match_in_db(self, new_match) -> bool | None:
+    def is_match_in_db(self, new_match) -> bool:
         query = "SELECT match_id FROM matches WHERE team1_id=? AND team2_id=? AND m_event_id=? AND bracket=? AND kind=?"
         params = (
             new_match.team1_id
@@ -125,6 +125,18 @@ class DBInstance():
         )
         sql_match = self.fetch_one(query, params)
         if not sql_match:
+            return False
+        return True
+    
+    def is_vote_in_db(self, new_vote) -> bool:
+        query = "SELECT vote_id FROM votes WHERE vote_match_id=? AND vote_team_id=? AND vote_player_id=?"
+        params = (
+            new_vote.vote_match_id
+            , new_vote.vote_team_id
+            , new_vote.vote_player_id
+        )
+        sql_vote = self.fetch_one(query, params)
+        if not sql_vote:
             return False
         return True
 
@@ -193,6 +205,14 @@ class DBInstance():
             print(f"No further matches after date: {input_date}")
             return None
         return sql_date[0]
+
+    def get_team_id_from_name(self, name: str) -> int | None:
+        query = "SELECT team_id FROM teams WHERE name=?"
+        t_id = self.fetch_one(query, (name,))
+        if not t_id:
+            print(f"No team with name: {name}")
+            return None
+        return int(t_id[0])
 
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:

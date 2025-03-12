@@ -127,6 +127,19 @@ class Query_DB():
             return None
         return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
     
+    def match_id_from_params(self, **filters) -> int | None:
+        # Construct filter clauses
+        conditions = " AND ".join(f"{key}=?" for key in filters.keys())
+        vals = tuple(filters.values())
+        where_filt = f"WHERE {conditions}" if filters else ""
+        
+        query = f"SELECT match_id FROM matches {where_filt}"
+        sql_match_id = self.db.fetch_one(query, vals)
+        if not sql_match_id:
+            print(f"No match found for filters: {filters}")
+            return None
+        return int(sql_match_id[0])
+
 
     # /// Vote queries
     def votes_from_match_id(self, match_id: int) -> list[Vote]:

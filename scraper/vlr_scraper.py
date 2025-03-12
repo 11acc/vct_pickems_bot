@@ -7,7 +7,7 @@ from datetime import datetime
 
 from db.db_instance import db
 from db.queries import db_logic
-from db.entity_classes import Player, Points, BreakdownPts, Match
+from db.entity_classes import Player, Points, BreakdownPts, Match, Vote
 
 
 def request_response(url) -> str:
@@ -129,10 +129,10 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
                 match_bracket = match_type_split[1]
 
                 # Create match class obj & check if it already exists
-                new_match = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date, match_time)
+                NewMatch = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date, match_time)
 
                 # Check if match already exists but without a winner
-                existing_match_id = db.get_match_without_winner(new_match)
+                existing_match_id = db.get_match_without_winner(NewMatch)
                 if existing_match_id:
                     if winner_id:
                         db.update_match_winner(existing_match_id, winner_id)
@@ -142,9 +142,61 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
                     continue
 
                 # Check if exact match (including winner) already exists
-                if db.is_match_in_db(new_match):
+                if db.is_match_in_db(NewMatch):
                     print("Match exists in db, with no change, skipping")
                     continue
 
                 # Add to db
-                db.add_entry("matches", new_match)
+                db.add_entry("matches", NewMatch)
+
+
+def scrape_vlr_votes(player_id: int, event_id: int, url: str) -> None:
+    response = request_response(url)
+    soup = BeautifulSoup(response.content, "html.parser")
+
+    for container in soup.find_all("div", class_="pickem-subseries-container"):
+        # Extract bracket kind (title)
+        bracket_kind = container.find('div', class_='wf-label mod-large').text.strip()
+        match_bracket, match_kind = bracket_kind.split(":", 1)
+        match_kind = match_kind.lstrip()
+        
+        # Find all match items in current container
+        match_items = container.find_all('div', class_='wf-card pi-match-item noselect')
+
+        for match in match_items:
+            # Extract both team names from the container
+            team_elements = match.find_all('div', class_='pi-match-item-team')
+            team_full_names = [team_name.find('div', class_='pi-match-item-name').text.strip() for team_name in team_elements]
+            team1_name = team_full_names[0]
+            team2_name = team_full_names[1]
+
+            # Note which team was selected from class property: .mod-selected
+            selected_team = match.find('div', class_='mod-selected')
+            if not selected_team:
+                print(f"No chosen team, skipping")
+                continue
+            chosen_team = selected_team.find('div', class_='pi-match-item-name').text.strip()
+            chosen_team_id = db.get_team_id_from_name(chosen_team)
+
+            # Identify match id from match info
+            identified_match_id = db_logic.match_id_from_params(
+                team1_id = db.get_team_id_from_name(team1_name)
+                , team2_id = db.get_team_id_from_name(team2_name)
+                , m_event_id = event_id
+                , bracket = match_bracket
+                , kind = match_kind
+            )
+            if not identified_match_id:
+                print(f"Failed to identify match from extracted match information")
+                continue
+
+            # Construct Vote obj and save to DB
+            NewVote = Vote(None, identified_match_id, chosen_team_id, player_id)
+
+            # Check if vote already exists
+            if db.is_vote_in_db(NewVote):
+                print("Vote exists in db, skipping")
+                continue
+
+            # Add to db
+            db.add_entry("votes", NewVote)

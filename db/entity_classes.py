@@ -27,7 +27,7 @@ class Team():
         self.short_name = short_name
     
     def __repr__(self) -> str:
-        return f'{self.short_name}'
+        return f'Team({self.short_name})'
     
     @property
     def fullname(self):
