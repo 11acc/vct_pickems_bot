@@ -37,6 +37,14 @@ class Query_DB():
             return None
         return self.tuple_into_class(Match, sql_match)
 
+    def team_from_id(self, team_id: int) -> Team | None:
+        query = "SELECT * FROM teams WHERE team_id=?"
+        sql_team = self.db.fetch_one(query, (team_id,))
+        if not sql_team:
+            print(f"No team with id: {team_id}")
+            return None
+        return self.tuple_into_class(Team, sql_team)
+
 
     # /// Points queries
     def point_sets_from_filters(self, **filters) -> list[Points] | None:
@@ -109,6 +117,15 @@ class Query_DB():
 
         return star_category_count, star_event_objs
 
+
+    # /// Match queries
+    def match_objs_for_date(self, date_str: str) -> list[Match] | None:
+        query = "SELECT * FROM matches WHERE date=?"
+        sql_matches = db.fetch_all(query, (date_str,))
+        if not sql_matches:
+            print(f"No matches found for date: {date_str}")
+            return None
+        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
 
 
 # Global instance

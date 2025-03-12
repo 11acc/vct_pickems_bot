@@ -174,3 +174,4 @@ td.txt
 repo_testing.py
 db_sensitive/
 tests/
+.vscode

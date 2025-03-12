@@ -70,3 +70,20 @@ def format_star_leaderboard(PlayerStarCategoryCount: list, PlayerStarEvents: lis
             f"\n"
         )
     return "\n".join(stars_formatted)
+
+
+# Format x
+"""
+    desc = 
+- **Swiss Stage: Round 1  ·**  {get_vct_emoji('vit')} vs {get_vct_emoji('t1')}
+  - {get_vct_emoji('vit')}   `Alex`  `Ting`
+  - {get_vct_emoji('t1')}   `Qiff`  `Oliver`  `Maka`
+- **Swiss Stage: Round 1  ·**  {get_vct_emoji('g2')} vs {get_vct_emoji('te')}
+  - {get_vct_emoji('g2')}   `Alex`  `Ting`  `Qiff`
+  - {get_vct_emoji('te')}   `Oliver`  `Maka`
+  
+    embed.set_image(url="https://i.ytimg.com/vi/FA3f5TGNj7s/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBt2kHJKriLP0D5XXptHurNnd7a1Q")
+    embed.set_footer(
+        text="Fri, February 21, 2025"
+    )
+"""

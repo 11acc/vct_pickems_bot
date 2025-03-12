@@ -186,6 +186,14 @@ class DBInstance():
         sql_match = self.fetch_one(query, params)
         return int(sql_match[0]) if sql_match else None
 
+    def get_next_upcoming_match_date(self, input_date: str) -> list | None:
+        query = "SELECT DISTINCT date FROM matches WHERE date(date) > date(?) ORDER BY date(date) LIMIT 1"
+        sql_date = db.fetch_one(query, (input_date,))
+        if not sql_date:
+            print(f"No further matches after date: {input_date}")
+            return None
+        return sql_date[0]
+
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:
         self.modify_entry("matches", "winner_id", winner_id, "match_id", match_id)

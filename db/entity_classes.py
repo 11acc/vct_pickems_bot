@@ -115,6 +115,8 @@ class Match():
         self.match_id = match_id
         self.team1_id = team1_id
         self.team2_id = team2_id
+        self._team1 = None  # Team obj class, loaded on demand
+        self._team2 = None  # Team obj class, loaded on demand
         self.winner_id = winner_id
         self.m_event_id = m_event_id
         self.bracket = bracket
@@ -122,8 +124,22 @@ class Match():
         self.date = date
         self.time = time
 
-    # def __repr__(self) -> str:
-    #     return f'{self.bracket}: {self.kind} · {self.team1_id} vs {self.team2_id}'
+    @property
+    def team1(self):
+        from .queries import db_logic
+        if self._team1 is None:
+            self._team1 = db_logic.team_from_id(self.team1_id)
+        return self._team1
+
+    @property
+    def team2(self):
+        from .queries import db_logic
+        if self._team2 is None:
+            self._team2 = db_logic.team_from_id(self.team2_id)
+        return self._team2
+
+    def __repr__(self) -> str:
+        return f'Match({self.bracket}: {self.kind} · {self.team1.short_name} vs {self.team2.short_name})'
 
 
 class Bet():
