@@ -141,24 +141,12 @@ class Match():
     def __repr__(self) -> str:
         return f'Match({self.bracket}: {self.kind} · {self.team1.short_name} vs {self.team2.short_name})'
 
-
-class Bet():
-    def __init__(self, bet_id: int, active: bool, player1: Player, player2: Player, amount: int
-                 , match: Match, p1_choice: Team, p2_choice: Team, winner=None
-                 ) -> None:
-        self.bet_id = bet_id
-        self.active = active
-        self.player1 = player1
-        self.player2 = player2
-        self.amount = amount
-        self.match = match
-        self.modifier = self.bet_modifier()
-        self.p1_choice = p1_choice
-        self.p2_choice = p2_choice
-        self.winner = winner
+class Vote():
+    def __init__(self, vote_id: int, vote_match_id: int, vote_team_id: int, vote_player_id: int) -> None:
+        self.vote_id = vote_id
+        self.vote_match_id = vote_match_id
+        self.vote_team_id = vote_team_id
+        self.vote_player_id = vote_player_id
 
     def __repr__(self) -> str:
-        return f'{self.player1} vs {self.player2} · {self.amount} (x{self.modifier:.1f}) - {self.match}'
-
-    def bet_modifier(self) -> float:
-        return self.amount / self.match.worth
+        return f'Vote(p{self.vote_player_id} voted t{self.vote_team_id} in m{self.vote_match_id})'

@@ -2,7 +2,7 @@
 # :: High level queries handling for table entities
 
 from .db_instance import db
-from .entity_classes import Player, Team, Event, Points, BreakdownPts, Star, Match
+from .entity_classes import Player, Team, Event, Points, BreakdownPts, Star, Match, Vote
 
 
 class Query_DB():
@@ -126,6 +126,15 @@ class Query_DB():
             print(f"No matches found for date: {date_str}")
             return None
         return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
+    
+
+    # /// Vote queries
+    def votes_from_match_id(self, match_id: int) -> list[Vote]:
+        query = "SELECT * FROM votes WHERE vote_match_id=? ORDER BY vote_player_id"
+        sql_votes = db.fetch_all(query, (match_id,))
+        if not sql_votes:
+            print(f"No votes found for match with id: {match_id}")
+        return [self.tuple_into_class(Vote, a_vote) for a_vote in sql_votes]
 
 
 # Global instance

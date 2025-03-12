@@ -16,16 +16,16 @@ def who_voted_who() -> str | None:
     today = datetime.now().strftime("%Y-%m-%d")
 
     # Get matches occurring today
-    TodayMatches = db_logic.match_objs_for_date(today)
+    UpcomingMatches = db_logic.match_objs_for_date(today)
 
     # If no matches today, find next upcoming matches
-    if not TodayMatches:
+    if not UpcomingMatches:
         next_date = db.get_next_upcoming_match_date(today)
         UpcomingMatches = db_logic.match_objs_for_date(next_date) if next_date else None
         if not UpcomingMatches:
             print("No upcoming matches found")
             return None
 
-        return UpcomingMatches
-
-    return TodayMatches
+    # Get all vote objs for matches in UpcomingMatches
+    #   -> for match in x: db_logic.votes_from_match_id(match_id)
+    # Format
