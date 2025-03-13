@@ -95,9 +95,9 @@ async def leaderboard(ctx) -> None:
 
 # /// WHO VOTED WHO
 @bot.command()
-async def wvw(ctx) -> None:
+async def wvw(ctx, next_param: int = None) -> None:
     header = f"{get_vct_emoji("who")} VCT Who Voted Who"
-    upcoming_formatted = who_voted_who()
+    upcoming_formatted = who_voted_who(next_param)
     if not upcoming_formatted:
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
@@ -159,6 +159,39 @@ async def test_emojis(ctx) -> None:
     
     for message in messages:
         await ctx.send(message)
+
+@bot.command()
+async def test_emoji_lookup(ctx) -> None:
+    from utils.emojis import VCT_EMOJIS, ALIASES
+    results = []
+
+    # Test direct lookups using the VCT_EMOJIS keys
+    results.append("**Testing direct VCT_EMOJIS keys:**")
+    for key, emoji in VCT_EMOJIS.items():
+        found = get_vct_emoji(key)
+        results.append(f"Input: `{key}` -> Expected: {emoji} | Got: {found}")
+
+    # Test using the aliases
+    results.append("\n**Testing ALIASES:**")
+    for alias, direct_key in ALIASES.items():
+        expected = VCT_EMOJIS.get(direct_key, "❓")
+        found = get_vct_emoji(alias)
+        results.append(f"Input: `{alias}` -> Expected: {expected} | Got: {found}")
+
+    # Optionally, add some fuzzy match tests
+    fuzzy_tests = ["Team Vtlty", "G2", "Sentinel", "Talon", "FURIA", "Navi"]
+    results.append("\n**Testing Fuzzy Matches:**")
+    for test in fuzzy_tests:
+        found = get_vct_emoji(test)
+        results.append(f"Input: `{test}` -> Got: {found}")
+
+    # Discord messages have a character limit, so split into chunks if necessary
+    output = "\n".join(results)
+    if len(output) > 1900:
+        for chunk in [output[i:i+1900] for i in range(0, len(output), 1900)]:
+            await ctx.send(chunk)
+    else:
+        await ctx.send(output)
 
 
 bot.run(DISCORD_BOT_TOKEN)

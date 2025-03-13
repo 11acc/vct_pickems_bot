@@ -124,6 +124,6 @@ def format_upcoming_match_votes(UpcomingMatches: list) -> str | None:
             formatted_matches.append(team_line)
         
         # Newline
-        # formatted_matches.append("")
+        formatted_matches.append("")
 
     return "\n".join(formatted_matches).strip()
