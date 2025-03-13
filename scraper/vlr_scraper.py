@@ -85,7 +85,9 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
 
     for date_tag in soup.find_all("div", class_="wf-label mod-large"):
         # Extract date first
-        match_date = date_tag.find(text=True).strip()
+        extracted_date = date_tag.find(text=True).strip()
+        date_obj = datetime.strptime(extracted_date, '%a, %B %d, %Y')
+        match_date = datetime.strftime(date_obj, '%Y-%m-%d')
 
         # Get the next sibling that is the match card
         match_card = date_tag.find_next_sibling('div', class_='wf-card')
@@ -120,7 +122,9 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
                     continue
 
                 # Obtain time of match
-                match_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
+                extracted_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
+                time_obj = datetime.strptime(extracted_time, '%I:%M %p')
+                match_time = datetime.strftime(time_obj, '%H:%M:%S')
 
                 # Obtain match bracket and kind
                 match_type_raw = a_tag_match.find("div", class_="match-item-event").text.split("\n")
