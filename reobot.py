@@ -12,14 +12,16 @@ from utils.emojis import get_vct_emoji
 from utils.matching import find_best_event_match
 from services.points_for_event import points_from_event
 from services.leaderboard import star_leaderboard
+from services.who_voted_who import who_voted_who
 
 
 load_dotenv()
 REO_DEV_USER_ID = 229174776634015744
 DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 BOT_NAME = "reobot"
-BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(177,35,235)
-BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(255,68,85)
+BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(48,92,222)
+BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(234,232,111)
+BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(64,130,109)  # 168,220,171
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
@@ -91,6 +93,31 @@ async def leaderboard(ctx) -> None:
 
     await ctx.send(embed=embed)
 
+# /// WHO VOTED WHO
+@bot.command()
+async def wvw(ctx) -> None:
+    header = f"{get_vct_emoji("who")} VCT Who Voted Who"
+    upcoming_formatted = who_voted_who()
+    if not upcoming_formatted:
+        await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
+        return
+    
+    embed = discord.Embed(
+        colour=BOT_EMBED_WVW_COLOUR
+        , description=upcoming_formatted
+        , title=header
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+
+    await ctx.send(embed=embed)
+
+"""
+    embed.set_image(url="https://i.ytimg.com/vi/FA3f5TGNj7s/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBt2kHJKriLP0D5XXptHurNnd7a1Q")
+    embed.set_footer(
+        text="Fri, February 21, 2025"
+    )
+"""
+
 
 @bot.command()
 async def easter_egg(ctx) -> None:
@@ -112,30 +139,26 @@ async def easter_egg(ctx) -> None:
 
     await ctx.send(embed=embed)
 
-# @bot.command()
-# async def test(ctx) -> None:
-#     header = f"{get_vct_emoji('vct_masters')} Masters Bangkok - Swiss [ Day 2 ] - Who Voted Who"
-#     desc = f"""
-# - **Swiss Stage: Round 1  ·**  {get_vct_emoji('vit')} vs {get_vct_emoji('t1')}
-#   - {get_vct_emoji('vit')}   `Alex`  `Ting`
-#   - {get_vct_emoji('t1')}   `Qiff`  `Oliver`  `Maka`
-# - **Swiss Stage: Round 1  ·**  {get_vct_emoji('g2')} vs {get_vct_emoji('te')}
-#   - {get_vct_emoji('g2')}   `Alex`  `Ting`  `Qiff`
-#   - {get_vct_emoji('te')}   `Oliver`  `Maka`
-#     """
-
-#     embed = discord.Embed(
-#         colour=discord.Colour.from_rgb(184,180,228)
-#         , description=desc
-#         , title=header
-#     )
-#     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
-#     embed.set_image(url="https://i.ytimg.com/vi/FA3f5TGNj7s/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBt2kHJKriLP0D5XXptHurNnd7a1Q")
-#     embed.set_footer(
-#         text="Fri, February 21, 2025"
-#     )
-
-#     await ctx.send(embed=embed)
+@bot.command()
+async def test_emojis(ctx) -> None:
+    from utils.emojis import VCT_EMOJIS
+    lines = [f"{name}: {emoji}" for name, emoji in VCT_EMOJIS.items()]
+    
+    messages = []
+    current_message = ""
+    for line in lines:
+        new_line = line + "\n"
+        if len(current_message) + len(new_line) > 2000:
+            messages.append(current_message)
+            current_message = new_line
+        else:
+            current_message += new_line
+    
+    if current_message:
+        messages.append(current_message)
+    
+    for message in messages:
+        await ctx.send(message)
 
 
 bot.run(DISCORD_BOT_TOKEN)

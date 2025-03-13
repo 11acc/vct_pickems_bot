@@ -149,6 +149,28 @@ class Query_DB():
             print(f"No votes found for match with id: {match_id}")
         return [self.tuple_into_class(Vote, a_vote) for a_vote in sql_votes]
 
+    def organised_votes_from_match_id(self, match_id: int) -> dict:
+        query = "SELECT vote_team_id, group_concat(vote_player_id) FROM votes WHERE vote_match_id=? GROUP BY vote_team_id"
+        sql_votes = db.fetch_all(query, (match_id,))
+        if not sql_votes:
+            print(f"No votes found for match with id: {match_id}")
+        
+        votes_by_team = {}
+        for team_id, player_ids_str in sql_votes:
+            # Split the comma-separated ply_ids and convert each to an integer
+            player_ids = [int(p_id) for p_id in player_ids_str.split(',')]
+            # Convert ids to objs
+            team = self.team_from_id(team_id)
+            players = [self.player_from_id(p_id) for p_id in player_ids]
+
+            # If team already exists, extend the list; otherwise, create a new entry
+            if team in votes_by_team:
+                votes_by_team[team].extend(players)
+            else:
+                votes_by_team[team] = players
+
+        return votes_by_team
+
 
 # Global instance
 db_logic = Query_DB()

@@ -111,14 +111,16 @@ class Star():
         return self._event
 
 class Match():
-    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, bracket: str, kind: str, date: str, time: str) -> None:
+    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, region: str, bracket: str, kind: str, date: str, time: str) -> None:
         self.match_id = match_id
+        self._votes = None  # Vote obj class, loaded on demand
         self.team1_id = team1_id
         self.team2_id = team2_id
         self._team1 = None  # Team obj class, loaded on demand
         self._team2 = None  # Team obj class, loaded on demand
         self.winner_id = winner_id
         self.m_event_id = m_event_id
+        self.region = region
         self.bracket = bracket
         self.kind = kind
         self.date = date
@@ -138,6 +140,13 @@ class Match():
             self._team2 = db_logic.team_from_id(self.team2_id)
         return self._team2
 
+    @property
+    def votes(self):
+        from .queries import db_logic
+        if self._votes is None:
+            self._votes = db_logic.organised_votes_from_match_id(self.match_id)
+        return self._votes
+
     def __repr__(self) -> str:
         return f'Match({self.bracket}: {self.kind} · {self.team1.short_name} vs {self.team2.short_name})'
 
@@ -147,6 +156,14 @@ class Vote():
         self.vote_match_id = vote_match_id
         self.vote_team_id = vote_team_id
         self.vote_player_id = vote_player_id
+        self._player = None  # Player obj class, loaded on demand
+
+    @property
+    def player(self):
+        from .queries import db_logic
+        if self._player is None:
+            self._player = db_logic.player_from_id(self.s_player_id)
+        return self._player
 
     def __repr__(self) -> str:
-        return f'Vote(p{self.vote_player_id} voted t{self.vote_team_id} in m{self.vote_match_id})'
+        return f'Vote({self.player} voted t{self.vote_team_id} in m{self.vote_match_id})'

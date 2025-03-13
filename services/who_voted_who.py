@@ -5,9 +5,7 @@ from datetime import datetime
 
 from db.db_instance import db
 from db.queries import db_logic
-
-# "%Y-%m-%d" -> '%a, %B %d, %Y'
-# "%H:%M:%S" -> '%I:%M %p'
+from utils.formatting import format_upcoming_match_votes
 
 
 # Get information for who voted for which teams for the day's upcomming matches
@@ -26,6 +24,4 @@ def who_voted_who() -> str | None:
             print("No upcoming matches found")
             return None
 
-    # Get all vote objs for matches in UpcomingMatches
-    #   -> for match in x: db_logic.votes_from_match_id(match_id)
-    # Format
+    return format_upcoming_match_votes(UpcomingMatches)
