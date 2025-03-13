@@ -106,7 +106,7 @@ def format_upcoming_match_votes(UpcomingMatches: list) -> str | None:
         header_line = (
             f"- {get_vct_emoji(match.region)} "
             f"{md_text_eff(match_title, 'bold')}  "
-            f"{get_vct_emoji(match.team1.short_name)} vs {get_vct_emoji(match.team2.short_name)}"
+            f"{get_vct_emoji(match.team1.name)} vs {get_vct_emoji(match.team2.name)}"
         )
         formatted_matches.append(header_line)
 
@@ -120,7 +120,7 @@ def format_upcoming_match_votes(UpcomingMatches: list) -> str | None:
                 players_formatted = " ".join(f"`{player.name}`" for player in all_players)
             else:
                 players_formatted = "`—`"
-            team_line = f"  - {get_vct_emoji(team.short_name)}   {players_formatted}"
+            team_line = f"  - {get_vct_emoji(team.name)}   {players_formatted}"
             formatted_matches.append(team_line)
         
         # Newline
