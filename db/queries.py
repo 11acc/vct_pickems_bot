@@ -120,7 +120,7 @@ class Query_DB():
 
     # /// Match queries
     def match_objs_for_date(self, date_str: str) -> list[Match] | None:
-        query = "SELECT * FROM matches WHERE date=?"
+        query = "SELECT * FROM matches WHERE date=? AND winner_id IS NULL"
         sql_matches = db.fetch_all(query, (date_str,))
         if not sql_matches:
             print(f"No matches found for date: {date_str}")

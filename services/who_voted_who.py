@@ -13,10 +13,10 @@ def who_voted_who(next_param: int) -> str | None:
     # Format to ISO like in DB
     today = datetime.now().strftime("%Y-%m-%d")
 
-    # Get matches occurring today if next param is 0
+    # Get unfinished matches occurring today if next param is 0
     UpcomingMatches = db_logic.match_objs_for_date(today) if next_param == 0 else None
 
-    # If no matches today find next upcoming matches or if next_param >0 skip n upcoming days
+    # If no matches today find next unfinished upcoming matches or if next_param >0 skip n upcoming days
     if not UpcomingMatches:
         next_date = db.get_next_upcoming_match_date(today, next_param-1)  # -1 for intuitive use, 0 already goes to the next upcoming match
         UpcomingMatches = db_logic.match_objs_for_date(next_date) if next_date else None
