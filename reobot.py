@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 import discord
 from discord.ext import commands
 from discord.ui import Select, View
+import traceback
+import random as rand
 
 from db.db_instance import db
 from utils.emojis import get_vct_emoji
@@ -13,6 +15,7 @@ from utils.matching import find_best_event_match
 from services.points_for_event import points_from_event
 from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
+from services.update import update_current_pickems, update_current_matches
 
 
 load_dotenv()
@@ -116,6 +119,40 @@ async def wvw(ctx, next_param: int = 0) -> None:
     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
     await ctx.send(embed=embed)
+
+# /// UPDATE
+# Helper function for update error handling
+async def execute_with_progress(ctx, update_function, action_name="update"):
+    progress_message = await ctx.send(f"{get_vct_emoji("miku_loading")} refreshing...")
+    
+    try:
+        # Execute the provided update function
+        update_function()
+        
+        # Delete the progress message and send success
+        await progress_message.delete()
+        await ctx.send(f"{get_vct_emoji("miku_yay")} the fresh has been re ✅")
+        
+    except Exception as e:
+        # Delete the progress message
+        await progress_message.delete()
+        
+        # Send error message
+        await ctx.send(f"{get_vct_emoji("miku_what")} <@{REO_DEV_USER_ID}> you fucking suck brosky:\n```{str(e)}```")
+        
+        # Log to console
+        print(f"Error in {action_name} command: {str(e)}")
+        traceback.print_exc()
+
+# Refresh methods
+@bot.command()
+async def refresh_pickems(ctx) -> None:
+    await execute_with_progress(ctx, update_current_pickems, "updating pickems")
+
+@bot.command()
+async def refresh_matches(ctx) -> None:
+    await execute_with_progress(ctx, update_current_matches, "updating matches")
+
 
 
 @bot.command()

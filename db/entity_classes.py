@@ -39,12 +39,12 @@ class Event():
         , "Masters": 2
     }
 
-    def __init__(self, event_id: int, kind: str, loc: str, year: int, vlr_pickem_link: str) -> None:
+    def __init__(self, event_id: int, kind: str, loc: str, year: int, ongoing: bool) -> None:
         self.event_id = event_id
         self.kind = kind
         self.loc = loc
         self.year = year
-        self.vlr_pickem_link = vlr_pickem_link
+        self.ongoing = ongoing
 
     def __repr__(self) -> str:
         return f'VCT {self.year} : {self.kind} {self.loc}'
@@ -52,6 +52,14 @@ class Event():
     @property
     def kind_tier(self) -> int:
         return self._tier_mapping.get(self.kind, 3)
+
+class SubEvent():
+    def __init__(self, subev_id: int, subev_parent_id: int, subev_match_url: str, subev_pickem_url: str, region: str) -> None:
+        self.subev_id = subev_id
+        self.subev_parent_id = subev_parent_id
+        self.subev_match_url = subev_match_url
+        self.subev_pickem_url = subev_pickem_url
+        self.region = region
 
 class Points():
     def __init__(self, point_id: int, pt_player_id: int, pt_event_id: int, nr_points: int) -> None:

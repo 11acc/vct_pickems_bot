@@ -2,7 +2,7 @@
 # :: High level queries handling for table entities
 
 from .db_instance import db
-from .entity_classes import Player, Team, Event, Points, BreakdownPts, Star, Match, Vote
+from .entity_classes import Player, Team, Event, SubEvent, Points, BreakdownPts, Star, Match, Vote
 
 
 class Query_DB():
@@ -44,6 +44,32 @@ class Query_DB():
             print(f"No team with id: {team_id}")
             return None
         return self.tuple_into_class(Team, sql_team)
+
+
+    # /// Event queries
+    def ongoing_event_id(self) -> int | None:
+        query = "SELECT event_id FROM events WHERE ongoing=?"
+        sql_event = db.fetch_one(query, (True,))
+        if not sql_event:
+            print(f"No currently ongoing event")
+            return None
+        return int(sql_event[0])
+
+
+    # /// SubEvent queries
+    def get_subevent_data_from_event_id(self, event_id: int, url_field: str) -> list[tuple] | None:
+        query = f"SELECT region, {url_field} FROM sub_event WHERE subev_parent_id=?"
+        sql_subev = self.db.fetch_all(query, (event_id,))
+        if not sql_subev:
+            print(f"No region or {url_field} found in sub events for event id: {event_id}")
+            return None
+        return sql_subev
+
+    def subevent_region_match_urls_from_event_id(self, event_id: int) -> list[tuple] | None:
+        return self.get_subevent_data_from_event_id(event_id, "subev_match_url")
+        
+    def subevent_region_pickem_urls_from_event_id(self, event_id: int) -> list[tuple] | None:
+        return self.get_subevent_data_from_event_id(event_id, "subev_pickem_url")
 
 
     # /// Points queries

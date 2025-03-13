@@ -79,6 +79,9 @@ VCT_EMOJIS = {
 
     , "who": "<a:who:1349559640836407458>"
     , "miku": "<a:miku_leek:1342190731313287238>"
+    , "miku_loading": "<a:miku_loading:1349844506241138819>"
+    , "miku_what": "<a:miku_what:1349845458901794867>"
+    , "miku_yay": "<a:miku_yay:1349846113053704204>"
 }
 ALIASES = {
     'Team Vitality': 'vit'
