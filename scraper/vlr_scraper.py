@@ -79,7 +79,7 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
     db_logic.update_total_point_sets()
 
 
-def scrape_vlr_matches(event_id: int, url: str) -> None:
+def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
     response = request_response(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
@@ -133,7 +133,7 @@ def scrape_vlr_matches(event_id: int, url: str) -> None:
                 match_bracket = match_type_split[1]
 
                 # Create match class obj & check if it already exists
-                NewMatch = Match(None, *team_ids, winner_id, event_id, match_bracket, match_kind, match_date, match_time)
+                NewMatch = Match(None, *team_ids, winner_id, event_id, region, match_bracket, match_kind, match_date, match_time)
 
                 # Check if match already exists but without a winner
                 existing_match_id = db.get_match_without_winner(NewMatch)
