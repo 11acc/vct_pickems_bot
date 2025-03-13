@@ -21,8 +21,9 @@ DISCORD_BOT_TOKEN = os.getenv('DISCORD_BOT_TOKEN')
 BOT_NAME = "reobot"
 BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(48,92,222)
 BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(234,232,111)
-BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(64,130,109)  # 168,220,171
+BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(242,240,239)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
+BOT_FOOTER_ICON = "https://cdn.discordapp.com/attachments/1349758435343863848/1349758457653231688/lil_reobot.png?ex=67d44405&is=67d2f285&hm=52b95ef1b43e0bda86943d5bd5c4c59080a0d20543bc6afd8cb7b0b53b24e0c1&"
 
 # Discord connection and bot command setup
 intents = discord.Intents.default()
@@ -115,13 +116,6 @@ async def wvw(ctx, next_param: int = 0) -> None:
     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
     await ctx.send(embed=embed)
-
-"""
-    embed.set_image(url="https://i.ytimg.com/vi/FA3f5TGNj7s/hqdefault.jpg?sqp=-oaymwEnCNACELwBSFryq4qpAxkIARUAAIhCGAHYAQHiAQoIGBACGAY4AUAB&rs=AOn4CLBt2kHJKriLP0D5XXptHurNnd7a1Q")
-    embed.set_footer(
-        text="Fri, February 21, 2025"
-    )
-"""
 
 
 @bot.command()
