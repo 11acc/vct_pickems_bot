@@ -142,7 +142,6 @@ def get_vct_emoji(input_name):
     best_match, score = process.extractOne(input_name, ALIASES.keys())
     if score >= 80:
         matched_emoji = VCT_EMOJIS.get(ALIASES.get(best_match))
-        print(f"/// END")
         return matched_emoji
 
     # and fuzzy on the whole VCT_EMOJIS list

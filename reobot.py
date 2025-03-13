@@ -95,7 +95,12 @@ async def leaderboard(ctx) -> None:
 
 # /// WHO VOTED WHO
 @bot.command()
-async def wvw(ctx, next_param: int = None) -> None:
+async def wvw(ctx, next_param: int = 0) -> None:
+    # Prevent negative next_param
+    if next_param < 0:
+        await ctx.send(f"nice try jackass, param can't be negative")
+        return
+
     header = f"{get_vct_emoji("who")} VCT Who Voted Who"
     upcoming_formatted = who_voted_who(next_param)
     if not upcoming_formatted:
