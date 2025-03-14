@@ -7,7 +7,6 @@ import discord
 from discord.ext import commands
 from discord.ui import Select, View
 import traceback
-import random as rand
 
 from db.db_instance import db
 from utils.emojis import get_vct_emoji
@@ -26,7 +25,6 @@ BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(48,92,222)
 BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(234,232,111)
 BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(242,240,239)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
-BOT_FOOTER_ICON = "https://cdn.discordapp.com/attachments/1349758435343863848/1349758457653231688/lil_reobot.png?ex=67d44405&is=67d2f285&hm=52b95ef1b43e0bda86943d5bd5c4c59080a0d20543bc6afd8cb7b0b53b24e0c1&"
 
 # Discord connection and bot command setup
 intents = discord.Intents.default()
@@ -46,7 +44,7 @@ async def on_disconnect() -> None:
 
 @bot.command()
 async def hello(ctx) -> None:
-    await ctx.send(f"hello {ctx.author.name}")
+    await ctx.send(f"sup {ctx.author.name}")
 
 # /// POINTS
 @bot.command()
@@ -172,26 +170,6 @@ async def on_command_error(ctx, error):
 
 
 @bot.command()
-async def easter_egg(ctx) -> None:
-    header = f"{get_vct_emoji("miku")} testin"
-    asd = """
-- :flag_es:  **A** <a:champs_sparkle_1:1342202573498880115> <a:champs_sparkle_2:1342202584936747111> <a:champs_sparkle_3_6:1342202595640610997>
-  - **__VCT 2049 : Champions Almeria__**
-
-- :flag_ge:  **K** <:masters_sparkle_1:1342206382698397787> <:masters_sparkle_2:1342206390403600405> <:masters_sparkle_3:1342206396808171562>
-  - **VCT 2049 : Masters Los Angeles**
-    """
-
-    embed = discord.Embed(
-        colour=discord.Colour.from_rgb(19,122,127)
-        , description=asd
-        , title=header
-    )
-    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
-
-    await ctx.send(embed=embed)
-
-@bot.command()
 async def test_emojis(ctx) -> None:
     from utils.emojis import VCT_EMOJIS
     lines = [f"{name}: {emoji}" for name, emoji in VCT_EMOJIS.items()]
@@ -231,7 +209,7 @@ async def test_emoji_lookup(ctx) -> None:
         results.append(f"Input: `{alias}` -> Expected: {expected} | Got: {found}")
 
     # Optionally, add some fuzzy match tests
-    fuzzy_tests = ["Team Vtlty", "G2", "Sentinel", "Talon", "FURIA", "Navi"]
+    fuzzy_tests = ["Team Hrtcs", "G2", "Sentinel", "Talon", "FURIA", "Navi"]
     results.append("\n**Testing Fuzzy Matches:**")
     for test in fuzzy_tests:
         found = get_vct_emoji(test)
