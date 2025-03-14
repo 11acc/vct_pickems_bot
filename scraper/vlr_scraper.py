@@ -141,13 +141,13 @@ def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
                     if winner_id:
                         db.update_match_winner(existing_match_id, winner_id)
                         print(f"Updated match {existing_match_id} with winner {winner_id}")
-                    else:
-                        print("Match exists in db with no winner change, skipping")
+                    # else:
+                    #     print("Match exists in db with no winner change, skipping")
                     continue
 
                 # Check if exact match (including winner) already exists
                 if db.is_match_in_db(NewMatch):
-                    print("Match exists in db, with no change, skipping")
+                    # print("Match exists in db, with no change, skipping")
                     continue
 
                 # Add to db
@@ -177,7 +177,7 @@ def scrape_vlr_votes(player_id: int, event_id: int, url: str) -> None:
             # Note which team was selected from class property: .mod-selected
             selected_team = match.find('div', class_='mod-selected')
             if not selected_team:
-                print(f"No chosen team, skipping")
+                # print(f"No chosen team, skipping")
                 continue
             chosen_team = selected_team.find('div', class_='pi-match-item-name').text.strip()
             chosen_team_id = db.get_team_id_from_name(chosen_team)
@@ -199,7 +199,7 @@ def scrape_vlr_votes(player_id: int, event_id: int, url: str) -> None:
 
             # Check if vote already exists
             if db.is_vote_in_db(NewVote):
-                print("Vote exists in db, skipping")
+                # print("Vote exists in db, skipping")
                 continue
 
             # Add to db
