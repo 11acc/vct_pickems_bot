@@ -64,7 +64,7 @@ async def points(ctx, loc:str, year: int) -> None:
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
     player_bullets = "\n".join(event_points)
-    event_link = db.get_event_vlr_link_from_name(input_event)
+    event_link = db.pickem_link_from_event_name(input_event)
     if not event_link:
         event_link = ""
 

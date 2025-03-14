@@ -182,9 +182,14 @@ class DBInstance():
             return None
         return int(sql_team[0])
 
-    def get_event_vlr_link_from_name(self, input_event: str) -> str | None:
-        query = "SELECT vlr_pickem_link FROM events WHERE loc=?"
-        return self.fetch_one(query, (input_event,))[0]
+    def pickem_link_from_event_name(self, input_event: str) -> str | None:
+        input_id = self.get_event_id_from_name(input_event)
+
+        query = "SELECT subev_pickem_url FROM sub_event WHERE subev_parent_id=?"
+        sql_link = self.fetch_one(query, (input_id,))
+        if not sql_link:
+            return None
+        return sql_link[0]
 
     def get_match_without_winner(self, new_match) -> int | None:
         query = "SELECT match_id FROM matches WHERE team1_id=? AND team2_id=? AND winner_id IS NULL AND m_event_id=? AND bracket=? AND kind=?"
