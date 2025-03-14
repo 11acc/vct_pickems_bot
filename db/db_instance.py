@@ -203,7 +203,7 @@ class DBInstance():
         sql_match = self.fetch_one(query, params)
         return int(sql_match[0]) if sql_match else None
 
-    def get_next_upcoming_match_date(self, input_date: str, skipping_amount: int) -> list | None:
+    def get_next_upcoming_match_date(self, input_date: str, skipping_amount: int) -> str | None:
         query = "SELECT DISTINCT date FROM matches WHERE date(date) > date(?) ORDER BY date(date) LIMIT 1 OFFSET ?"
         sql_date = db.fetch_one(query, (input_date, skipping_amount))
         if not sql_date:

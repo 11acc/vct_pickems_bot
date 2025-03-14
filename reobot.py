@@ -104,13 +104,14 @@ async def wvw(ctx, next_param: int = 0) -> None:
     if next_param < 0:
         await ctx.send(f"nice try jackass, param can't be negative")
         return
-
-    header = f"{get_vct_emoji("who")} VCT Who Voted Who"
-    upcoming_formatted = who_voted_who(next_param)
+    
+    date_lookup, upcoming_formatted = who_voted_who(next_param)
     if not upcoming_formatted:
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
-    
+
+    header = f"{get_vct_emoji("who")} VCT Who Voted Who — {date_lookup}"
+
     embed = discord.Embed(
         colour=BOT_EMBED_WVW_COLOUR
         , description=upcoming_formatted
