@@ -1,8 +1,10 @@
-# Reobot - VCT Pickem Discord Bot
+# Reobot - VLR Pickem Discord Bot
 
-Reobot is a Discord bot created to make tracking of pick'em more convenient. The main inspiration for the project came from wanting to easily compare my friend's total points across various regional events, such as Kickoff 2025. Using vlr, one has to go to each event's pickem page and add the points for each, which quickly becomes tedious. And so the usual small project started growing with more ideas... leaderboard for whoever had the most points for an event, checking who voted who each day, etc.
+Reobot is a Discord bot created to make tracking of [Valorant's Esport](https://valorantesports.com/) pick'em through [VLR](https://www.vlr.gg/) more convenient.
 
-The project by no means is trying to be a mainstream solution, rather it very much is a slapstickly built fun side project. As a result, there are many gaps where one needs to do some manual inputting for the bot to work smoothly.
+My friends and I use [vlr.gg](https://www.vlr.gg/), which is an amazing website, however if you want to compare everyone's points accross all regions for an event such as Kickoff, you have to go to each event's pickem page and add the points for each, which quickly becomes tedious. And that was the main inspiration for the bot, which then started growing with more ideas.
+
+The project by no means is trying to be a mainstream solution, rather it very much is a slapstickly built fun side project. This bot still depends on [vlr.gg](https://www.vlr.gg/) for up to date data and the whole pickem functionality. As a result, there are many gaps where one needs to do some manual inputting for the bot to work smoothly.
 - Manual entry of events and teams into DB
 - Scraping method of votes is incomplete (bracket votes still missing)
 - Limited flexibility
@@ -19,8 +21,8 @@ Nonetheless, I think reobot is pretty cool.
 | `!vct hello` | Test command to check if the bot is responsive | `!vct hello` |
 | `!vct points <event> <year>` | Get the points leaderboard for a specific event | `!vct points bangkok 2025` |
 | `!vct leaderboard` | View the global Pickem leaderboard | `!vct leaderboard` |
-| `!vct wvw [skip]` | See who voted for which teams in upcoming matches | `!vct wvw` or `!vct wvw 3` to skip to the nth next match day |
-| `!vct refresh <type>` | Update the database with fresh data | `!vct refresh pickems`, `!vct refresh matches`, or `!vct refresh votes` |
+| `!vct wvw [skip]` | See 'who voted for who' in upcoming matches | `!vct wvw` or `!vct wvw 3` to skip to the nth next match day |
+| `!vct refresh <type>` | Update the database with fresh vlr data | `!vct refresh pickems`, `!vct refresh matches`, or `!vct refresh votes` |
 
 
 ## 📂 Architecture
@@ -94,7 +96,7 @@ pip install -r requirements.txt
 Create a `.env` file in the project root with the following variables:
 ```bash
 DISCORD_BOT_TOKEN=your_discord_bot_token
-DB_PATH=path_to_your_sqlite_database.db
+DB_PATH=path_to_sqlite_db_file.db
 ```
 
 Run the bot:
