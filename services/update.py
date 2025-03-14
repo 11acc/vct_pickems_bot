@@ -49,3 +49,7 @@ def update_current_pickems() -> None:
 def update_current_matches() -> None:
     curr_event_id = db_logic.ongoing_event_id()
     update_matches(curr_event_id)
+
+def update_current_votes() -> None:
+    curr_event_id = db_logic.ongoing_event_id()
+    update_votes(curr_event_id)

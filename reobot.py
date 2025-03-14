@@ -15,7 +15,7 @@ from utils.matching import find_best_event_match
 from services.points_for_event import points_from_event
 from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
-from services.update import update_current_pickems, update_current_matches
+from services.update import update_current_pickems, update_current_matches, update_current_votes
 
 
 load_dotenv()
@@ -123,7 +123,7 @@ async def wvw(ctx, next_param: int = 0) -> None:
 
 # /// UPDATE
 # Helper function for update error handling
-async def execute_with_progress(ctx, update_function, action_name="update"):
+async def execute_with_progress(ctx, update_function):
     progress_message = await ctx.send(f"{get_vct_emoji("miku_loading")} refreshing...")
     
     try:
@@ -142,17 +142,32 @@ async def execute_with_progress(ctx, update_function, action_name="update"):
         await ctx.send(f"{get_vct_emoji("miku_what")} <@{REO_DEV_USER_ID}> you fucking suck brosky:\n```{str(e)}```")
         
         # Log to console
-        print(f"Error in {action_name} command: {str(e)}")
+        print(f"Error in command: {str(e)}")
         traceback.print_exc()
 
 # Refresh methods
+update_funcs = {
+    'pickems': update_current_pickems,
+    'matches': update_current_matches,
+    'votes': update_current_votes,
+}
 @bot.command()
-async def refresh_pickems(ctx) -> None:
-    await execute_with_progress(ctx, update_current_pickems, "updating pickems")
+async def refresh(ctx, update_func: str) -> None:
+    if update_func not in update_funcs:
+        await ctx.send("nice try jackass, update something sensible pls")
+        return
+    
+    func = update_funcs[update_func]
+    await execute_with_progress(ctx, func)
 
-@bot.command()
-async def refresh_matches(ctx) -> None:
-    await execute_with_progress(ctx, update_current_matches, "updating matches")
+
+# /// ERROR HANDLING
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send("you missed something in the command, stop trying to break me mf")
+    else:
+        raise error
 
 
 
