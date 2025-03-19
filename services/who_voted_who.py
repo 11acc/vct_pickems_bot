@@ -9,11 +9,9 @@ from utils.formatting import format_upcoming_match_votes
 
 
 # Get information for who voted for which teams for a set of upcomming matches
-def who_voted_who(phase: str, region: str, skip_amount: int) -> tuple[str, str] | tuple[None, None]:
+def who_voted_who(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, None]:
     # Format to ISO like in DB
     date_lookup = datetime.now().strftime('%Y-%m-%d')  # today
-    # Normalise region
-    region = region.capitalize()
 
     # Check if there's a match today
     match_id_lookup = db_logic.match_id_from_params(date=date_lookup)
@@ -27,7 +25,10 @@ def who_voted_who(phase: str, region: str, skip_amount: int) -> tuple[str, str] 
     # The set of upcoming matches will vary if filtering by match kind (phase) or not
     format_date = UpcomingMatches = None
 
-    if phase:
+    if region:
+        # Normalise region
+        region = region.capitalize()
+        # Filter by match kind
         match_kind = db.get_match_kind_from_id(match_id_lookup)
         if not match_kind:
             return None, None

@@ -97,17 +97,17 @@ async def leaderboard(ctx) -> None:
 
 # /// WHO VOTED WHO
 @bot.command()
-async def wvw(ctx, phase: str = None, region: str = None, skip_amount: int = 0) -> None:
+async def wvw(ctx, region: str = None, skip_amount: int = 0) -> None:
     # Handle region parameter
     if region:
         region = region.capitalize()
-        valid_regions = ["China", "Americas", "EMEA", "Pacific"]
+        valid_regions = ["China", "Americas", "Emea", "Pacific"]
         if region not in valid_regions:
             regions_str = ", ".join(valid_regions)
             await ctx.send(f"nice typo, region has to be one of: {regions_str}")
             return
 
-    date_lookup, upcoming_formatted = who_voted_who(phase, region, skip_amount)
+    date_lookup, upcoming_formatted = who_voted_who(region, skip_amount)
     if not upcoming_formatted:
         await ctx.send(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
