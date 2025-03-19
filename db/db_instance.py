@@ -203,13 +203,29 @@ class DBInstance():
         sql_match = self.fetch_one(query, params)
         return int(sql_match[0]) if sql_match else None
 
-    def get_next_upcoming_match_date(self, input_date: str, skipping_amount: int) -> str | None:
-        query = "SELECT DISTINCT date FROM matches WHERE date(date) > date(?) ORDER BY date(date) LIMIT 1 OFFSET ?"
-        sql_date = db.fetch_one(query, (input_date, skipping_amount))
+    def get_next_upcoming_match_date(self, input_date: str, region: str, skipping_amount: int) -> str | None:
+        params = [input_date]
+        # Check if to filter by region or not
+        condition = ""
+        if region:
+            condition = "AND region=?"
+            params.append(region)
+        params.append(skipping_amount)
+
+        query = f"SELECT DISTINCT date FROM matches WHERE date(date) > date(?) {condition} ORDER BY date(date) LIMIT 1 OFFSET ?"
+        sql_date = db.fetch_one(query, (params))
         if not sql_date:
             print(f"No further matches after date: {input_date}")
             return None
         return sql_date[0]
+
+    def get_match_kind_from_id(self, match_id: int) -> str | None:
+        query = "SELECT kind FROM matches WHERE match_id=?"
+        sql_kind = db.fetch_one(query, (match_id,))
+        if not sql_kind:
+            print(f"No kind found for match with id: {match_id}")
+            return None
+        return sql_kind[0]
 
     def get_team_id_from_name(self, name: str) -> int | None:
         query = "SELECT team_id FROM teams WHERE name=?"

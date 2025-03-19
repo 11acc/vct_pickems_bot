@@ -153,6 +153,14 @@ class Query_DB():
             return None
         return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
     
+    def match_objs_for_week(self, match_kind: str, region: str) -> list[Match] | None:
+        query = "SELECT * FROM matches WHERE kind=? AND region=?"
+        sql_matches = db.fetch_all(query, (match_kind, region))
+        if not sql_matches:
+            print(f"No matches found for match_kind, region: {match_kind}, {region}")
+            return None
+        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
+
     def match_id_from_params(self, **filters) -> int | None:
         # Construct filter clauses
         conditions = " AND ".join(f"{key}=?" for key in filters.keys())
