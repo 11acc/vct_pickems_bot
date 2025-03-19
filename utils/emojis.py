@@ -61,7 +61,7 @@ VCT_EMOJIS = {
     , "vct_americas": "<:vct_americas:1332393264526921808>"
     , "vct_china": "<:vct_china:1332393256004354068>"
     , "vct_pacific": "<:vct_pacific:1332393245489238057>"
-    , "vct_emea": "<:vct_emea:1332393237507346462>"
+    , "vct_emea": "<:vct_emea:1351923526210424852>"
     , "vct_masters": "<:vct_masters:1332393227101143083>"
 
     , "regular_sparkle_1": "<:sparkle_1:1342206404760567989>"
