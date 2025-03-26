@@ -203,19 +203,27 @@ class DBInstance():
         sql_match = self.fetch_one(query, params)
         return int(sql_match[0]) if sql_match else None
 
-    def get_next_upcoming_match_date(self, input_date: str, region: str, skipping_amount: int) -> str | None:
+    def get_next_upcoming_match_date(self, input_date: str, region: str = None,  skipping_amount: int = 0) -> str | None:
+        # Work around a region input or not
         params = [input_date]
-        # Check if to filter by region or not
-        condition = ""
+        and_condition = ""
         if region:
-            condition = "AND region=?"
+            and_condition = "AND region=? "
             params.append(region)
         params.append(skipping_amount)
-
-        query = f"SELECT DISTINCT date FROM matches WHERE date(date) > date(?) {condition} ORDER BY date(date) LIMIT 1 OFFSET ?"
+        # Construct query
+        query = f"SELECT DISTINCT date FROM matches WHERE date(date) > date(?) {and_condition} AND winner_id IS NULL ORDER BY date(date) LIMIT 1 OFFSET ?"
         sql_date = db.fetch_one(query, (params))
         if not sql_date:
             print(f"No further matches after date: {input_date}")
+            return None
+        return sql_date[0]
+
+    def get_next_upcoming_phase(self, input_date: str, region: str, skipping_amount: int = 0) -> str | None:
+        query = "SELECT DISTINCT date FROM matches WHERE date(date) > date(?) AND region=? GROUP BY kind ORDER BY date(date) LIMIT 1 OFFSET ?"
+        sql_date = db.fetch_one(query, (input_date, region, skipping_amount))
+        if not sql_date:
+            print(f"No further match phases after {input_date}'s kind")
             return None
         return sql_date[0]
 
