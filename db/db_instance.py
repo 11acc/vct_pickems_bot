@@ -127,18 +127,6 @@ class DBInstance():
         if not sql_match:
             return False
         return True
-    
-    def is_vote_in_db(self, new_vote) -> bool:
-        query = "SELECT vote_id FROM votes WHERE vote_match_id=? AND vote_team_id=? AND vote_player_id=?"
-        params = (
-            new_vote.vote_match_id
-            , new_vote.vote_team_id
-            , new_vote.vote_player_id
-        )
-        sql_vote = self.fetch_one(query, params)
-        if not sql_vote:
-            return False
-        return True
 
     # /// Aggregate list
     def get_player_ids_with_stars(self) -> list[int] | None:
@@ -243,10 +231,32 @@ class DBInstance():
             return None
         return int(t_id[0])
 
+    def get_vote_id_without_voted_team(self, new_vote) -> int | None:
+        query = "SELECT vote_id FROM votes WHERE vote_match_id=? AND vote_player_id=?"
+        params = (
+            new_vote.vote_match_id
+            , new_vote.vote_player_id
+        )
+        sql_id = self.fetch_one(query, params)
+        if not sql_id:
+            # print(f"No vote with given properties: {params}")
+            return None
+        return int(sql_id[0])
+
+    def get_team_id_from_vote(self, existing_vote_id: int) -> int | None:
+        query = "SELECT vote_team_id FROM votes WHERE vote_id=?"
+        sql_id = self.fetch_one(query, (existing_vote_id,))
+        if not sql_id:
+            # print(f"No vote with id: {existing_vote_id}")
+            return None
+        return int(sql_id[0])
+
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:
         self.modify_entry("matches", "winner_id", winner_id, "match_id", match_id)
 
+    def update_vote_choice(self, existing_vote_id: int, chosen_team_id: int) -> None:
+        self.modify_entry("votes", "vote_team_id", chosen_team_id, "vote_id", existing_vote_id)
 
 
 # Global instance

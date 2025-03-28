@@ -170,7 +170,7 @@ class Vote():
     def player(self):
         from .queries import db_logic
         if self._player is None:
-            self._player = db_logic.player_from_id(self.s_player_id)
+            self._player = db_logic.player_from_id(self.vote_player_id)
         return self._player
 
     def __repr__(self) -> str:

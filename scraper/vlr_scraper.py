@@ -194,13 +194,16 @@ def scrape_vlr_votes(player_id: int, event_id: int, url: str) -> None:
                 print(f"Failed to identify match from extracted match information")
                 continue
 
-            # Construct Vote obj and save to DB
+            # Construct Vote obj
             NewVote = Vote(None, identified_match_id, chosen_team_id, player_id)
 
             # Check if vote already exists
-            if db.is_vote_in_db(NewVote):
-                # print("Vote exists in db, skipping")
-                continue
-
-            # Add to db
-            db.add_entry("votes", NewVote)
+            existing_vote_id = db.get_vote_id_without_voted_team(NewVote)
+            voted_team_id = db.get_team_id_from_vote(existing_vote_id)
+            if existing_vote_id:
+                # If the team choice has changed, update the vote in the DB
+                if voted_team_id != chosen_team_id:
+                    db.update_vote_choice(existing_vote_id, chosen_team_id)
+            else:
+                # Vote doesn't exist, insert it.
+                db.add_entry("votes", NewVote)
