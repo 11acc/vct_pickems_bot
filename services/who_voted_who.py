@@ -17,11 +17,14 @@ def wvw_day(skip_amount: int) -> tuple[str, str] | tuple[None, None]:
         skip_amount -= 1  # for intuitive use
         date_lookup = db.get_next_upcoming_match_date(input_date=date_lookup, skipping_amount=skip_amount)
 
+    print(f"date_lookup: {date_lookup}")
+
     # Check if there's a match for selected date
-    match_id_lookup = db_logic.match_id_from_params(date=date_lookup)
+    match_id_lookup = db_logic.match_id_non_winner_from_params(date=date_lookup)
+    print(f"match_id_lookup: {match_id_lookup}")
     if not match_id_lookup:
         date_lookup = db.get_next_upcoming_match_date(input_date=date_lookup, skipping_amount=skip_amount)
-        match_id_lookup = db_logic.match_id_from_params(date=date_lookup)
+        match_id_lookup = db_logic.match_id_non_winner_from_params(date=date_lookup)
         if not match_id_lookup:
             return None, None
 
@@ -40,12 +43,12 @@ def wvw_day(skip_amount: int) -> tuple[str, str] | tuple[None, None]:
 # Attempts to validate the provided date by checking for a match
 def get_valid_match_date(date_lookup: str, region: str) -> str | None:
     # Check if there's a match on the given date
-    if db_logic.match_id_from_params(date=date_lookup, region=region):
+    if db_logic.match_id_non_winner_from_params(date=date_lookup, region=region):
         return date_lookup
 
     # Try to get the next upcoming match date
     new_date = db.get_next_upcoming_match_date(date_lookup, region=region, skipping_amount=0)
-    if new_date and db_logic.match_id_from_params(date=new_date, region=region):
+    if new_date and db_logic.match_id_non_winner_from_params(date=new_date, region=region):
         return new_date
     return None
 
@@ -61,7 +64,7 @@ def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, No
         return None, None
 
     # Get the match id and then the match kind
-    match_id = db_logic.match_id_from_params(date=date_lookup, region=region)
+    match_id = db_logic.match_id_non_winner_from_params(date=date_lookup, region=region)
     match_kind = db.get_match_kind_from_id(match_id)
     if not match_kind:
         return None, None
@@ -73,7 +76,7 @@ def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, No
         date_lookup = get_valid_match_date(date_lookup, region)
         if not date_lookup:
             return None, None
-        match_id = db_logic.match_id_from_params(date=date_lookup, region=region)
+        match_id = db_logic.match_id_non_winner_from_params(date=date_lookup, region=region)
         match_kind = db.get_match_kind_from_id(match_id)
         if not match_kind:
             return None, None

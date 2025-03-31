@@ -170,7 +170,18 @@ class Query_DB():
         query = f"SELECT match_id FROM matches {where_filt}"
         sql_match_id = self.db.fetch_one(query, vals)
         if not sql_match_id:
-            print(f"No match found for filters: {filters}")
+            # print(f"No match found for filters: {filters}")
+            return None
+        return int(sql_match_id[0])
+
+    def match_id_non_winner_from_params(self, **filters) -> int | None:
+        conditions = " AND ".join(f"{key}=?" for key in filters.keys())
+        vals = tuple(filters.values())
+        where_filt = f"WHERE {conditions} AND winner_id IS NULL"
+        query = f"SELECT match_id FROM matches {where_filt}"
+        sql_match_id = self.db.fetch_one(query, vals)
+        if not sql_match_id:
+            # print(f"No match found for filters: {filters} & winner_id being NULL")
             return None
         return int(sql_match_id[0])
 
