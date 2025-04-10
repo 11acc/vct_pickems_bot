@@ -17,11 +17,8 @@ def wvw_day(skip_amount: int) -> tuple[str, str] | tuple[None, None]:
         skip_amount -= 1  # for intuitive use
         date_lookup = db.get_next_upcoming_match_date(input_date=date_lookup, skipping_amount=skip_amount)
 
-    print(f"date_lookup: {date_lookup}")
-
     # Check if there's a match for selected date
     match_id_lookup = db_logic.match_id_non_winner_from_params(date=date_lookup)
-    print(f"match_id_lookup: {match_id_lookup}")
     if not match_id_lookup:
         date_lookup = db.get_next_upcoming_match_date(input_date=date_lookup, skipping_amount=skip_amount)
         match_id_lookup = db_logic.match_id_non_winner_from_params(date=date_lookup)

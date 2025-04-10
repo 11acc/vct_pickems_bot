@@ -13,7 +13,7 @@ from utils.matching import find_best_event_match
 from services.points_for_event import points_from_event
 from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
-from services.update import update_current_pickems, update_current_matches, update_current_votes
+from services.update import update_current_pickems, update_current_matches, update_current_votes, update_all
 
 
 load_dotenv()
@@ -150,6 +150,7 @@ update_funcs = {
     'pickems': update_current_pickems
     , 'matches': update_current_matches
     , 'votes': update_current_votes
+    , 'all': update_all
 }
 async def execute_with_progress(interaction: discord.Interaction, update_function):
     # Send the initial progress message
@@ -165,7 +166,7 @@ async def execute_with_progress(interaction: discord.Interaction, update_functio
 
         # Delete the progress message and send a success follow-up.
         await progress_message.delete()
-        await interaction.followup.send(f"{get_vct_emoji('miku_yay')} the fresh has been re ✅")
+        await interaction.followup.send(f"{get_vct_emoji('miku_yay')} the fresh has been re ✅ for: {update_function.__name__.split("_")[-1]}")
 
     except Exception as e:
         # Delete the progress message and send an error follow-up.
@@ -176,7 +177,7 @@ async def execute_with_progress(interaction: discord.Interaction, update_functio
 
 @bot.tree.command(name="refresh", description="Update the database with fresh vlr data")
 @app_commands.describe(
-    update_func="Which dataset to refresh: pickems, matches, or votes",
+    update_func="Which dataset to refresh: 'pickems', 'matches', 'votes', or 'all' of them",
 )
 async def refresh(interaction: discord.Interaction, update_func: str):
     if update_func not in update_funcs:
