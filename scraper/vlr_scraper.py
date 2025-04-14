@@ -91,74 +91,110 @@ def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
 
         # Get the next sibling that is the match card
         match_card = date_tag.find_next_sibling('div', class_='wf-card')
-        if match_card:
-            for a_tag_match in match_card.find_all('a', class_='wf-module-item'):
-                skip_match = False  # Flag in case of existing match in db or TBD matches
-                team_ids = []
-                winner_id = None
+        if not match_card:
+            continue
 
-                for team in a_tag_match.find_all("div", class_="match-item-vs-team"):
-                    # Scrape team name
-                    text_div = team.find("div", class_="text-of")
-                    if text_div is None:
-                        print("No text detected, skipping")
-                        skip_match = True
-                        break
-                    
-                    team_name = text_div.get_text(strip=True)
-                    team_id = db.get_team_id_by_name(team_name)
-                    if team_id is None:
-                        print("No team detected, skipping")
-                        skip_match = True
-                        break
+        for a_tag_match in match_card.find_all('a', class_='wf-module-item'):
+            skip_match = False
+            team_ids = []
+            winner_id = None
 
-                    if "mod-winner" in team.get("class", []):
-                        winner_id = team_id
-                    
-                    team_ids.append(team_id)
-                
-                # If no detected team, skip a_tag_match
-                if skip_match:
-                    continue
+            team_divs = a_tag_match.find_all("div", class_="match-item-vs-team")
+            if not team_divs:
+                continue
 
-                # Obtain time of match
-                extracted_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
-                time_obj = datetime.strptime(extracted_time, '%I:%M %p')
-                match_time = datetime.strftime(time_obj, '%H:%M:%S')
+            for team_div in team_divs:
+                # Scrape team name
+                text_div = team_div.find("div", class_="text-of")
+                if text_div is None:  # If there's literally no text, default to "TBD"
+                    team_name = "TBD"
+                else:
+                    # Get the scraped text
+                    scraped_name = text_div.get_text(strip=True)
+                    # If empty or “TBD”-like, store as "TBD"
+                    team_name = scraped_name if scraped_name else "TBD"
+                    if team_name.lower() in ("tbd", "tba"):
+                        team_name = "TBD"
 
-                # Obtain match bracket and kind
-                match_type_raw = a_tag_match.find("div", class_="match-item-event").text.split("\n")
-                match_type_split = [vlr_text.replace("\t", "") for vlr_text in match_type_raw if vlr_text]
-                match_kind = match_type_split[0]
-                match_bracket = match_type_split[1]
+                team_id = db.get_team_id_by_name(team_name)
+                if team_id is None:
+                    print("No team detected, including TBD, skipping")
+                    skip_match = True
+                    break
 
-                # Create match class obj & check if it already exists
-                NewMatch = Match(None, *team_ids, winner_id, event_id, region, match_bracket, match_kind, match_date, match_time)
+                # Check if team is marked as the winner
+                if "mod-winner" in team_div.get("class", []):
+                    winner_id = team_id
 
-                # Check if match already exists but without a winner
-                existing_match_id = db.get_match_without_winner(NewMatch)
-                if existing_match_id:
-                    if winner_id:
-                        db.update_match_winner(existing_match_id, winner_id)
-                        print(f"Updated match {existing_match_id} with winner {winner_id}")
-                    # else:
-                    #     print("Match exists in db with no winner change, skipping")
-                    continue
+                team_ids.append(team_id)
 
-                # Check if exact match (including winner) already exists
-                if db.is_match_in_db(NewMatch):
-                    # print("Match exists in db, with no change, skipping")
-                    continue
+            # If no detected team, skip a_tag_match
+            if skip_match:
+                continue
 
-                # Add to db
+            # Obtain time of match
+            extracted_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
+            time_obj = datetime.strptime(extracted_time, '%I:%M %p')
+            match_time = datetime.strftime(time_obj, '%H:%M:%S')
+
+            # Obtain match bracket and kind
+            match_type_raw = a_tag_match.find("div", class_="match-item-event").text.split("\n")
+            match_type_split = [vlr_text.replace("\t", "") for vlr_text in match_type_raw if vlr_text]
+            match_kind = match_type_split[0]
+            match_bracket = match_type_split[1]
+
+            # Obtain vlr match id
+            match_href = a_tag_match.get("href", "")
+            if not match_href:
+                vlr_match_id = None
+            else:
+                # This assumes that the URL starts with a slash and the first segment is the vlr numeric id
+                # For example, "/473233/..." -> vlr_match_id == "473233"
+                vlr_match_id = match_href.split("/")[1]
+
+            # Create match class obj
+            NewMatch = Match(None, *team_ids, winner_id, event_id, region, match_bracket, match_kind, match_date, match_time, vlr_match_id)
+
+            # See if the match already exists in DB
+            existing_match_id = db.find_equivalent_vlr_match(NewMatch.vlr_match_id)
+            ExistingMatch = db_logic.match_from_id(existing_match_id)
+
+            if existing_match_id and ExistingMatch:
+                # Update teams if they've changed
+                if (ExistingMatch.team1_id != NewMatch.team1_id) or (ExistingMatch.team2_id != NewMatch.team2_id):
+                    db.update_match_teams(existing_match_id, NewMatch.team1_id, NewMatch.team2_id)
+                    print(f"Match id: {existing_match_id}, updating teams: {ExistingMatch.team1_id, ExistingMatch.team2_id} -> ({NewMatch.team1_id}, {NewMatch.team2_id})")
+
+                # If the winner is known now, update that too
+                if winner_id:
+                    db.update_match_winner(existing_match_id, winner_id)
+                    print(f"Match id: {existing_match_id}, adding winner: {winner_id}")
+
+            else:
+                # If no existing match, add the new one to the DB
                 db.add_entry("matches", NewMatch)
+                print(f"New match recorded: {NewMatch}")
 
 
 def scrape_vlr_votes(player_id: int, event_id: int, url: str) -> None:
     response = request_response(url)
     soup = BeautifulSoup(response.content, "html.parser")
 
+    # Scrape bracket (playoffs)
+    # bracket_html = soup.find_all("div", class_="pickem-bracket-container")
+    # if bracket_html:
+    #     scrape_vlr_bracket_votes(soup)
+
+    # # Scrape subseries (group stage)
+    # subseries_html = soup.find_all("div", class_="pickem-subseries-container")
+    # if subseries_html:
+    #     scrape_vlr_subseries_votes(subseries_html)
+
+    import sys
+    sys.exit()
+
     for container in soup.find_all("div", class_="pickem-subseries-container"):
+    # for container in soup.find_all("div", class_="pickem-bracket-container"):
         # Extract bracket kind (title)
         bracket_kind = container.find('div', class_='wf-label mod-large').text.strip()
         match_bracket, match_kind = bracket_kind.split(":", 1)

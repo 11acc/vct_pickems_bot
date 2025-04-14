@@ -128,6 +128,13 @@ class DBInstance():
             return False
         return True
 
+    def find_equivalent_vlr_match(self, vlr_match_id) -> int | None:
+        query = "SELECT match_id FROM matches WHERE vlr_match_id=?"
+        sql_match = self.fetch_one(query, (vlr_match_id,))
+        if not sql_match:
+            return None
+        return int(sql_match[0])
+
     # /// Aggregate list
     def get_player_ids_with_stars(self) -> list[int] | None:
         query = "SELECT DISTINCT s_player_id FROM stars ORDER BY s_player_id ASC"
@@ -254,6 +261,10 @@ class DBInstance():
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:
         self.modify_entry("matches", "winner_id", winner_id, "match_id", match_id)
+
+    def update_match_teams(self, match_id: int, team1_id: int, team2_id: int) -> None:
+        query = "UPDATE matches SET team1_id=?, team2_id=? WHERE match_id=?"
+        self.execute(query, (team1_id, team2_id, match_id))
 
     def update_vote_choice(self, existing_vote_id: int, chosen_team_id: int) -> None:
         self.modify_entry("votes", "vote_team_id", chosen_team_id, "vote_id", existing_vote_id)
