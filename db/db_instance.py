@@ -114,27 +114,6 @@ class DBInstance():
         query = "SELECT vlr_user FROM players WHERE vlr_user=?"
         return self.fetch_one(query, (player_name,))
 
-    def is_match_in_db(self, new_match) -> bool:
-        query = "SELECT match_id FROM matches WHERE team1_id=? AND team2_id=? AND m_event_id=? AND bracket=? AND kind=?"
-        params = (
-            new_match.team1_id
-            , new_match.team2_id
-            , new_match.m_event_id
-            , new_match.bracket
-            , new_match.kind
-        )
-        sql_match = self.fetch_one(query, params)
-        if not sql_match:
-            return False
-        return True
-
-    def find_equivalent_vlr_match(self, vlr_match_id) -> int | None:
-        query = "SELECT match_id FROM matches WHERE vlr_match_id=?"
-        sql_match = self.fetch_one(query, (vlr_match_id,))
-        if not sql_match:
-            return None
-        return int(sql_match[0])
-
     # /// Aggregate list
     def get_player_ids_with_stars(self) -> list[int] | None:
         query = "SELECT DISTINCT s_player_id FROM stars ORDER BY s_player_id ASC"
@@ -185,18 +164,6 @@ class DBInstance():
         if not sql_link:
             return None
         return sql_link[0]
-
-    def get_match_without_winner(self, new_match) -> int | None:
-        query = "SELECT match_id FROM matches WHERE team1_id=? AND team2_id=? AND winner_id IS NULL AND m_event_id=? AND bracket=? AND kind=?"
-        params = (
-            new_match.team1_id
-            , new_match.team2_id
-            , new_match.m_event_id
-            , new_match.bracket
-            , new_match.kind
-        )
-        sql_match = self.fetch_one(query, params)
-        return int(sql_match[0]) if sql_match else None
 
     def get_next_upcoming_match_date(self, input_date: str, region: str = None,  skipping_amount: int = 0) -> str | None:
         # Work around a region input or not
@@ -257,6 +224,13 @@ class DBInstance():
             # print(f"No vote with id: {existing_vote_id}")
             return None
         return int(sql_id[0])
+
+    def get_match_from_vlr_match_id(self, vlr_match_id) -> int | None:
+        query = "SELECT match_id FROM matches WHERE vlr_match_id=?"
+        sql_match = self.fetch_one(query, (vlr_match_id,))
+        if not sql_match:
+            return None
+        return int(sql_match[0])
 
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:

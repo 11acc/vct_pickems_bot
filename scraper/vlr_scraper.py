@@ -156,7 +156,7 @@ def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
             NewMatch = Match(None, *team_ids, winner_id, event_id, region, match_bracket, match_kind, match_date, match_time, vlr_match_id)
 
             # See if the match already exists in DB
-            existing_match_id = db.find_equivalent_vlr_match(NewMatch.vlr_match_id)
+            existing_match_id = db.get_match_from_vlr_match_id(NewMatch.vlr_match_id)
             ExistingMatch = db_logic.match_from_id(existing_match_id)
 
             if existing_match_id and ExistingMatch:
