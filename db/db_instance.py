@@ -232,6 +232,14 @@ class DBInstance():
             return None
         return int(sql_match[0])
 
+    def get_bracket_type_from_event_id(self, event_id: int) -> str | None:
+        # 1) Fetch the event's bracket_type
+        query = "SELECT bracket_type FROM events WHERE event_id=?"
+        sql_btype = db.fetch_one(query, (event_id,))
+        if not sql_btype or not sql_btype[0]:
+            return None
+        return sql_btype[0]
+
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:
         self.modify_entry("matches", "winner_id", winner_id, "match_id", match_id)
@@ -242,6 +250,9 @@ class DBInstance():
 
     def update_vote_choice(self, existing_vote_id: int, chosen_team_id: int) -> None:
         self.modify_entry("votes", "vote_team_id", chosen_team_id, "vote_id", existing_vote_id)
+
+    def update_playoff_bracket_id(self, match_id: int, playoff_bracket_id: str) -> None:
+        self.modify_entry("matches", "playoff_bracket_id", playoff_bracket_id, "match_id", match_id)
 
 
 # Global instance

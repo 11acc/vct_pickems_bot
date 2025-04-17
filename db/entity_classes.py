@@ -119,7 +119,7 @@ class Star():
         return self._event
 
 class Match():
-    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, region: str, bracket: str, kind: str, date: str, time: str, vlr_match_id: int) -> None:
+    def __init__(self, match_id: int, team1_id: int, team2_id: int, winner_id: int, m_event_id: int, region: str, bracket: str, kind: str, date: str, time: str, vlr_match_id: int, playoff_bracket_id: str) -> None:
         self.match_id = match_id
         self._votes = None  # Vote obj class, loaded on demand
         self.team1_id = team1_id
@@ -134,6 +134,7 @@ class Match():
         self.date = date
         self.time = time
         self.vlr_match_id = vlr_match_id
+        self.playoff_bracket_id = playoff_bracket_id
 
     @property
     def team1(self):

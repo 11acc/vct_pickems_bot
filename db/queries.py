@@ -33,7 +33,7 @@ class Query_DB():
         query = "SELECT * FROM matches WHERE match_id=?"
         sql_match = self.db.fetch_one(query, (match_id,))
         if not sql_match:
-            print(f"No match with id: {match_id}")
+            # print(f"No match with id: {match_id}")
             return None
         return self.tuple_into_class(Match, sql_match)
 
@@ -185,6 +185,16 @@ class Query_DB():
             return None
         return int(sql_match_id[0])
 
+    # def match_ids_playoff_matches(self, **filters) -> list[int] | None:
+    #     conditions = " AND ".join(f"{key}=?" for key in filters.keys())
+    #     vals = tuple(filters.values())
+    #     where_filt = f"WHERE {conditions}" if filters else ""
+    #     query = f"SELECT match_id FROM matches {where_filt}"
+    #     sql_match_ids = self.db.fetch_all(query, vals)
+    #     if not sql_match_ids:
+    #         # print(f"No matches found for filters: {filters}")
+    #         return None
+    #     return [int(_id[0]) for _id in sql_match_ids]
 
     # /// Vote queries
     def votes_from_match_id(self, match_id: int) -> list[Vote]:
