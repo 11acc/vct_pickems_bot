@@ -3,7 +3,9 @@
 
 from db.db_instance import db
 from db.queries import db_logic
-from scraper.vlr_scraper import scrape_vlr_event_pickem, scrape_vlr_matches, scrape_vlr_votes
+from scraper.event_pickem import scrape_vlr_event_pickem
+from scraper.matches import scrape_vlr_matches
+from scraper.votes import scrape_vlr_votes
 
 
 # Go to event's sub, and get all match urls, then scrape them all
@@ -38,7 +40,7 @@ def update_votes(event_id: int) -> None:
                 continue
             url_to_scrape = f"https://www.vlr.gg/pickem/{bd_set.vlr_handle}"
 
-            scrape_vlr_votes(pt_set.pt_player_id, event_id, url_to_scrape)
+            scrape_vlr_votes(pt_set.pt_player_id, event_id, bd_set.region, url_to_scrape)
 
 
 # Update on currently ongoing event

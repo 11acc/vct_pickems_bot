@@ -185,17 +185,6 @@ class Query_DB():
             return None
         return int(sql_match_id[0])
 
-    # def match_ids_playoff_matches(self, **filters) -> list[int] | None:
-    #     conditions = " AND ".join(f"{key}=?" for key in filters.keys())
-    #     vals = tuple(filters.values())
-    #     where_filt = f"WHERE {conditions}" if filters else ""
-    #     query = f"SELECT match_id FROM matches {where_filt}"
-    #     sql_match_ids = self.db.fetch_all(query, vals)
-    #     if not sql_match_ids:
-    #         # print(f"No matches found for filters: {filters}")
-    #         return None
-    #     return [int(_id[0]) for _id in sql_match_ids]
-
     # /// Vote queries
     def votes_from_match_id(self, match_id: int) -> list[Vote]:
         query = "SELECT * FROM votes WHERE vote_match_id=? ORDER BY vote_player_id"
