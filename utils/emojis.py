@@ -2,6 +2,8 @@
 import pycountry
 from fuzzywuzzy import process
 
+from db.db_instance import db
+
 
 VCT_EMOJIS = {
     "100t": "<:100t:1337076165269131354>"
@@ -136,7 +138,16 @@ ALIASES = {
 }
 
 
-def get_vct_emoji(input_name):
+def get_vct_emoji(emoji_lookup: any) -> str:
+    # Check if team id is given, if so conver it
+    if isinstance(emoji_lookup, int):
+        input_name = db.get_team_name_from_id(emoji_lookup)
+        if not input_name:
+            print(f"Emoji: Failed to change input int to team name: {emoji_lookup}")
+            return "❓"
+    else:
+        input_name = emoji_lookup
+
     # First try to look up a direct match, if not try aliases
     res_key = input_name if input_name in VCT_EMOJIS else ALIASES.get(input_name)
     if res_key:

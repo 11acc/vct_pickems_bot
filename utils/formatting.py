@@ -120,9 +120,22 @@ def format_upcoming_match_votes(UpcomingMatches: list) -> str | None:
                 players_formatted = " ".join(f"`{player.name}`" for player in all_players)
             else:
                 players_formatted = "`—`"
+
             team_line = f"  - {get_vct_emoji(team.name)}   {players_formatted}"
             formatted_matches.append(team_line)
-        
+
+        # Check if there are any non main team votes
+        for phantom_team_id, phantom_players in votes_by_team_id.items():
+            if phantom_team_id not in (match.team1_id, match.team2_id):
+                # collect their names (with backticks)
+                names = ", ".join(f"`{p.name}`" for p in phantom_players)
+                # get the emoji for that phantom team
+                emoji = get_vct_emoji(phantom_team_id)
+                # append a single grouped line
+                formatted_matches.append(
+                    f"  - {names} actually thought {emoji} would get here..."
+                )
+
         # Newline
         formatted_matches.append("")
 

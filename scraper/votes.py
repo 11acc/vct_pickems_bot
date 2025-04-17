@@ -69,14 +69,11 @@ def scrape_vlr_bracket_votes(soup, player_id: int, event_id: int, region: str) -
             , playoff_bracket_id = playoff_bracket_id
         )
         if not identified_match_id:
-            print(f"Failed to identify match from extracted match information")
+            # print(f"Failed to identify match from extracted match information - playoff_bracket_id, match_kind: {playoff_bracket_id}, {match_kind}")
             continue
-
-        print(f"identified_match_id: {identified_match_id}")
 
         # Construct Vote obj
         NewVote = Vote(None, identified_match_id, chosen_team_id, player_id)
-        print(NewVote)
 
         # Check if vote already exists
         existing_vote_id = db.get_vote_id_without_voted_team(NewVote)
@@ -122,9 +119,8 @@ def scrape_vlr_subseries_votes(soup, player_id: int, event_id: int) -> None:
                 , bracket = match_bracket
                 , kind = match_kind
             )
-
             if not identified_match_id:
-                print(f"Failed to identify match from extracted match information")
+                # print(f"Failed to identify match from extracted match information")
                 continue
 
             # Construct Vote obj
