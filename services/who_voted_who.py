@@ -52,7 +52,6 @@ def get_valid_match_date(date_lookup: str, region: str) -> str | None:
 # [Phase Format] Get information for who voted for which teams for a given phase (eg. Week 1)
 def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, None]:
     date_lookup = datetime.now().strftime('%Y-%m-%d')  # today
-    date_lookup = "2025-03-25"
     region = region.capitalize()
 
     # Validate the initial match date
@@ -67,7 +66,8 @@ def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, No
         return None, None
 
     # If skipping is requested, move to the nth upcoming phase
-    if skip_amount:
+    if skip_amount != 0:
+        skip_amount -= 1  # for intuitive use
         date_lookup = db.get_next_upcoming_phase(date_lookup, region, skip_amount)
         # Re-validate the new date
         date_lookup = get_valid_match_date(date_lookup, region)
@@ -88,6 +88,9 @@ def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, No
 
 # Parent orchestrator method for Who Voted Who
 def who_voted_who(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, None]:
+    # Normalise skip
+    if not skip_amount:
+        skip_amount = 0
     # If region, go to phase format
     if region:
         return wvw_phase(region, skip_amount)
