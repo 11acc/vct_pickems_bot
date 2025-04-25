@@ -11,7 +11,7 @@ PLAYOFF_CONFIGS = {
         "Upper Final":       "311",
         "Grand Final":       "411",
         "Lower Round 1":     ["112", "122"],
-        "Lower Round 2":     ["212", "222"],
+        "Lower Round 2":     ["222", "212"],
         "Lower Round 3":     "312",
         "Lower Final":       "412",
     },
