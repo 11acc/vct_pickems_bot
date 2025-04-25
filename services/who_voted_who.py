@@ -59,11 +59,8 @@ def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, No
     if not date_lookup:
         return None, None
 
-    # Get the match id and then the match kind
+    # Get the match id
     match_id = db_logic.match_id_non_winner_from_params(date=date_lookup, region=region)
-    match_kind = db.get_match_kind_from_id(match_id)
-    if not match_kind:
-        return None, None
 
     # If skipping is requested, move to the nth upcoming phase
     if skip_amount != 0:
@@ -74,16 +71,25 @@ def wvw_phase(region: str, skip_amount: int) -> tuple[str, str] | tuple[None, No
         if not date_lookup:
             return None, None
         match_id = db_logic.match_id_non_winner_from_params(date=date_lookup, region=region)
-        match_kind = db.get_match_kind_from_id(match_id)
-        if not match_kind:
-            return None, None
 
-    UpcomingMatches = db_logic.match_objs_for_week(match_kind, region)
-    if not UpcomingMatches:
-        print("No upcoming matches found")
+    # Match properties
+    match_row = db.fetch_one(
+        "SELECT bracket, kind FROM matches WHERE match_id=?"
+        , (match_id,)
+    )
+    if not match_row:
         return None, None
 
-    return match_kind, format_upcoming_match_votes(UpcomingMatches)
+    # If it’s playoffs, filter by bracket; otherwise by kind
+    match_bracket, match_kind = match_row
+    filter_val = match_bracket if match_bracket == "Playoffs" else match_kind
+
+    UpcomingMatches = db_logic.match_objs_from_type_filter(region, filter_val)
+    if not UpcomingMatches:
+        print(f"No upcoming matches found for region: {region} and filter: {filter_val}")
+        return None, None
+
+    return filter_val, format_upcoming_match_votes(UpcomingMatches)
 
 
 # Parent orchestrator method for Who Voted Who

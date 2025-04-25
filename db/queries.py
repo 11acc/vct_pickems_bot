@@ -174,6 +174,16 @@ class Query_DB():
             return None
         return int(sql_match_id[0])
 
+    def match_objs_from_type_filter(self, region: str, filter_val: str) -> int | None:
+        # pick the right column based on playoff vs. non-playoff
+        column = "bracket" if filter_val == "Playoffs" else "kind"
+        query = f"SELECT * FROM matches WHERE region=? AND {column}=? AND winner_id IS NULL"
+        sql_matches = self.db.fetch_all(query, (region, filter_val))
+        if not sql_matches:
+            # print(f"No match found for region: {region} and filter: {filter_val}")
+            return None
+        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
+
     def match_id_non_winner_from_params(self, **filters) -> int | None:
         conditions = " AND ".join(f"{key}=?" for key in filters.keys())
         vals = tuple(filters.values())
