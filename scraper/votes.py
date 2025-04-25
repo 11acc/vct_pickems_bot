@@ -38,6 +38,12 @@ def scrape_vlr_bracket_votes(soup, player_id: int, event_id: int, region: str) -
 
             team_ids.append(team_id)
 
+        # Check if we got a chosen team id
+        if not chosen_team_id:
+            print(f"No winner selected, no votes, exiting")
+            skip_match = True
+            break
+
         # If no detected team, skip a_tag_match
         if skip_match:
             continue
