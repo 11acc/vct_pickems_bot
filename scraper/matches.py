@@ -3,6 +3,8 @@
 
 from bs4 import BeautifulSoup
 from datetime import datetime
+from dateutil import tz
+from dateutil.parser import parse
 
 from .core import request_response
 from db.db_instance import db
@@ -10,6 +12,11 @@ from db.queries import db_logic
 from db.entity_classes import Match
 from utils.bracket_assigner import compute_playoff_bracket_id
 
+
+def convert_time(input_time: str) -> str:
+    to_zone = tz.gettz('America/Scoresbysund')
+    standard_time = input_time.astimezone(to_zone)
+    return standard_time.strftime('%H:%M:%S')
 
 def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
     response = request_response(url)
@@ -68,6 +75,9 @@ def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
             extracted_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
             time_obj = datetime.strptime(extracted_time, '%I:%M %p')
             match_time = datetime.strftime(time_obj, '%H:%M:%S')
+            # Convert time to deal with annoying matches overflowing days
+            time_parsed = parse(match_time)
+            match_time = convert_time(time_parsed)
 
             # Obtain match bracket and kind
             match_type_raw = a_tag_match.find("div", class_="match-item-event").text.split("\n")
