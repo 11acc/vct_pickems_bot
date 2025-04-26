@@ -88,9 +88,11 @@ def scrape_vlr_bracket_votes(soup, player_id: int, event_id: int, region: str) -
             # If the team choice has changed, update the vote in the DB
             if voted_team_id != chosen_team_id:
                 db.update_vote_choice(existing_vote_id, chosen_team_id)
+                print(f"Vote id: {existing_vote_id}, updating choice: {existing_vote_id} -> ({chosen_team_id}")
         else:
             # Vote doesn't exist, insert it.
             db.add_entry("votes", NewVote)
+            print(f"New votes recorded: {NewVote}")
 
 def scrape_vlr_subseries_votes(soup, player_id: int, event_id: int) -> None:
     for container in soup.find_all("div", class_="pickem-subseries-container"):
@@ -140,9 +142,11 @@ def scrape_vlr_subseries_votes(soup, player_id: int, event_id: int) -> None:
                 # If the team choice has changed, update the vote in the DB
                 if voted_team_id != chosen_team_id:
                     db.update_vote_choice(existing_vote_id, chosen_team_id)
+                    print(f"Vote id: {existing_vote_id}, updating choice: {existing_vote_id} -> ({chosen_team_id}")
             else:
                 # Vote doesn't exist, insert it.
                 db.add_entry("votes", NewVote)
+                print(f"New votes recorded: {NewVote}")
 
 def scrape_vlr_votes(player_id: int, event_id: int, region: str, url: str) -> None:
     response = request_response(url)
