@@ -39,12 +39,13 @@ class Event():
         , "Masters": 2
     }
 
-    def __init__(self, event_id: int, kind: str, loc: str, year: int, ongoing: bool) -> None:
+    def __init__(self, event_id: int, kind: str, loc: str, year: int, ongoing: bool, bracket_type: str) -> None:
         self.event_id = event_id
         self.kind = kind
         self.loc = loc
         self.year = year
         self.ongoing = ongoing
+        self.bracket_type = bracket_type
 
     def __repr__(self) -> str:
         return f'VCT {self.year} : {self.kind} {self.loc}'
