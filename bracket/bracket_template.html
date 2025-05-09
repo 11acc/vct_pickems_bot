@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Bracket</title>
+    <style>
+        /* === INLINE BRACKET CSS === */
+        .event-brackets-container { padding:15px 20px; padding-bottom:25px; padding-right:150px; overflow-x:auto; }
+        .bracket-container { display:flex; padding:10px 0; }
+        .bracket-col { margin-right:56px; }
+        .bracket-col-label { margin-bottom:15px; color:#444; font-size:11px; font-weight:700; text-align:center; }
+        .bracket-col-label.mod-spacing { margin-top:45px; }
+        .bracket-col-label.mod-spacing.mod-3 { margin-top:140px; }
+        .bracket-col-label.mod-spacing.mod-4 { margin-top:350px; }
+        .bracket-col-label.mod-spacing.mod-5 { margin-top:780px; }
+        .bracket-row { position:relative; }
+        .bracket-item { display:block; position:relative; margin-bottom:31px; font-size:11px; border:2px solid #aaa; border-radius:3px; }
+        .bracket-item.mod-last { margin-bottom:0!important; }
+        .bracket-item.mod-empty { border:2px solid transparent; height:70px; }
+        .bracket-item-team { display:flex; justify-content:space-between; width:140px; border-top:1px solid #ccc; }
+        .bracket-item-team.mod-first { border-top:0; border-bottom:1px solid #ccc; }
+        .bracket-item-team.mod-winner { background:#cee9d3; font-weight:700; }
+        .bracket-item-team-name { display:flex; align-items:center; height:32px; }
+        .team-icon { font-size:20px; margin:0 5px; }
+        .bracket-item-team-name span { width:75px; padding:5px 0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+        .bracket-item-team-score { flex:0 0 32px; display:flex; align-items:center; justify-content:center; height:32px; border-left:1px solid #ccc; }
+        .bracket-item-status { position:absolute; bottom:-22px; left:0; width:100%; height:15px; line-height:15px; font-size:11px; padding-left:8px; display:flex; justify-content:space-between; }
+        .bracket-item-line { position:absolute; right:-30px; top:32px; width:30px; height:31px; border:2px solid #aaa; border-left:0; border-bottom:0; border-radius:0 3px 0 0; }
+        .bracket-item-line:after { content:''; position:absolute; right:-30px; bottom:-4px; width:30px; height:4px; border:2px solid #aaa; border-top:0; border-right:0; border-radius:0 0 0 3px; }
+        .bracket-item-line.mod-up { top:3px; border-top:0; border-bottom:2px solid #aaa; border-radius:0 0 3px 0; }
+        .bracket-item-line.mod-up:after { top:-4px; border-top:2px solid #aaa; border-bottom:0; border-radius:3px 0 0 0; }
+        /* per-column offsets (upper bracket) */
+        .bracket-container.mod-upper .bracket-col.mod-1 { padding-top:0 }
+        .bracket-container.mod-upper .bracket-col.mod-2 { padding-top:50px }
+        .bracket-container.mod-upper .bracket-col.mod-3 { padding-top:150px }
+        .bracket-container.mod-upper .bracket-col.mod-4 { padding-top:351px }
+        /* per-column offsets (lower bracket) */
+        .bracket-container.mod-lower .bracket-col.mod-1 { padding-top:49px }
+        .bracket-container.mod-lower .bracket-col.mod-2 { padding-top:0 }
+        .bracket-container.mod-lower .bracket-col.mod-3 { padding-top:50px }
+        .bracket-container.mod-lower .bracket-col.mod-4 { padding-top:0 }
+    </style>
+</head>
+<body>
+    <div class="event-brackets-container">
+        <!-- UPPER BRACKET -->
+        <div class="bracket-container mod-upper">
+            {% for col in upper %}
+            <div class="bracket-col mod-{{col.colIndex}}">
+                <div class="bracket-col-label {{col.labelClass}}">{{col.label}}</div>
+                {% for m in col.matches %}
+                <div class="bracket-row mod-{{m.rowIndex}}">
+                    <span class="bracket-item {% if m.isLast %}mod-last{% endif %}">
+                        <!-- Team A -->
+                        <div class="bracket-item-team mod-first {% if m.teamA.winner %}mod-winner{% endif %}">
+                            <div class="bracket-item-team-name">
+                                <span class="team-icon">{{m.teamA.emoji}}</span><span>{{m.teamA.name}}</span>
+                            </div>
+                            <div class="bracket-item-team-score">{{m.teamA.score}}</div>
+                        </div>
+                        <!-- Team B -->
+                        <div class="bracket-item-team {% if m.teamB.winner %}mod-winner{% endif %}">
+                            <div class="bracket-item-team-name">
+                                <span class="team-icon">{{m.teamB.emoji}}</span><span>{{m.teamB.name}}</span>
+                            </div>
+                            <div class="bracket-item-team-score">{{m.teamB.score}}</div>
+                        </div>
+                        <div class="bracket-item-status">Points: {{m.points}} / {{m.max}}</div>
+                        <!-- line to next -->
+                        {% if m.line == 'up' %}
+                        <div class="bracket-item-line mod-up"></div>
+                        {% elif m.line == 'straight' %}
+                        <div class="bracket-item-line mod-straight"></div>
+                        {% else %}
+                        <div class="bracket-item-line"></div>
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <!-- LOWER BRACKET -->
+        <div class="bracket-container mod-lower">
+            {% for col in lower %}
+            <div class="bracket-col mod-{{col.colIndex}}">
+                <div class="bracket-col-label {{col.labelClass}}">{{col.label}}</div>
+                {% for m in col.matches %}
+                <div class="bracket-row mod-{{m.rowIndex}}">
+                    <span class="bracket-item {% if m.isLast %}mod-last{% endif %}">
+                        <div class="bracket-item-team mod-first {% if m.teamA.winner %}mod-winner{% endif %}">
+                            <div class="bracket-item-team-name">
+                                <span class="team-icon">{{m.teamA.emoji}}</span><span>{{m.teamA.name}}</span>
+                            </div>
+                            <div class="bracket-item-team-score">{{m.teamA.score}}</div>
+                        </div>
+                        <div class="bracket-item-team {% if m.teamB.winner %}mod-winner{% endif %}">
+                            <div class="bracket-item-team-name">
+                                <span class="team-icon">{{m.teamB.emoji}}</span><span>{{m.teamB.name}}</span>
+                            </div>
+                            <div class="bracket-item-team-score">{{m.teamB.score}}</div>
+                        </div>
+                        <div class="bracket-item-status">Points: {{m.points}} / {{m.max}}</div>
+                        {% if m.line == 'up' %}
+                        <div class="bracket-item-line mod-up"></div>
+                        {% elif m.line == 'straight' %}
+                        <div class="bracket-item-line mod-straight"></div>
+                        {% else %}
+                        <div class="bracket-item-line"></div>
+                        {% endif %}
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+
+</html>
