@@ -3,8 +3,7 @@
     <html>
     <head>
         <style>
-            
-*, *:before, *:after {
+            *, *:before, *:after {
     box-sizing: inherit;
 }
 
@@ -43,10 +42,8 @@ body {
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
     color: #333;
-    background-color: #c6c6c6;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
-    /* overflow-y: hidden; */
     -webkit-text-size-adjust: 100%;
     box-sizing: border-box;
 }
@@ -59,19 +56,12 @@ body {
 .wrapper {
     width: auto;
     min-width: 320px;
-    max-width: 1160px;
     position: relative;
-    padding: 0 22px;
-    padding-top: 24px;
-    padding-bottom: 60px;
-    margin: 0 auto;
-    background: #dadadc;
-    box-shadow: 0 0 2px rgba(0, 0, 0, 0.22);
     min-height: calc(100vh - 55px - 44px - 1px);
 }
 
 .col-container {
-    display: flex;
+    /* display: flex; */
     flex-wrap: wrap;
 }
 .col {
@@ -95,12 +85,9 @@ body {
 }
 
 .wf-card {
-    background: #fafafa;
     overflow: hidden;
-    margin-bottom: 22px;
     position: relative;
     border: 0 !important;
-    box-shadow: 0 1px 3px -1px rgba(0, 0, 0, 0.4);
     display: block;
 }
 
@@ -111,9 +98,7 @@ body {
     overflow: hidden;
 }
 .event-brackets-container {
-    padding: 15px 20px;
-    padding-bottom: 25px;
-    padding-right: 150px;
+    padding: 20px;
     overflow-x: auto;
 }
 .bracket-container {
@@ -307,7 +292,6 @@ body {
 .bracket-container.mod-upper .bracket-col.mod-2 .bracket-item-line.mod-up {
     top: -49px;
 }
-
         </style>
     </head>
     <body>
@@ -320,12 +304,12 @@ body {
                                 <div class="event-brackets-container mod-locked">
     <div class="bracket-container mod-upper mod-compact">
         <div class="bracket-col mod-1">
-            <div class="bracket-col-label">
-                Upper Round 1
-            </div>
         
             <div class="bracket-row mod-spacing">
                 <div class="bracket-item mod-empty"></div>
+            </div>
+            <div class="bracket-col-label">
+                Upper Round 1
             </div>
             
             <div class="bracket-row mod-1">
@@ -348,7 +332,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: 0 / 5</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -379,7 +363,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: 0 / 5</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -387,10 +371,11 @@ body {
             </div>
             </div>
         <div class="bracket-col mod-2">
+        
             <div class="bracket-col-label">
                 Upper Semifinals
             </div>
-        
+            
             <div class="bracket-row mod-1">
                 <span class="bracket-item mod-pickem " title="Team Heretics vs. BBL Esports" 
                       data-curr-id="211" data-next-id="311" data-next-pos="0" 
@@ -411,7 +396,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 10</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-down"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -438,7 +423,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 10</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -446,10 +431,11 @@ body {
             </div>
             </div>
         <div class="bracket-col mod-3">
+        
             <div class="bracket-col-label">
                 Upper Final
             </div>
-        
+            
             <div class="bracket-row mod-1">
                 <span class="bracket-item mod-pickem mod-last" title=" vs. " 
                       data-curr-id="311" data-next-id="411" data-next-pos="0" 
@@ -470,7 +456,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 15</div>
+                    <div class="bracket-item-status"></div>
                     
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -478,10 +464,11 @@ body {
             </div>
             </div>
         <div class="bracket-col mod-3">
+        
             <div class="bracket-col-label">
                 Grand Final
             </div>
-        
+            
             <div class="bracket-row mod-1">
                 <span class="bracket-item mod-pickem mod-last" title=" vs. " 
                       data-curr-id="411" data-next-id="" data-next-pos="" 
@@ -502,7 +489,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 50</div>
+                    <div class="bracket-item-status"></div>
                     
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -534,7 +521,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: 0 / 10</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -561,7 +548,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: 0 / 10</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -593,7 +580,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 20</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-down"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -620,7 +607,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 20</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -652,7 +639,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 30</div>
+                    <div class="bracket-item-status"></div>
                     <div class="bracket-item-line mod-up"></div>
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">
@@ -684,7 +671,7 @@ body {
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status">Points: ? / 40</div>
+                    <div class="bracket-item-status"></div>
                     
                     <input type="hidden" class="bracket-item-pick mod-winner" value="">
                     <input type="hidden" class="bracket-item-pick mod-loser" value="">

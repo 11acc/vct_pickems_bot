@@ -10,14 +10,12 @@ bracket_data = {
                 {
                     "team1": {"name": "BBL Esports", "logo": "https://owcdn.net/img/65b8ccef5e273.png"},
                     "team2": {"name": "Natus Vincere", "logo": "https://owcdn.net/img/62a4109ddbd7f.png"},
-                    "winner": "team1",
-                    "points": "0 / 5"
+                    "winner": "team1"
                 },
                 {
                     "team1": {"name": "FNATIC", "logo": "https://owcdn.net/img/62a40cc2b5e29.png"},
                     "team2": {"name": "FUT Esports", "logo": "https://owcdn.net/img/632be9976b8fe.png"},
-                    "winner": "team1",
-                    "points": "0 / 5"
+                    "winner": "team1"
                 }
             ]
         },
@@ -27,14 +25,12 @@ bracket_data = {
                 {
                     "team1": {"name": "Team Heretics", "logo": "https://owcdn.net/img/637b755224c12.png"},
                     "team2": {"name": "BBL Esports", "logo": "https://owcdn.net/img/65b8ccef5e273.png"},
-                    "winner": "",
-                    "points": "? / 10"
+                    "winner": ""
                 },
                 {
                     "team1": {"name": "Team Liquid", "logo": "https://owcdn.net/img/640c381f0603f.png"},
                     "team2": {"name": "FNATIC", "logo": "https://owcdn.net/img/62a40cc2b5e29.png"},
-                    "winner": "",
-                    "points": "? / 10"
+                    "winner": ""
                 }
             ]
         },
@@ -44,8 +40,7 @@ bracket_data = {
                 {
                     "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
                     "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": "",
-                    "points": "? / 15"
+                    "winner": ""
                 }
             ]
         },
@@ -55,8 +50,7 @@ bracket_data = {
                 {
                     "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
                     "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": "",
-                    "points": "? / 50"
+                    "winner": ""
                 }
             ]
         }
@@ -68,14 +62,12 @@ bracket_data = {
                 {
                     "team1": {"name": "Natus Vincere", "logo": "https://owcdn.net/img/62a4109ddbd7f.png"},
                     "team2": {"name": "Karmine Corp", "logo": "https://owcdn.net/img/627403a0d9e48.png"},
-                    "winner": "team1",
-                    "points": "0 / 10"
+                    "winner": "team1"
                 },
                 {
                     "team1": {"name": "FUT Esports", "logo": "https://owcdn.net/img/632be9976b8fe.png"},
                     "team2": {"name": "Team Vitality", "logo": "https://owcdn.net/img/6466d79e1ed40.png"},
-                    "winner": "team1",
-                    "points": "0 / 10"
+                    "winner": "team1"
                 }
             ]
         },
@@ -85,14 +77,12 @@ bracket_data = {
                 {
                     "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
                     "team2": {"name": "Natus Vincere", "logo": "https://owcdn.net/img/62a4109ddbd7f.png"},
-                    "winner": "",
-                    "points": "? / 20"
+                    "winner": ""
                 },
                 {
                     "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
                     "team2": {"name": "FUT Esports", "logo": "https://owcdn.net/img/632be9976b8fe.png"},
-                    "winner": "",
-                    "points": "? / 20"
+                    "winner": ""
                 }
             ]
         },
@@ -102,8 +92,7 @@ bracket_data = {
                 {
                     "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
                     "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": "",
-                    "points": "? / 30"
+                    "winner": ""
                 }
             ]
         },
@@ -113,8 +102,7 @@ bracket_data = {
                 {
                     "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
                     "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": "",
-                    "points": "? / 40"
+                    "winner": ""
                 }
             ]
         }
@@ -122,9 +110,11 @@ bracket_data = {
 }
 
 
-bracket = generate_bracket_html(bracket_data)
+# bracket = generate_bracket_html(bracket_data)
 
-with open('bracket.html', 'w', encoding='utf-8') as f:
-    f.write(bracket)
+# with open('bracket.html', 'w', encoding='utf-8') as f:
+#     f.write(bracket)
 
-print("Saved the thing")
+
+
+print("Did the thing")
