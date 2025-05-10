@@ -1,0 +1,604 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            
+html, body {
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    color: #333;
+    min-width: 1160px;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+/* Core bracket styling */
+.bracket-container {
+  display: flex;
+}
+
+.bracket-col {
+  margin-right: 56px;
+}
+
+.bracket-col-label {
+  margin-bottom: 15px;
+  color: #444;
+  font-size: 11px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.bracket-row {
+  position: relative;
+}
+
+.bracket-item {
+  right: 0;
+  font-size: 11px;
+  font-weight: 400;
+  display: block;
+  margin-bottom: 31px;
+  position: relative;
+  border: 2px solid #aaa;
+  border-radius: 3px;
+  z-index: 1;
+}
+
+/* Team boxes */
+.bracket-item-team {
+  display: flex;
+  justify-content: space-between;
+  width: 140px;
+  border-top: 1px solid #ccc;
+}
+
+.bracket-item-team.mod-winner {
+  background: #cee9d3;
+  font-weight: 700;
+}
+
+.bracket-item-team.mod-loser {
+  /* No special styling for losers except when selected in pickem */
+}
+
+.bracket-item-team.mod-first {
+  border-bottom: 1px solid #ccc;
+  border-top: 0;
+}
+
+/* Team name and logo */
+.bracket-item-team-name {
+  height: 32px;
+  display: flex;
+  align-items: center;
+}
+
+.bracket-item-team-name span {
+  width: 75px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 5px 0;
+}
+
+.bracket-item img {
+  width: 20px;
+  height: 20px;
+  margin: 0 5px;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Team score display */
+.bracket-item-team-score {
+  flex: 0 0 32px;
+  height: 32px;
+  justify-content: center;
+  border-left: 1px solid #ccc;
+  align-items: center;
+  display: flex;
+}
+
+/* Bracket lines connecting matches */
+.bracket-item-line {
+  position: absolute;
+  width: 30px;
+  height: 31px;
+  right: -30px;
+  top: 32px;
+  border: 2px solid #aaa;
+  border-left: 0;
+  border-bottom: 0;
+  border-radius: 0 3px 0 0;
+}
+
+.bracket-item-line:after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  height: 4px;
+  right: -30px;
+  width: 30px;
+  border: 2px solid #aaa;
+  border-top: 0;
+  border-right: 0;
+  border-radius: 0 0 0 3px;
+}
+
+.bracket-item-line.mod-up {
+  border-top: 0;
+  border-bottom: 2px solid #aaa;
+  top: 3px;
+  border-radius: 0 0 3px 0;
+}
+
+.bracket-item-line.mod-up:after {
+  top: -4px;
+  border-top: 2px solid #aaa;
+  border-bottom: 0;
+  border-radius: 3px 0 0 0;
+}
+
+/* Compact bracket mode (reduces spacing) */
+.bracket-container.mod-compact .bracket-col {
+  margin-right: 23px;
+}
+
+.bracket-container.mod-compact .bracket-item-line {
+  width: 13px;
+  right: -13px;
+}
+
+.bracket-container.mod-compact .bracket-item-line:after {
+  right: -15px;
+  width: 15px;
+}
+
+/* Last item in a column */
+.bracket-item.mod-last {
+  margin-bottom: 0 !important;
+}
+
+/* Pickem specific styles */
+.bracket-item.mod-pickem .bracket-item-team:hover {
+  background: #e8f5fc;
+  cursor: pointer;
+}
+
+.bracket-item-status {
+  position: absolute;
+  bottom: -22px;
+  left: 0;
+  font-size: 11px;
+  padding-left: 8px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  height: 15px;
+  line-height: 15px;
+}
+
+/* Draggable container */
+.event-brackets-container {
+  padding: 15px 20px;
+  padding-bottom: 25px;
+  padding-right: 150px;
+  overflow-x: auto;
+}
+
+.drag {
+  width: 220%;
+  cursor: grab;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -khtml-user-select: none;
+  user-select: none;
+}
+
+/* Upper bracket specific */
+.bracket-container.mod-upper .bracket-col.mod-2 {
+  padding-top: 50px;
+}
+
+.bracket-container.mod-upper .bracket-col.mod-2 .bracket-item {
+  margin-bottom: 132px;
+}
+
+.bracket-container.mod-upper .bracket-col.mod-2 .bracket-item-line {
+  height: 83px;
+}
+
+.bracket-container.mod-upper .bracket-col.mod-2 .bracket-item-line.mod-up {
+  top: -49px;
+}
+
+/* Lower bracket specific */
+.bracket-container.mod-lower .bracket-col.mod-2 .bracket-item {
+  margin-bottom: 32px;
+}
+
+        </style>
+    </head>
+    <body>
+        <div class="drag">
+            <div class="event-brackets-container mod-locked">
+    <div class="bracket-container mod-upper mod-compact">
+        <div class="bracket-col mod-1">
+            <div class="bracket-col-label">
+                Upper Round 1
+            </div>
+        
+            <div class="bracket-row mod-spacing">
+                <div class="bracket-item mod-empty"></div>
+            </div>
+            
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="BBL vs. NAVI" 
+                      data-curr-id="111" data-next-id="211" data-next-pos="1" 
+                      data-next-id2="112" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first mod-winner" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/65b8ccef5e273.png">
+                            <span>BBL</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-loser" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a4109ddbd7f.png">
+                            <span>NAVI</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: 0 / 5</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919400" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919400" value="">
+                </span>
+            </div>
+            
+                <div class="bracket-row mod-spacing">
+                    <div class="bracket-item mod-empty"></div>
+                </div>
+                
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title="FNATIC vs. FUT" 
+                      data-curr-id="121" data-next-id="221" data-next-pos="1" 
+                      data-next-id2="122" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first mod-winner" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a40cc2b5e29.png">
+                            <span>FNATIC</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-loser" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/632be9976b8fe.png">
+                            <span>FUT</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: 0 / 5</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919401" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919401" value="">
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-2">
+            <div class="bracket-col-label">
+                Upper Semifinals
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="Team Heretics vs. BBL" 
+                      data-curr-id="211" data-next-id="311" data-next-pos="0" 
+                      data-next-id2="222" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/637b755224c12.png">
+                            <span>Team Heretics</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/65b8ccef5e273.png">
+                            <span>BBL</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 10</div>
+                    <div class="bracket-item-line mod-down"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919410" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919410" value="">
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title="Team Liquid vs. FNATIC" 
+                      data-curr-id="221" data-next-id="311" data-next-pos="1" 
+                      data-next-id2="212" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/640c381f0603f.png">
+                            <span>Team Liquid</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a40cc2b5e29.png">
+                            <span>FNATIC</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 10</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919411" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919411" value="">
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-3">
+            <div class="bracket-col-label">
+                Upper Final
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title=" vs. " 
+                      data-curr-id="311" data-next-id="411" data-next-pos="0" 
+                      data-next-id2="412" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 15</div>
+                    <div class="bracket-item-line mod-down"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919420" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919420" value="">
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-4">
+            <div class="bracket-col-label">
+                Grand Final
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title=" vs. " 
+                      data-curr-id="411" data-next-id="" data-next-pos="" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 50</div>
+                    <div class="bracket-item-line mod-down"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919430" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919430" value="">
+                </span>
+            </div>
+            </div></div><div class="bracket-container mod-lower">
+        <div class="bracket-col mod-1">
+            <div class="bracket-col-label">
+                Lower Round 1
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="NAVI vs. Karmine Corp"
+                      data-curr-id="112" data-next-id="212" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first mod-winner" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a4109ddbd7f.png">
+                            <span>NAVI</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-loser" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/627403a0d9e48.png">
+                            <span>Karmine Corp</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: 0 / 10</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919440" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919440" value="">
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title="FUT vs. Team Vitality"
+                      data-curr-id="122" data-next-id="222" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first mod-winner" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/632be9976b8fe.png">
+                            <span>FUT</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-loser" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/6466d79e1ed40.png">
+                            <span>Team Vitality</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: 0 / 10</div>
+                    <div class="bracket-item-line mod-down"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919441" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919441" value="">
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-2">
+            <div class="bracket-col-label">
+                Lower Round 2
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title=" vs. NAVI"
+                      data-curr-id="212" data-next-id="312" data-next-pos="0" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a4109ddbd7f.png">
+                            <span>NAVI</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 20</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919450" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919450" value="">
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title=" vs. FUT"
+                      data-curr-id="222" data-next-id="312" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/632be9976b8fe.png">
+                            <span>FUT</span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 20</div>
+                    <div class="bracket-item-line mod-down"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919451" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919451" value="">
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-3">
+            <div class="bracket-col-label">
+                Lower Round 3
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title=" vs. "
+                      data-curr-id="312" data-next-id="412" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 30</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919460" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919460" value="">
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-4">
+            <div class="bracket-col-label">
+                Lower Final
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title=" vs. "
+                      data-curr-id="412" data-next-id="411" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="/img/vlr/tmp/vlr.png">
+                            <span></span>
+                        </div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">Points: ? / 40</div>
+                    <div class="bracket-item-line mod-up"></div>
+                    <input type="hidden" class="bracket-item-pick mod-winner" name="bracket-item-id-winner-919470" value="">
+                    <input type="hidden" class="bracket-item-pick mod-loser" name="bracket-item-id-loser-919470" value="">
+                </span>
+            </div>
+            </div></div>
+            </div>
+        </div>
+    </body>
+    </html>
+    
