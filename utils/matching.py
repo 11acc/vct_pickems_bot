@@ -2,12 +2,17 @@
 # :: Methods to match user input to propper db entry
 
 from fuzzywuzzy import process
+from datetime import datetime
 
 from db.db_instance import db
 
 
 # Fuzzy match the user input event to the best match in the db
-def find_best_event_match(input_event: str, year: int) -> str | None:
+def find_best_event_match(input_event: str, year: int = None) -> str | None:
+    # If no year input, default to current
+    if not year:
+        year = datetime.now().year
+
     events_in_year = db.get_events_in_year(year)
     if not events_in_year:
         return None

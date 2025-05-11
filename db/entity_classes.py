@@ -21,10 +21,11 @@ class Player():
         return hash((self.player_id, self.name, self.vlr_user, self.local))
 
 class Team():
-    def __init__(self, team_id: int, name: str, short_name: str) -> None:
+    def __init__(self, team_id: int, name: str, short_name: str, logo_url: str) -> None:
         self.team_id = team_id
         self.name = name
         self.short_name = short_name
+        self.logo_url = logo_url
     
     def __repr__(self) -> str:
         return f'Team({self.short_name})'
