@@ -1,5 +1,5 @@
 
-# :: Method to render the vlr bracket with any input data
+# :: Render vlr bracket with any input data
 
 
 def generate_bracket_html(bracket_data: dict) -> str | None:
