@@ -3,6 +3,8 @@
 
 import os
 
+# Generating other brackets breaks it, lines and spacing are not the same
+# deeper generation customisation is necessary
 
 def generate_bracket_html(bracket_data: dict) -> str | None:
     if not bracket_data:

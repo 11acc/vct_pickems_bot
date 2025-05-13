@@ -17,6 +17,8 @@ def bracket_for_event(event_id: int, region: str = None, year: int = None) -> st
     bracket_data = generate_bracket_config(event_id, region)
     bracket_html = generate_bracket_html(bracket_data)
 
-    # data is obtained
+    # no region also works
+    # get vote data and modify html
+
     # call method to conver to image
     # return image path? upload url? ...?
