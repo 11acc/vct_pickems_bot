@@ -71,6 +71,13 @@ class Query_DB():
     def subevent_region_pickem_urls_from_event_id(self, event_id: int) -> list[tuple] | None:
         return self.get_subevent_data_from_event_id(event_id, "subev_pickem_url")
 
+    def check_event_subs(self, event_id: int) -> bool | None:
+        query = "SELECT subev_id FROM sub_event WHERE subev_parent_id=?"
+        sql_event = db.fetch_all(query, (event_id,))
+        if not sql_event:
+            print(f"No sub events for event with id: {event_id}")
+            return None
+        return True if len(sql_event) > 1 else False
 
     # /// Points queries
     def point_sets_from_filters(self, **filters) -> list[Points] | None:

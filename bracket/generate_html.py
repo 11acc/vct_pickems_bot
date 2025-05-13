@@ -1,6 +1,8 @@
 
 # :: Render vlr bracket with any input data
 
+import os
+
 
 def generate_bracket_html(bracket_data: dict) -> str | None:
     if not bracket_data:
@@ -8,15 +10,17 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
         return None
 
     # Read css from file
-    css_path = "./style.css"
     css_content = ""
-    try:
-        with open(css_path, "r") as css_file:
-            css_content = css_file.read()
-    except FileNotFoundError:
-        print(f"css file not found, reading from path: {css_path}")
 
-    # Build html    
+    # Check if file exists
+    css_path = os.path.join(os.path.dirname(__file__), "style.css")
+    if not os.path.exists(css_path):
+        raise FileNotFoundError(f"Template file not found at: {css_path}")
+
+    with open(css_path, "r") as css_file:
+        css_content = css_file.read()
+
+    # Build html
     html = f'''
     <!DOCTYPE html>
     <html>
@@ -137,7 +141,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                       data-next-id2="{next_id2}" data-next-pos2="{next_pos2}">
                     <div class="bracket-item-team {team1_class}" data-curr-pos="0">
                         <div class="bracket-item-team-name">
-                            <img src="{team1['logo']}">
+                            <img src="{team1['logo_url']}">
                             <span>{team1['name']}</span>
                         </div>
                         <div class="bracket-item-team-score">
@@ -145,7 +149,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                     </div>
                     <div class="bracket-item-team {team2_class}" data-curr-pos="1">
                         <div class="bracket-item-team-name">
-                            <img src="{team2['logo']}">
+                            <img src="{team2['logo_url']}">
                             <span>{team2['name']}</span>
                         </div>
                         <div class="bracket-item-team-score">
@@ -220,7 +224,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                       data-next-id2="{next_id2}" data-next-pos2="{next_pos2}">
                     <div class="bracket-item-team {team1_class}" data-curr-pos="0">
                         <div class="bracket-item-team-name">
-                            <img src="{team1['logo']}">
+                            <img src="{team1['logo_url']}">
                             <span>{team1['name']}</span>
                         </div>
                         <div class="bracket-item-team-score">
@@ -228,7 +232,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                     </div>
                     <div class="bracket-item-team {team2_class}" data-curr-pos="1">
                         <div class="bracket-item-team-name">
-                            <img src="{team2['logo']}">
+                            <img src="{team2['logo_url']}">
                             <span>{team2['name']}</span>
                         </div>
                         <div class="bracket-item-team-score">

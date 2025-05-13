@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 import discord
 from discord import app_commands
 from discord.ext import commands
-from datetime import datetime
 
 from db.db_instance import db
+from db.queries import db_logic
 from utils.emojis import get_vct_emoji
 from utils.matching import find_best_event_match
 from services.points_for_event import points_from_event
@@ -208,6 +208,7 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
             "massive whiff on that event selection brosky, no event with that name"
         )
         return
+    match_ev_id = db.get_event_id_from_name(input_event)
 
     # Validate region if provided
     if region:
@@ -218,14 +219,16 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
                 f"nice typo, region has to be one of: {', '.join(valid_regions)}"
             )
             return
-
-    # Validate year
-    if not year:
-        year = datetime.now().year
+    # If region wasn't provided but event requires it, throw error
+    if not db_logic.check_event_subs(match_ev_id):
+        await interaction.response.send_message(
+            "specify which region for selected event, or don't and read this again"
+        )
+        return
 
     ### BRACKET STUFF
     ### ???
-    bracket_formatted = None  # bracket_for_event(input_event, region, year)
+    bracket_formatted = None  # bracket_for_event(match_ev_id, region, year)
     if not bracket_formatted:
         await interaction.response.send_message(
             f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
