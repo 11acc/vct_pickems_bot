@@ -47,9 +47,9 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict | None:
                     match["team2"]["logo_url"] = match_obj.team2.logo_url
                     # Winner
                     if match_obj.winner_id is not None:
-                        match["winner"] = (match_obj.team1_id
+                        match["winner"] = ("team1"
                                           if match_obj.winner_id == match_obj.team1_id
-                                          else match_obj.team2_id
+                                          else "team2"
                                           if match_obj.winner_id == match_obj.team2_id
                                           else "")
                     else:

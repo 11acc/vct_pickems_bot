@@ -126,13 +126,11 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             next_pos2 = nav.get("next_pos2", "")
 
             team1_class = "mod-first"
+            team2_class = ""
             if winner == "team1":
                 team1_class += " mod-winner"
-            team2_class = ""
-            if winner == "team2":
+            elif winner == "team2":
                 team2_class += " mod-winner"
-            elif winner == "team1":
-                team2_class += " mod-loser"
 
             html += f'''
             <div class="bracket-row mod-{match_idx + 1}">

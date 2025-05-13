@@ -185,10 +185,10 @@ body {
     border-bottom: 1px solid #ccc;
     border-top: 0;
 }
-.bracket-item-team.mod-winner {
+/* .bracket-item-team.mod-winner {
     background: #cee9d3;
     font-weight: 700;
-}
+} */
 .bracket-item.mod-pickem .bracket-item-team.mod-winner {
     background: none;
     font-weight: 400;
@@ -206,6 +206,10 @@ body {
     border-left: 1px solid #ccc;
     align-items: center;
     display: flex;
+}
+.bracket-item-team.mod-winner .bracket-item-team-score {
+    background: #9966cc;  /* cf9fff */
+    border-left: 1px solid #aaa;
 }
 .bracket-item img {
     width: 20px;
