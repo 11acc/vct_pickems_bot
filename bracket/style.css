@@ -36,7 +36,10 @@ body {
     display: block;
     font-family: 'Roboto', sans-serif;
     font-size: 12px;
-    color: #333;
+    /* background: none;
+    color: #333; */
+    background: #40474f;
+    color: #d4d4d4;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
@@ -107,10 +110,11 @@ body {
 /* /// LABELS , SPACING */
 .bracket-col-label {
     margin-bottom: 15px;
-    color: #444;
     font-size: 11px;
     font-weight: 700;
     text-align: center;
+    /* color: #444; */
+    color: #d4d4d4;
 }
 .bracket-row {
     position: relative;
@@ -126,7 +130,9 @@ body {
     display: block;
     margin-bottom: 31px;
     position: relative;
-    border: 2px solid #aaa;
+    /* border: 2px solid #aaa; */
+    border: 2px solid #acadaf;
+    color: #d4d4d4;
     border-radius: 3px;
     z-index: 1;
 }
@@ -180,15 +186,12 @@ body {
     justify-content: space-between;
     width: 140px;
     border-top: 1px solid #ccc;
+    border-color: #929496;
 }
 .bracket-item-team.mod-first {
     border-bottom: 1px solid #ccc;
     border-top: 0;
 }
-/* .bracket-item-team.mod-winner {
-    background: #cee9d3;
-    font-weight: 700;
-} */
 .bracket-item.mod-pickem .bracket-item-team.mod-winner {
     background: none;
     font-weight: 400;
@@ -204,6 +207,7 @@ body {
     height: 32px;
     justify-content: center;
     border-left: 1px solid #ccc;
+    border-color: #929496;
     align-items: center;
     display: flex;
 }
@@ -249,6 +253,7 @@ body {
     right: -30px;
     top: 32px;
     border: 2px solid #aaa;
+    border-color: #acadaf;
     border-left: 0;
     border-bottom: 0;
     border-radius: 0 3px 0 0;
@@ -261,6 +266,7 @@ body {
     right: -30px;
     width: 30px;
     border: 2px solid #aaa;
+    border-color: #acadaf;
     border-top: 0;
     border-right: 0;
     border-radius: 0 0 0 3px;
@@ -276,12 +282,14 @@ body {
 .bracket-item-line.mod-up {
     border-top: 0;
     border-bottom: 2px solid #aaa;
+    border-color: #acadaf;
     top: 3px;
     border-radius: 0 0 3px 0;
 }
 .bracket-item-line.mod-up:after {
     top: -4px;
     border-top: 2px solid #aaa;
+    border-color: #acadaf;
     border-bottom: 0;
     border-radius: 3px 0 0 0;
 }
