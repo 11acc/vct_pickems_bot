@@ -1,117 +1,58 @@
 
 # :: Builds bracket configuration from event information
 
+import os
+import json
+
 from db.db_instance import db
 from db.queries import db_logic
 
 
+def generate_bracket_config(event_id: int, region: str = None) -> dict | None:
+    # Find out which bracket type the event has
+    bracket_type = db.get_bracket_type_from_event_id(event_id)
+    if not bracket_type:
+        print(f"No bracket type for event with id: {event_id}")
 
+    # Use absolute path to templates directory
+    templates_dir = os.path.join(os.path.dirname(__file__), "templates")
+    template_path = os.path.join(templates_dir, f"{bracket_type}.json")
 
+    # Check if file exists
+    if not os.path.exists(template_path):
+        raise FileNotFoundError(f"Template file not found at: {template_path}")
 
-bracket_data = {
-    "upper": [
-        {
-            "round": "Upper Round 1",
-            "matches": [
-                {
-                    "team1": {"name": "BBL Esports", "logo": "https://owcdn.net/img/65b8ccef5e273.png"},
-                    "team2": {"name": "Natus Vincere", "logo": "https://owcdn.net/img/62a4109ddbd7f.png"},
-                    "winner": "team1"
-                },
-                {
-                    "team1": {"name": "FNATIC", "logo": "https://owcdn.net/img/62a40cc2b5e29.png"},
-                    "team2": {"name": "FUT Esports", "logo": "https://owcdn.net/img/632be9976b8fe.png"},
-                    "winner": "team1"
-                }
-            ]
-        },
-        {
-            "round": "Upper Semifinals",
-            "matches": [
-                {
-                    "team1": {"name": "Team Heretics", "logo": "https://owcdn.net/img/637b755224c12.png"},
-                    "team2": {"name": "BBL Esports", "logo": "https://owcdn.net/img/65b8ccef5e273.png"},
-                    "winner": ""
-                },
-                {
-                    "team1": {"name": "Team Liquid", "logo": "https://owcdn.net/img/640c381f0603f.png"},
-                    "team2": {"name": "FNATIC", "logo": "https://owcdn.net/img/62a40cc2b5e29.png"},
-                    "winner": ""
-                }
-            ]
-        },
-        {
-            "round": "Upper Final",
-            "matches": [
-                {
-                    "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": ""
-                }
-            ]
-        },
-        {
-            "round": "Grand Final",
-            "matches": [
-                {
-                    "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": ""
-                }
-            ]
-        }
-    ],
-    "lower": [
-        {
-            "round": "Lower Round 1",
-            "matches": [
-                {
-                    "team1": {"name": "Natus Vincere", "logo": "https://owcdn.net/img/62a4109ddbd7f.png"},
-                    "team2": {"name": "Karmine Corp", "logo": "https://owcdn.net/img/627403a0d9e48.png"},
-                    "winner": "team1"
-                },
-                {
-                    "team1": {"name": "FUT Esports", "logo": "https://owcdn.net/img/632be9976b8fe.png"},
-                    "team2": {"name": "Team Vitality", "logo": "https://owcdn.net/img/6466d79e1ed40.png"},
-                    "winner": "team1"
-                }
-            ]
-        },
-        {
-            "round": "Lower Round 2",
-            "matches": [
-                {
-                    "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "team2": {"name": "Natus Vincere", "logo": "https://owcdn.net/img/62a4109ddbd7f.png"},
-                    "winner": ""
-                },
-                {
-                    "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "team2": {"name": "FUT Esports", "logo": "https://owcdn.net/img/632be9976b8fe.png"},
-                    "winner": ""
-                }
-            ]
-        },
-        {
-            "round": "Lower Round 3",
-            "matches": [
-                {
-                    "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": ""
-                }
-            ]
-        },
-        {
-            "round": "Lower Final",
-            "matches": [
-                {
-                    "team1": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "team2": {"name": "", "logo": "/img/vlr/tmp/vlr.png"},
-                    "winner": ""
-                }
-            ]
-        }
-    ]
-}
+    # Load the template
+    with open(template_path, 'r', encoding='utf-8') as f:
+        bracket_data = json.load(f)
 
+    # Get all playoff matches for event
+    match_data = db_logic.match_objs_for_playoffs(event_id, region)
+    match_lookup = {match.playoff_bracket_id: match for match in match_data}
+
+    for section in ["upper", "lower"]:
+        for round_data in bracket_data[section]:
+            for match in round_data["matches"]:
+                # Find match through playoff id
+                b_id = match["playoff_bracket_id"]
+                if b_id in match_lookup:
+                    match_obj = match_lookup[b_id]
+                    # Team 1
+                    match["team1"]["team_id"] = match_obj.team1_id
+                    match["team1"]["name"] = match_obj.team1.name
+                    match["team1"]["logo_url"] = match_obj.team1.logo_url
+                    # Team 2
+                    match["team2"]["team_id"] = match_obj.team2_id
+                    match["team2"]["name"] = match_obj.team2.name
+                    match["team2"]["logo_url"] = match_obj.team2.logo_url
+                    # Winner
+                    if match_obj.winner_id is not None:
+                        match["winner"] = (match_obj.team1_id
+                                          if match_obj.winner_id == match_obj.team1_id
+                                          else match_obj.team2_id
+                                          if match_obj.winner_id == match_obj.team2_id
+                                          else "")
+                    else:
+                        match["winner"] = ""
+
+    return bracket_data

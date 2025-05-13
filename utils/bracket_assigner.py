@@ -6,14 +6,24 @@ from db.db_instance import db
 
 PLAYOFF_CONFIGS = {
     "8d22": {
-        "Upper Round 1":     ["111", "121"],
-        "Upper Semifinals":  ["211", "221"],
-        "Upper Final":       "311",
-        "Grand Final":       "411",
-        "Lower Round 1":     ["112", "122"],
-        "Lower Round 2":     ["222", "212"],
-        "Lower Round 3":     "312",
-        "Lower Final":       "412",
+        "Upper Round 1":       ["111", "121"],
+        "Upper Semifinals":    ["211", "221"],
+        "Upper Final":         "311",
+        "Grand Final":         "411",
+        "Lower Round 1":       ["112", "122"],
+        "Lower Round 2":       ["222", "212"],
+        "Lower Round 3":       "312",
+        "Lower Final":         "412",
+    },
+    "8d00": {
+        "Upper Quarterfinals": ["111", "121", "131", "141"],
+        "Upper Semifinals":    ["211", "221"],
+        "Upper Final":         "311",
+        "Grand Final":         "411",
+        "Lower Round 1":       ["112", "122"],
+        "Lower Round 2":       ["222", "212"],
+        "Lower Round 3":       "312",
+        "Lower Final":         "412",
     },
     # add more event-level bracket_type entries here...
 }

@@ -1,0 +1,118 @@
+{
+    "upper": [
+        {
+            "round": "Upper Round 1",
+            "matches": [
+                {
+                    "playoff_bracket_id": "111",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                },
+                {
+                    "playoff_bracket_id": "121",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        },
+        {
+            "round": "Upper Semifinals",
+            "matches": [
+                {
+                    "playoff_bracket_id": "211",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                },
+                {
+                    "playoff_bracket_id": "221",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        },
+        {
+            "round": "Upper Final",
+            "matches": [
+                {
+                    "playoff_bracket_id": "311",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        },
+        {
+            "round": "Grand Final",
+            "matches": [
+                {
+                    "playoff_bracket_id": "411",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        }
+    ],
+    "lower": [
+        {
+            "round": "Lower Round 1",
+            "matches": [
+                {
+                    "playoff_bracket_id": "112",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                },
+                {
+                    "playoff_bracket_id": "122",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        },
+        {
+            "round": "Lower Round 2",
+            "matches": [
+                {
+                    "playoff_bracket_id": "212",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                },
+                {
+                    "playoff_bracket_id": "222",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        },
+        {
+            "round": "Lower Round 3",
+            "matches": [
+                {
+                    "playoff_bracket_id": "312",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        },
+        {
+            "round": "Lower Final",
+            "matches": [
+                {
+                    "playoff_bracket_id": "412",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": ""
+                }
+            ]
+        }
+    ]
+}
