@@ -155,7 +155,11 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status"></div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons">
+                            </div>
+                            <span></span>
+                    </div>
                     '''
             if mod_line:
                 html += f'<div class="bracket-item-line {mod_line}"></div>'
@@ -238,7 +242,11 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
-                    <div class="bracket-item-status"></div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons">
+                            </div>
+                            <span></span>
+                    </div>
                     '''
             if mod_line:
                 html += f'<div class="bracket-item-line {mod_line}"></div>'

@@ -109,7 +109,7 @@ body {
 
 /* /// LABELS , SPACING */
 .bracket-col-label {
-    margin-bottom: 15px;
+    margin-bottom: 30px;
     font-size: 11px;
     font-weight: 700;
     text-align: center;
@@ -229,21 +229,42 @@ body {
     padding: 5px 0;
 }
 /* /// // STATUS */
-.bracket-item.mod-pickem .bracket-item-status {
-    display: block;
-}
 .bracket-item-status {
-    position: absolute;
-    bottom: -22px;
-    left: 0;
-    font-size: 11px;
-    padding-left: 8px;
     width: 100%;
+    height: 20px;
     display: flex;
     justify-content: space-between;
-    height: 15px;
-    line-height: 15px;
+    position: absolute;
+    left: 0;
+    font-size: 10px;
 }
+.bracket-item-status.vote-top {
+    top: -25px;
+}
+.bracket-item-status.vote-bottom {
+    bottom: -25px;
+}
+.bracket-item-status-icons {
+    display: flex;
+    position: relative;
+    height: 20px;
+}
+.bracket-item-status-icons img {
+    position: absolute;
+    margin: 0;
+}
+/* .bracket-item-status-vote span {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+    margin-left: 40px; Leave enough space for up to 5 icons (16px + overlap)
+} */
+/* Fanned-out stacking effect for icons (horizontal overlap) */
+.bracket-item-status-icons img:nth-child(1) { left: 0; z-index: 1; }
+.bracket-item-status-icons img:nth-child(2) { left: 10px; z-index: 2; }
+.bracket-item-status-icons img:nth-child(3) { left: 20px; z-index: 3; }
+.bracket-item-status-icons img:nth-child(4) { left: 30px; z-index: 4; }
+.bracket-item-status-icons img:nth-child(5) { left: 40px; z-index: 5; }
 
 /* /// LINES */
 .bracket-item-line {
