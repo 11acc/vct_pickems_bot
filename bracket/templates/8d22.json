@@ -7,13 +7,17 @@
                     "playoff_bracket_id": "111",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 },
                 {
                     "playoff_bracket_id": "121",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         },
@@ -24,13 +28,17 @@
                     "playoff_bracket_id": "211",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 },
                 {
                     "playoff_bracket_id": "221",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         },
@@ -41,7 +49,9 @@
                     "playoff_bracket_id": "311",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         },
@@ -52,7 +62,9 @@
                     "playoff_bracket_id": "411",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         }
@@ -65,13 +77,17 @@
                     "playoff_bracket_id": "112",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 },
                 {
                     "playoff_bracket_id": "122",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         },
@@ -82,13 +98,17 @@
                     "playoff_bracket_id": "212",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 },
                 {
                     "playoff_bracket_id": "222",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         },
@@ -99,7 +119,9 @@
                     "playoff_bracket_id": "312",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         },
@@ -110,7 +132,9 @@
                     "playoff_bracket_id": "412",
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
-                    "winner": ""
+                    "winner": "",
+                    "votes_team1": [],
+                    "votes_team2": []
                 }
             ]
         }

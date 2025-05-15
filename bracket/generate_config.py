@@ -54,5 +54,14 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict | None:
                                           else "")
                     else:
                         match["winner"] = ""
+                    # Votes
+                    votes_by_team_id = {team.team_id: players for team, players in match_obj.votes.items()}
+                    for team_id, player in votes_by_team_id.items():
+                        for p in player:
+                            match_vote = {"player_id": p.player_id, "name": p.name, "icon_url": ""}
+                            if team_id == match_obj.team1_id:
+                                match["votes_team1"].append(match_vote)
+                            else:
+                                match["votes_team2"].append(match_vote)
 
     return bracket_data
