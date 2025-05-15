@@ -9,7 +9,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 },
                 {
                     "playoff_bracket_id": "121",
@@ -17,7 +18,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         },
@@ -30,7 +32,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 },
                 {
                     "playoff_bracket_id": "221",
@@ -38,7 +41,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         },
@@ -51,7 +55,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         },
@@ -64,7 +69,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         }
@@ -79,7 +85,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 },
                 {
                     "playoff_bracket_id": "122",
@@ -87,7 +94,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         },
@@ -100,7 +108,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 },
                 {
                     "playoff_bracket_id": "222",
@@ -108,7 +117,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         },
@@ -121,7 +131,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         },
@@ -134,7 +145,8 @@
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
                     "votes_team1": [],
-                    "votes_team2": []
+                    "votes_team2": [],
+                    "votes_other": []
                 }
             ]
         }

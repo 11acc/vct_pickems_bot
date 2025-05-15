@@ -8,7 +8,7 @@ from db.db_instance import db
 from db.queries import db_logic
 
 
-def generate_bracket_config(event_id: int, region: str = None) -> dict | None:
+def generate_bracket_config(event_id: int, region: str = None) -> dict:
     # Find out which bracket type the event has
     bracket_type = db.get_bracket_type_from_event_id(event_id)
     if not bracket_type:
@@ -39,11 +39,11 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict | None:
                     match_obj = match_lookup[b_id]
                     # Team 1
                     match["team1"]["team_id"] = match_obj.team1_id
-                    match["team1"]["name"] = match_obj.team1.name
+                    match["team1"]["name"] = match_obj.team1.short_name
                     match["team1"]["logo_url"] = match_obj.team1.logo_url
                     # Team 2
                     match["team2"]["team_id"] = match_obj.team2_id
-                    match["team2"]["name"] = match_obj.team2.name
+                    match["team2"]["name"] = match_obj.team2.short_name
                     match["team2"]["logo_url"] = match_obj.team2.logo_url
                     # Winner
                     if match_obj.winner_id is not None:
@@ -56,12 +56,17 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict | None:
                         match["winner"] = ""
                     # Votes
                     votes_by_team_id = {team.team_id: players for team, players in match_obj.votes.items()}
+                    if not votes_by_team_id:
+                        print(f"No votes for match: {match}, skipping")
+                        continue
                     for team_id, player in votes_by_team_id.items():
                         for p in player:
-                            match_vote = {"player_id": p.player_id, "name": p.name, "icon_url": ""}
+                            match_vote = {"player_id": p.player_id, "name": p.name, "icon_url": "", "team_id": team_id}
                             if team_id == match_obj.team1_id:
                                 match["votes_team1"].append(match_vote)
-                            else:
+                            elif team_id == match_obj.team2_id:
                                 match["votes_team2"].append(match_vote)
+                            else:
+                                match["votes_other"].append(match_vote)
 
     return bracket_data
