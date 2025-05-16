@@ -54,6 +54,10 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict:
                                           else "")
                     else:
                         match["winner"] = ""
+                    # Check tbd
+                    match["tbd_check"] = False
+                    if match_obj.team1_id == 404 or match_obj.team2_id == 404:
+                        match["tbd_check"] = True
                     # Votes
                     votes_by_team_id = {team.team_id: players for team, players in match_obj.votes.items()}
                     if not votes_by_team_id:

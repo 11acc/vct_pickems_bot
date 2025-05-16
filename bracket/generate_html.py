@@ -112,6 +112,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             team1 = match["team1"]
             team2 = match["team2"]
             winner = match["winner"]
+            tbd_check = match["tbd_check"]
             # points = match.get("points", "? / 0")
             mod_last = "mod-last" if match_idx == len(round_data["matches"]) - 1 else ""
             votes_team1 = match["votes_team1"]
@@ -153,23 +154,25 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             team2_votes_html += '</div>'
 
             # Generate HTML for other votes, one row per team
-            votes_by_team = {}
-            for vote in votes_other:
-                team_id = vote["team_id"]
-                if team_id not in votes_by_team:
-                    votes_by_team[team_id] = []
-                votes_by_team[team_id].append(vote)
+            other_votes_html = ""
+            if not tbd_check:
+                votes_by_team = {}
+                for vote in votes_other:
+                    team_id = vote["team_id"]
+                    if team_id not in votes_by_team:
+                        votes_by_team[team_id] = []
+                    votes_by_team[team_id].append(vote)
 
-            other_votes_html = '<div class="bracket-item-status-icons">'
-            for team_id, votes in votes_by_team.items():
-                other_votes_html += '<div class="vote-row">'
-                other_votes_html += '<div class="vote-icons">'
-                for vote in votes:
-                    other_votes_html += f'<img src="{vote["icon_url"]}">'
+                other_votes_html = '<div class="bracket-item-status-icons">'
+                for team_id, votes in votes_by_team.items():
+                    other_votes_html += '<div class="vote-row">'
+                    other_votes_html += '<div class="vote-icons">'
+                    for vote in votes:
+                        other_votes_html += f'<img src="{vote["icon_url"]}">'
+                    other_votes_html += '</div>'
+                    other_votes_html += f'<span class="vote-text">lmao image voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
+                    other_votes_html += '</div>'
                 other_votes_html += '</div>'
-                other_votes_html += f'<span class="vote-text">lmao image voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
-                other_votes_html += '</div>'
-            other_votes_html += '</div>'
 
 
             html += f'''
@@ -229,6 +232,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             team1 = match["team1"]
             team2 = match["team2"]
             winner = match["winner"]
+            tbd_check = match["tbd_check"]
             # points = match.get("points", "? / 0")
             mod_last = "mod-last" if match_idx == len(round_data["matches"]) - 1 else ""
             votes_team1 = match["votes_team1"]
@@ -252,13 +256,11 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             next_pos2 = nav.get("next_pos2", "")
 
             team1_class = "mod-first"
+            team2_class = ""
             if winner == "team1":
                 team1_class += " mod-winner"
-            team2_class = ""
-            if winner == "team2":
+            elif winner == "team2":
                 team2_class += " mod-winner"
-            elif winner == "team1":
-                team2_class += " mod-loser"
 
             # Generate vote images for team1
             team1_votes_html = '<div class="bracket-item-team-votes">'
@@ -273,23 +275,25 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             team2_votes_html += '</div>'
 
             # Generate HTML for other votes, one row per team
-            votes_by_team = {}
-            for vote in votes_other:
-                team_id = vote["team_id"]
-                if team_id not in votes_by_team:
-                    votes_by_team[team_id] = []
-                votes_by_team[team_id].append(vote)
+            other_votes_html = ""
+            if not tbd_check:
+                votes_by_team = {}
+                for vote in votes_other:
+                    team_id = vote["team_id"]
+                    if team_id not in votes_by_team:
+                        votes_by_team[team_id] = []
+                    votes_by_team[team_id].append(vote)
 
-            other_votes_html = '<div class="bracket-item-status-icons">'
-            for team_id, votes in votes_by_team.items():
-                other_votes_html += '<div class="vote-row">'
-                other_votes_html += '<div class="vote-icons">'
-                for vote in votes:
-                    other_votes_html += f'<img src="{vote["icon_url"]}">'
+                other_votes_html = '<div class="bracket-item-status-icons">'
+                for team_id, votes in votes_by_team.items():
+                    other_votes_html += '<div class="vote-row">'
+                    other_votes_html += '<div class="vote-icons">'
+                    for vote in votes:
+                        other_votes_html += f'<img src="{vote["icon_url"]}">'
+                    other_votes_html += '</div>'
+                    other_votes_html += f'<span class="vote-text">lmao image <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
+                    other_votes_html += '</div>'
                 other_votes_html += '</div>'
-                other_votes_html += f'<span class="vote-text">lmao image <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
-                other_votes_html += '</div>'
-            other_votes_html += '</div>'
 
 
             html += f'''

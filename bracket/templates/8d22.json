@@ -8,6 +8,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -17,6 +18,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -31,6 +33,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -40,6 +43,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -54,6 +58,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -84,6 +89,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -93,6 +99,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -107,6 +114,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -116,6 +124,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -130,6 +139,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
@@ -144,6 +154,7 @@
                     "team1": {"team_id": 0, "name": "", "logo_url": ""},
                     "team2": {"team_id": 0, "name": "", "logo_url": ""},
                     "winner": "",
+                    "tbd_check": false,
                     "votes_team1": [],
                     "votes_team2": [],
                     "votes_other": []
