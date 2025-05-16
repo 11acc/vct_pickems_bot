@@ -30,6 +30,9 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict:
     match_data = db_logic.match_objs_for_playoffs(event_id, region)
     match_lookup = {match.playoff_bracket_id: match for match in match_data}
 
+    # Create custom identifier for generated bracket
+    bracket_data["_id"] = f'{event_id}_{region.lower()}' if region else f'{event_id}'
+
     for section in ["upper", "lower"]:
         for round_data in bracket_data[section]:
             for match in round_data["matches"]:

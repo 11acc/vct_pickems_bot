@@ -2,6 +2,7 @@
 # :purpose: Main script to run discord bot
 
 import os
+import io
 from dotenv import load_dotenv
 import discord
 from discord import app_commands
@@ -227,13 +228,6 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
         return
 
     ### BRACKET STUFF
-    ### ???
-    bracket_formatted = None  # bracket_for_event(match_ev_id, region, year)
-    if not bracket_formatted:
-        await interaction.response.send_message(
-            f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
-        )
-        return
     ### i11
 
     header = f"{get_vct_emoji("pain")} VCT {year} [ {event.capitalize()} ] Bracket"
@@ -243,7 +237,6 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
 
     embed = discord.Embed(
         colour=BOT_EMBED_BRACKET_COLOUR
-        , description=bracket_formatted
         , title=header
         , url=event_link
     )

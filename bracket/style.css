@@ -168,13 +168,16 @@ body {
     padding-top: 0;
 }
 .bracket-container.mod-lower .bracket-col.mod-2 .bracket-item {
-    margin-bottom: 47px;  /* 32 */
+    margin-bottom: 47px;  /* 32px */
 }
 .bracket-container.mod-lower .bracket-col.mod-3 {
-    padding-top: 50px;
+    padding-top: 59px;  /* 50px */
 }
 .bracket-container.mod-lower .bracket-col.mod-3 .bracket-item {
     margin-bottom: 132px;
+}
+.bracket-container.mod-lower .bracket-col.mod-4 {
+    padding-top: 10px;
 }
 .bracket-container.mod-lower .bracket-col.mod-4 .bracket-item {
     margin-bottom: 133px;
