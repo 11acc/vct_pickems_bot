@@ -79,7 +79,7 @@ body {
 }
 .event-content {
     min-width: 0;
-    flex: 0 0 794px;
+    /* flex: 0 0 794px; */
 }
 
 .wf-card {
@@ -97,7 +97,7 @@ body {
 }
 .event-brackets-container {
     padding: 20px;
-    overflow-x: auto;
+    /* overflow-x: auto; */
 }
 .bracket-container {
     display: flex;
@@ -184,7 +184,7 @@ body {
 .bracket-item-team {
     display: flex;
     justify-content: space-between;
-    width: 140px;
+    width: 185px;
     border-top: 1px solid #ccc;
     border-color: #929496;
 }
@@ -222,12 +222,29 @@ body {
     image-rendering: -webkit-optimize-contrast;
 }
 .bracket-item-team-name span {
-    width: 75px;
+    width: 60px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     padding: 5px 0;
 }
+.bracket-item-team-votes {
+    min-width: 55px;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+.bracket-item-team-votes img {
+    position: absolute;
+    margin: 0;
+}
+/* Fanned-out stacking effect for icons (horizontal overlap) */
+.bracket-item-team-votes img:nth-child(1) { right: 0; z-index: 1; }
+.bracket-item-team-votes img:nth-child(2) { right: 10px; z-index: 2; }
+.bracket-item-team-votes img:nth-child(3) { right: 20px; z-index: 3; }
+.bracket-item-team-votes img:nth-child(4) { right: 30px; z-index: 4; }
+.bracket-item-team-votes img:nth-child(5) { right: 40px; z-index: 5; }
 /* /// // STATUS */
 .bracket-item-status {
     width: 100%;
@@ -244,27 +261,12 @@ body {
 .bracket-item-status.vote-bottom {
     bottom: -25px;
 }
-.bracket-item-status-icons {
-    display: flex;
-    position: relative;
-    height: 20px;
-}
-.bracket-item-status-icons img {
-    position: absolute;
-    margin: 0;
-}
 /* .bracket-item-status-vote span {
     display: flex;
     align-items: center;
     white-space: nowrap;
     margin-left: 40px; Leave enough space for up to 5 icons (16px + overlap)
 } */
-/* Fanned-out stacking effect for icons (horizontal overlap) */
-.bracket-item-status-icons img:nth-child(1) { left: 0; z-index: 1; }
-.bracket-item-status-icons img:nth-child(2) { left: 10px; z-index: 2; }
-.bracket-item-status-icons img:nth-child(3) { left: 20px; z-index: 3; }
-.bracket-item-status-icons img:nth-child(4) { left: 30px; z-index: 4; }
-.bracket-item-status-icons img:nth-child(5) { left: 40px; z-index: 5; }
 
 /* /// LINES */
 .bracket-item-line {

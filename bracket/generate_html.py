@@ -111,6 +111,9 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             winner = match["winner"]
             # points = match.get("points", "? / 0")
             mod_last = "mod-last" if match_idx == len(round_data["matches"]) - 1 else ""
+            votes_team1 = match["votes_team1"]
+            votes_team2 = match["votes_team2"]
+            votes_other = match["votes_other"]
 
             # Correct line directions
             if col_idx == 0:  # Upper Round 1
@@ -134,6 +137,18 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             elif winner == "team2":
                 team2_class += " mod-winner"
 
+            # Generate vote images for team1
+            team1_votes_html = '<div class="bracket-item-team-votes">'
+            for vote in votes_team1:
+                team1_votes_html += f'<img src="{vote["icon_url"]}">'
+            team1_votes_html += '</div>'
+
+            # Generate vote images for team2
+            team2_votes_html = '<div class="bracket-item-team-votes">'
+            for vote in votes_team2:
+                team2_votes_html += f'<img src="{vote["icon_url"]}">'
+            team2_votes_html += '</div>'
+
             html += f'''
             <div class="bracket-row mod-{match_idx + 1}">
                 <span class="bracket-item mod-pickem {mod_last}" title="{team1['name']} vs. {team2['name']}" 
@@ -144,6 +159,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                             <img src="{team1['logo_url']}">
                             <span>{team1['name']}</span>
                         </div>
+                        {team1_votes_html}
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
@@ -152,6 +168,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                             <img src="{team2['logo_url']}">
                             <span>{team2['name']}</span>
                         </div>
+                        {team2_votes_html}
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
@@ -195,6 +212,9 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             winner = match["winner"]
             # points = match.get("points", "? / 0")
             mod_last = "mod-last" if match_idx == len(round_data["matches"]) - 1 else ""
+            votes_team1 = match["votes_team1"]
+            votes_team2 = match["votes_team2"]
+            votes_other = match["votes_other"]
 
             if col_idx == 0:  # Lower Round 1
                 mod_line = "mod-up"
@@ -221,6 +241,18 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
             elif winner == "team1":
                 team2_class += " mod-loser"
 
+            # Generate vote images for team1
+            team1_votes_html = '<div class="bracket-item-team-votes">'
+            for vote in votes_team1:
+                team1_votes_html += f'<img src="{vote["icon_url"]}">'
+            team1_votes_html += '</div>'
+
+            # Generate vote images for team2
+            team2_votes_html = '<div class="bracket-item-team-votes">'
+            for vote in votes_team2:
+                team2_votes_html += f'<img src="{vote["icon_url"]}">'
+            team2_votes_html += '</div>'
+
             html += f'''
             <div class="bracket-row mod-{match_idx + 1}">
                 <span class="bracket-item mod-pickem {mod_last}" title="{team1['name']} vs. {team2['name']}"
@@ -231,6 +263,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                             <img src="{team1['logo_url']}">
                             <span>{team1['name']}</span>
                         </div>
+                        {team1_votes_html}
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
@@ -239,6 +272,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                             <img src="{team2['logo_url']}">
                             <span>{team2['name']}</span>
                         </div>
+                        {team2_votes_html}
                         <div class="bracket-item-team-score">
                         </div>
                     </div>
