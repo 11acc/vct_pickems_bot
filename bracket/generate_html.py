@@ -3,6 +3,9 @@
 
 import os
 
+from db.db_instance import db
+
+
 # Generating other brackets breaks it, lines and spacing are not the same
 # deeper generation customisation is necessary
 
@@ -149,6 +152,26 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                 team2_votes_html += f'<img src="{vote["icon_url"]}">'
             team2_votes_html += '</div>'
 
+            # Generate HTML for other votes, one row per team
+            votes_by_team = {}
+            for vote in votes_other:
+                team_id = vote["team_id"]
+                if team_id not in votes_by_team:
+                    votes_by_team[team_id] = []
+                votes_by_team[team_id].append(vote)
+
+            other_votes_html = '<div class="bracket-item-status-icons">'
+            for team_id, votes in votes_by_team.items():
+                other_votes_html += '<div class="vote-row">'
+                other_votes_html += '<div class="vote-icons">'
+                for vote in votes:
+                    other_votes_html += f'<img src="{vote["icon_url"]}">'
+                other_votes_html += '</div>'
+                other_votes_html += f'<span class="vote-text">lmao image voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
+                other_votes_html += '</div>'
+            other_votes_html += '</div>'
+
+
             html += f'''
             <div class="bracket-row mod-{match_idx + 1}">
                 <span class="bracket-item mod-pickem {mod_last}" title="{team1['name']} vs. {team2['name']}" 
@@ -173,16 +196,12 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                         </div>
                     </div>
                     <div class="bracket-item-status">
-                            <div class="bracket-item-status-icons">
-                            </div>
-                            <span></span>
+                            {other_votes_html}
                     </div>
                     '''
             if mod_line:
                 html += f'<div class="bracket-item-line {mod_line}"></div>'
             html += f'''
-                    <input type="hidden" class="bracket-item-pick mod-winner" value="">
-                    <input type="hidden" class="bracket-item-pick mod-loser" value="">
                 </span>
             </div>
             '''
@@ -253,6 +272,26 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                 team2_votes_html += f'<img src="{vote["icon_url"]}">'
             team2_votes_html += '</div>'
 
+            # Generate HTML for other votes, one row per team
+            votes_by_team = {}
+            for vote in votes_other:
+                team_id = vote["team_id"]
+                if team_id not in votes_by_team:
+                    votes_by_team[team_id] = []
+                votes_by_team[team_id].append(vote)
+
+            other_votes_html = '<div class="bracket-item-status-icons">'
+            for team_id, votes in votes_by_team.items():
+                other_votes_html += '<div class="vote-row">'
+                other_votes_html += '<div class="vote-icons">'
+                for vote in votes:
+                    other_votes_html += f'<img src="{vote["icon_url"]}">'
+                other_votes_html += '</div>'
+                other_votes_html += f'<span class="vote-text">lmao image <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
+                other_votes_html += '</div>'
+            other_votes_html += '</div>'
+
+
             html += f'''
             <div class="bracket-row mod-{match_idx + 1}">
                 <span class="bracket-item mod-pickem {mod_last}" title="{team1['name']} vs. {team2['name']}"
@@ -277,16 +316,12 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                         </div>
                     </div>
                     <div class="bracket-item-status">
-                            <div class="bracket-item-status-icons">
-                            </div>
-                            <span></span>
+                            {other_votes_html}
                     </div>
                     '''
             if mod_line:
                 html += f'<div class="bracket-item-line {mod_line}"></div>'
             html += f'''
-                    <input type="hidden" class="bracket-item-pick mod-winner" value="">
-                    <input type="hidden" class="bracket-item-pick mod-loser" value="">
                 </span>
             </div>
             '''

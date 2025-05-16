@@ -247,6 +247,13 @@ class DBInstance():
             return None
         return sql_team[0]
 
+    def get_team_logo_from_id(self, team_id: int) -> str | None:
+        query = "SELECT logo_url FROM teams WHERE team_id=?"
+        sql_team = db.fetch_one(query, (team_id,))
+        if not sql_team:
+            return None
+        return sql_team[0]
+
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:
         self.modify_entry("matches", "winner_id", winner_id, "match_id", match_id)

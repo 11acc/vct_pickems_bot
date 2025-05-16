@@ -61,7 +61,7 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict:
                         continue
                     for team_id, player in votes_by_team_id.items():
                         for p in player:
-                            match_vote = {"player_id": p.player_id, "name": p.name, "icon_url": "", "team_id": team_id}
+                            match_vote = {"player_id": p.player_id, "name": p.name, "icon_url": p.icon_url, "team_id": team_id}
                             if team_id == match_obj.team1_id:
                                 match["votes_team1"].append(match_vote)
                             elif team_id == match_obj.team2_id:
