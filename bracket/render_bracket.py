@@ -18,7 +18,7 @@ def render_bracket(html_path: str, imgs_dir: str, unique_id: str) -> None:
     driver.set_window_size(975, 825)  # w / h
 
     # Take a screenshot and save it
-    driver.save_screenshot(f'{imgs_dir}/bracket_e{unique_id}.png')
+    driver.save_screenshot(f'{imgs_dir}/{unique_id}.png')
 
     # Close the browser
     driver.quit()

@@ -215,7 +215,7 @@ body {
     display: flex;
 }
 .bracket-item-team.mod-winner .bracket-item-team-score {
-    background: #9966cc;  /* cf9fff */
+    background: #cf9fff;  /* 9966cc */
     border-left: 1px solid #aaa;
 }
 .bracket-item img {

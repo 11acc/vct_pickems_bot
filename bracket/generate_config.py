@@ -6,9 +6,10 @@ import json
 
 from db.db_instance import db
 from db.queries import db_logic
+from utils.bracket_id import get_bracket_id
 
 
-def generate_bracket_config(event_id: int, region: str = None) -> dict:
+def generate_bracket_config(event_id: int, region: str = None, year: str = None) -> dict:
     # Find out which bracket type the event has
     bracket_type = db.get_bracket_type_from_event_id(event_id)
     if not bracket_type:
@@ -31,7 +32,7 @@ def generate_bracket_config(event_id: int, region: str = None) -> dict:
     match_lookup = {match.playoff_bracket_id: match for match in match_data}
 
     # Create custom identifier for generated bracket
-    bracket_data["_id"] = f'{event_id}_{region.lower()}' if region else f'{event_id}'
+    bracket_data["_id"] = get_bracket_id(event_id, region, year)
 
     for section in ["upper", "lower"]:
         for round_data in bracket_data[section]:
