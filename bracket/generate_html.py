@@ -170,7 +170,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                     for vote in votes:
                         other_votes_html += f'<img src="{vote["icon_url"]}">'
                     other_votes_html += '</div>'
-                    other_votes_html += f'<span class="vote-text">lmao image voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
+                    other_votes_html += f'<span class="vote-text">lmao imagine voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
                     other_votes_html += '</div>'
                 other_votes_html += '</div>'
 
@@ -291,7 +291,7 @@ def generate_bracket_html(bracket_data: dict) -> str | None:
                     for vote in votes:
                         other_votes_html += f'<img src="{vote["icon_url"]}">'
                     other_votes_html += '</div>'
-                    other_votes_html += f'<span class="vote-text">lmao image voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
+                    other_votes_html += f'<span class="vote-text">lmao imagine voting for <img src="{db.get_team_logo_from_id(team_id)}" class="vote-span-team-icon" />  </span>'
                     other_votes_html += '</div>'
                 other_votes_html += '</div>'
 
