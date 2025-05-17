@@ -71,6 +71,13 @@ class Query_DB():
     def subevent_region_pickem_urls_from_event_id(self, event_id: int) -> list[tuple] | None:
         return self.get_subevent_data_from_event_id(event_id, "subev_pickem_url")
 
+    def check_event_subs(self, event_id: int) -> bool | None:
+        query = "SELECT subev_id FROM sub_event WHERE subev_parent_id=?"
+        sql_event = db.fetch_all(query, (event_id,))
+        if not sql_event:
+            print(f"No sub events for event with id: {event_id}")
+            return None
+        return True if len(sql_event) > 1 else False
 
     # /// Points queries
     def point_sets_from_filters(self, **filters) -> list[Points] | None:
@@ -145,22 +152,6 @@ class Query_DB():
 
 
     # /// Match queries
-    def match_objs_for_date(self, date_str: str) -> list[Match] | None:
-        query = "SELECT * FROM matches WHERE date=? AND winner_id IS NULL"
-        sql_matches = db.fetch_all(query, (date_str,))
-        if not sql_matches:
-            print(f"No matches found for date: {date_str}")
-            return None
-        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
-    
-    def match_objs_for_week(self, match_kind: str, region: str) -> list[Match] | None:
-        query = "SELECT * FROM matches WHERE kind=? AND region=?"
-        sql_matches = db.fetch_all(query, (match_kind, region))
-        if not sql_matches:
-            print(f"No matches found for match_kind, region: {match_kind}, {region}")
-            return None
-        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
-
     def match_id_from_params(self, **filters) -> int | None:
         # Construct filter clauses
         conditions = " AND ".join(f"{key}=?" for key in filters.keys())
@@ -174,16 +165,6 @@ class Query_DB():
             return None
         return int(sql_match_id[0])
 
-    def match_objs_from_type_filter(self, region: str, filter_val: str) -> int | None:
-        # pick the right column based on playoff vs. non-playoff
-        column = "bracket" if filter_val == "Playoffs" else "kind"
-        query = f"SELECT * FROM matches WHERE region=? AND {column}=? AND winner_id IS NULL"
-        sql_matches = self.db.fetch_all(query, (region, filter_val))
-        if not sql_matches:
-            # print(f"No match found for region: {region} and filter: {filter_val}")
-            return None
-        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
-
     def match_id_non_winner_from_params(self, **filters) -> int | None:
         conditions = " AND ".join(f"{key}=?" for key in filters.keys())
         vals = tuple(filters.values())
@@ -194,6 +175,37 @@ class Query_DB():
             # print(f"No match found for filters: {filters} & winner_id being NULL")
             return None
         return int(sql_match_id[0])
+
+    def match_objs_for_date(self, date_str: str) -> list[Match] | None:
+        query = "SELECT * FROM matches WHERE date=? AND winner_id IS NULL"
+        sql_matches = db.fetch_all(query, (date_str,))
+        if not sql_matches:
+            print(f"No matches found for date: {date_str}")
+            return None
+        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
+
+    def match_objs_from_type_filter(self, region: str, filter_val: str) -> int | None:
+        # pick the right column based on playoff vs. non-playoff
+        column = "bracket" if filter_val == "Playoffs" else "kind"
+        query = f"SELECT * FROM matches WHERE region=? AND {column}=? AND winner_id IS NULL"
+        sql_matches = self.db.fetch_all(query, (region, filter_val))
+        if not sql_matches:
+            # print(f"No match found for region: {region} and filter: {filter_val}")
+            return None
+        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
+
+    def match_objs_for_playoffs(self, event_id: int, region: str = None) -> int | None:
+        query = "SELECT * FROM matches WHERE m_event_id=? AND bracket=?"
+        params = [event_id, 'Playoffs']
+        if region:
+            query += " AND region=?"
+            params.append(region)
+        sql_matches = self.db.fetch_all(query, params)
+        if not sql_matches:
+            print(f"No matches found for event with id: {event_id} and maybe region: {region}")
+            return None
+        return [self.tuple_into_class(Match, a_match) for a_match in sql_matches]
+
 
     # /// Vote queries
     def votes_from_match_id(self, match_id: int) -> list[Vote]:

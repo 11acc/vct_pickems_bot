@@ -2,12 +2,13 @@
 # :: Classes for each db table for ease of use
 
 class Player():
-    def __init__(self, player_id: int, name: str, vlr_user: str, local: str) -> None:
+    def __init__(self, player_id: int, name: str, vlr_user: str, local: str, icon_url: str) -> None:
         self.player_id = player_id
         self.name = name
         self.vlr_user = vlr_user
         self.local = local
-    
+        self.icon_url = icon_url
+
     def __repr__(self):
         return f'{self.local} {self.name}'
 
@@ -16,19 +17,20 @@ class Player():
             return (self.player_id, self.name, self.vlr_user, self.local) == \
                    (other.player_id, other.name, other.vlr_user, other.local)
         return False
-    
+
     def __hash__(self):
         return hash((self.player_id, self.name, self.vlr_user, self.local))
 
 class Team():
-    def __init__(self, team_id: int, name: str, short_name: str) -> None:
+    def __init__(self, team_id: int, name: str, short_name: str, logo_url: str) -> None:
         self.team_id = team_id
         self.name = name
         self.short_name = short_name
-    
+        self.logo_url = logo_url
+
     def __repr__(self) -> str:
         return f'Team({self.short_name})'
-    
+
     @property
     def fullname(self):
         return self.name
@@ -73,7 +75,7 @@ class Points():
 
     def __repr__(self):
         return f'Points({self.player}, {self.nr_points} points, event id: {self.pt_event_id})'
-    
+
     @property
     def player(self):
         from .queries import db_logic  # import inside to avoid circular import
@@ -111,7 +113,7 @@ class Star():
         if self._player is None:
             self._player = db_logic.player_from_id(self.s_player_id)
         return self._player
-    
+
     @property
     def event(self):
         from .queries import db_logic

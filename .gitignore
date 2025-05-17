@@ -173,3 +173,5 @@ cython_debug/
 td.txt
 repo_testing.py
 .vscode
+bracket/generated_htmls/*.html
+bracket/generated_imgs/*.png

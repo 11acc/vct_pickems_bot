@@ -1,0 +1,98 @@
+{
+    "_id": "",
+    "upper": [
+        {
+            "round": "Upper Semifinals",
+            "matches": [
+                {
+                    "playoff_bracket_id": "111",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                },
+                {
+                    "playoff_bracket_id": "121",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Upper Final",
+            "matches": [
+                {
+                    "playoff_bracket_id": "211",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Grand Final",
+            "matches": [
+                {
+                    "playoff_bracket_id": "311",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        }
+    ],
+    "lower": [
+        {
+            "round": "Lower Round 1",
+            "matches": [
+                {
+                    "playoff_bracket_id": "112",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Lower Final",
+            "matches": [
+                {
+                    "playoff_bracket_id": "212",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        }
+    ]
+}

@@ -2,18 +2,23 @@
 # :purpose: Main script to run discord bot
 
 import os
+import io
 from dotenv import load_dotenv
 import discord
 from discord import app_commands
 from discord.ext import commands
+from datetime import datetime
 
 from db.db_instance import db
+from db.queries import db_logic
 from utils.emojis import get_vct_emoji
 from utils.matching import find_best_event_match
+from utils.bracket_id import get_bracket_id
 from services.points_for_event import points_from_event
 from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
 from services.update import update_current_pickems, update_current_matches, update_current_votes, update_all
+from services.bracket_for_event import bracket_for_event
 
 
 load_dotenv()
@@ -24,6 +29,7 @@ BOT_NAME = "reobot"
 BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(48,92,222)
 BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(234,232,111)
 BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(242,240,239)
+BOT_EMBED_BRACKET_COLOUR = discord.Colour.from_rgb(207,159,255)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
@@ -124,7 +130,7 @@ async def wvw(interaction: discord.Interaction, region: str = None, skip_amount:
         valid_regions = ["China", "Americas", "Emea", "Pacific"]
         if region not in valid_regions:
             await interaction.response.send_message(
-                f"Nice typo, region has to be one of: {', '.join(valid_regions)}"
+                f"nice typo, region has to be one of: {', '.join(valid_regions)}"
             )
             return
 
@@ -189,6 +195,92 @@ async def refresh(interaction: discord.Interaction, update_func: str):
     func = update_funcs[update_func]
     await execute_with_progress(interaction, func)
 
+
+# /// BRACKET PREP
+async def execute_bracket_with_progress(interaction: discord.Interaction, match_ev_id: int, input_event: str, year: int, region: str = None):
+    # Send the initial progress message
+    await interaction.response.send_message(f"{get_vct_emoji('miku_loading')} generating bracket...")
+
+    # Retrieve the message sent as the initial response
+    progress_message = await interaction.original_response()
+
+    try:
+        # Generate bracket image
+        bracket_for_event(match_ev_id, year, region)
+
+        # Locate and build paths for the image
+        bracket_file_name = f'{get_bracket_id(match_ev_id, region, year)}.png'
+        bracket_dir = os.path.join(os.path.dirname(__file__), "bracket")
+        imgs_dir = os.path.join(bracket_dir, "generated_imgs")
+        file_path = os.path.join(imgs_dir, bracket_file_name)
+
+        file = discord.File(file_path, filename=bracket_file_name)
+
+        # Prepare the embed
+        h_region = f"{get_vct_emoji(region)}" if region else ""
+        header = f"{get_vct_emoji("pain")} VCT {year} [ {input_event} ] {h_region} Bracket"
+        event_link = db.pickem_link_from_event_name(input_event)
+        if not event_link:
+            event_link = ""
+
+        embed = discord.Embed(
+            colour=BOT_EMBED_BRACKET_COLOUR,
+            title=header,
+            url=event_link
+        )
+        embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+        embed.set_image(url=f"attachment://{bracket_file_name}")
+
+        # Delete the progress message and send the bracket
+        await progress_message.delete()
+        await interaction.followup.send(file=file, embed=embed)
+
+    except Exception as e:
+        # Delete the progress message and send an error follow-up
+        await progress_message.delete()
+        await interaction.followup.send(
+            f"{get_vct_emoji('miku_what')} <@{REO_DEV_USER_ID}> you fucking suck brosky:\n```{str(e)}```"
+        )
+
+# /// BRACKET COMMAND
+@bot.tree.command(name="bracket", description="View an event's bracket with player votes")
+@app_commands.describe(
+    event="Event name (Kickoff, Bangkok, Stage1, etc.)",
+    region="Region for the matches (China, Americas, Emea, Pacific)",
+    year="The number thing we keep track of every earth spin"
+)
+async def bracket(interaction: discord.Interaction, event: str, region: str = None, year: int = None):
+    # Validate event input
+    input_event = find_best_event_match(event)
+    if not input_event:
+        await interaction.response.send_message(
+            "massive whiff on that event selection brosky, no event with that name"
+        )
+        return
+    match_ev_id = db.get_event_id_from_name(input_event)
+
+    # Validate region if provided
+    if region:
+        region = region.capitalize()
+        valid_regions = ["China", "Americas", "Emea", "Pacific"]
+        if region not in valid_regions:
+            await interaction.response.send_message(
+                f"nice typo, region has to be one of: {', '.join(valid_regions)}"
+            )
+            return
+    # If region wasn't provided but event requires it, throw error
+    if db_logic.check_event_subs(match_ev_id) and not region:
+        await interaction.response.send_message(
+            "specify which region for selected event, or don't and read this again"
+        )
+        return
+
+    # Validate year
+    if not year:
+        year = datetime.now().year
+
+    # Execute bracket generation with progress
+    await execute_bracket_with_progress(interaction, match_ev_id, input_event, year, region)
 
 
 bot.run(DISCORD_BOT_TOKEN)
