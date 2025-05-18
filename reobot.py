@@ -19,7 +19,7 @@ from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
 from services.update import update_current_pickems, update_current_matches, update_current_votes, update_all
 from services.bracket_for_event import bracket_for_event
-from services.new_db_entry import add_new_player
+from services.db_entries import add_new_player, update_player
 
 
 load_dotenv()
@@ -310,6 +310,50 @@ async def add_player(interaction: discord.Interaction, name: str, vlr_user: str,
 
     await interaction.response.send_message(
         f"Successfully added new player to active db"
+    )
+    # print active users
+
+
+# /// UPDATE PLAYER
+@bot.tree.command(name="update_player", description="Update a player's info")
+@app_commands.describe(
+    existing_player="Name of player to change",
+    new_name="The visaul name",
+    local="A country",
+    icon_url="URL for a profile icon"
+)
+async def update_player_command(interaction: discord.Interaction, existing_player: str, new_name: str = None, local: str = None, icon_url: str = None):
+    # Really?
+    if not new_name and not local and not icon_url:
+        await interaction.response.send_message(
+            f"really? lmao"
+        )
+        return
+
+    # Find existing player
+    existing_player_id = db.get_player_id_from_name(existing_player)
+    if not existing_player_id:
+        print(f"Failed to identify existing player")
+        return False
+
+    # Validate local
+    if local:
+        local = format_local(local)
+        if not local:
+            await interaction.response.send_message(
+                "have no idea where that local is buddy"
+            )
+            return
+
+    # Update player in db
+    if not update_player(existing_player_id, new_name, local, icon_url):
+        await interaction.response.send_message(
+            f"failed to update player '{existing_player}', probably 's fault"
+        )
+        return
+
+    await interaction.response.send_message(
+        f"successfully did the thing to '{existing_player}' and now became the new thing you did at some point in time"
     )
     # print active users
 

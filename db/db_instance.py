@@ -140,6 +140,14 @@ class DBInstance():
             return None
         return sql_events
 
+    def get_player_id_from_name(self, name: str) -> int | None:
+        query = "SELECT player_id FROM players WHERE name=?"
+        ply_id = self.fetch_one(query, (name,))
+        if not ply_id:
+            print(f"No player with name: {name}")
+            return None
+        return int(ply_id[0])
+
     def get_player_id_from_vlr_name(self, vlr_user: str) -> int | None:
         query = "SELECT player_id FROM players WHERE vlr_user=?"
         ply_id = self.fetch_one(query, (vlr_user,))
