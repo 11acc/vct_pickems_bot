@@ -86,6 +86,11 @@ VCT_EMOJIS = {
     , "miku_yay": "<a:miku_yay:1349846113053704204>"
     , "live": "<:live:1350446904940564561>"
     , "pain": "<:pain:1371169606663667773>"
+    , "chillin": "<:chillin:1373693234039230594>"
+    , "yay": "<:yay:1373694783880433705>"
+    , "bruh": "<:bruh:1373695720023920751>"
+    , "madge_time": "<:madge_time:1373696077278216303>"
+    , "celebrate": "<:celebrate:1373696719786868950>"
 }
 ALIASES = {
     'Team Vitality': 'vit'

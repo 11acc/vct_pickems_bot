@@ -67,7 +67,7 @@ async def points(interaction: discord.Interaction, event: str, year: int):
     input_event = find_best_event_match(event, year)
     if not input_event:
         await interaction.response.send_message(
-            "massive whiff on that event selection brosky, no event with that name and year combo"
+            f"{get_vct_emoji('chillin')} massive whiff on that event selection brosky, no event with that name and year combo"
         )
         return
 
@@ -76,7 +76,7 @@ async def points(interaction: discord.Interaction, event: str, year: int):
     event_points = points_from_event(input_event)
     if not event_points:
         await interaction.response.send_message(
-            f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+            f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
         )
         return
 
@@ -104,10 +104,10 @@ async def leaderboard(interaction: discord.Interaction) -> None:
     leaderboard = star_leaderboard()
     if not leaderboard:
         await interaction.response.send_message(
-            "oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+            f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
         )
         return
-    
+
     embed = discord.Embed(
         colour=BOT_EMBED_LEADERBOARD_COLOUR
         , description=leaderboard
@@ -131,13 +131,13 @@ async def wvw(interaction: discord.Interaction, region: str = None, skip_amount:
         valid_regions = ["China", "Americas", "Emea", "Pacific"]
         if region not in valid_regions:
             await interaction.response.send_message(
-                f"nice typo, region has to be one of: {', '.join(valid_regions)}"
+                f"{get_vct_emoji('chillin')} nice typo, region has to be one of: {', '.join(valid_regions)}"
             )
             return
 
     date_lookup, upcoming_formatted = who_voted_who(region, skip_amount)
     if not upcoming_formatted:
-        await interaction.response.send_message(f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
+        await interaction.response.send_message(f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass")
         return
 
     header = f"{get_vct_emoji("who")} VCT Who Voted Who — {date_lookup}"
@@ -255,7 +255,7 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
     input_event = find_best_event_match(event)
     if not input_event:
         await interaction.response.send_message(
-            "massive whiff on that event selection brosky, no event with that name"
+            f"{get_vct_emoji('chillin')} massive whiff on that event selection brosky, no event with that name"
         )
         return
     match_ev_id = db.get_event_id_from_name(input_event)
@@ -266,13 +266,13 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
         valid_regions = ["China", "Americas", "Emea", "Pacific"]
         if region not in valid_regions:
             await interaction.response.send_message(
-                f"nice typo, region has to be one of: {', '.join(valid_regions)}"
+                f"{get_vct_emoji('chillin')} nice typo, region has to be one of: {', '.join(valid_regions)}"
             )
             return
     # If region wasn't provided but event requires it, throw error
     if db_logic.check_event_subs(match_ev_id) and not region:
         await interaction.response.send_message(
-            "specify which region for selected event, or don't and read this again"
+            f"{get_vct_emoji('chillin')} specify which region for selected event, or don't and read this again"
         )
         return
 
@@ -297,19 +297,19 @@ async def add_player(interaction: discord.Interaction, name: str, vlr_user: str,
     formatted_local = format_local(local)
     if not formatted_local:
         await interaction.response.send_message(
-            "have no idea where that local is buddy"
+            f"{get_vct_emoji('chillin')} have no idea where that local is buddy"
         )
         return
 
     # Add new player to db
     if not add_new_player(name, vlr_user, formatted_local, icon_url):
         await interaction.response.send_message(
-            f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+            f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
         )
         return
 
     await interaction.response.send_message(
-        f"Successfully added new player to active db"
+        f"{get_vct_emoji('yay')} successfully added new player to active db"
     )
     # print active users
 
@@ -326,7 +326,7 @@ async def update_player_command(interaction: discord.Interaction, existing_playe
     # Really?
     if not new_name and not local and not icon_url:
         await interaction.response.send_message(
-            f"really? lmao"
+            f"{get_vct_emoji('bruh')} really? lmao"
         )
         return
 
@@ -341,19 +341,19 @@ async def update_player_command(interaction: discord.Interaction, existing_playe
         local = format_local(local)
         if not local:
             await interaction.response.send_message(
-                "have no idea where that local is buddy"
+                f"{get_vct_emoji('chillin')} have no idea where that local is buddy"
             )
             return
 
     # Update player in db
     if not update_player(existing_player_id, new_name, local, icon_url):
         await interaction.response.send_message(
-            f"failed to update player '{existing_player}', probably 's fault"
+            f"{get_vct_emoji('madge_time')} failed to update player '{existing_player}', probably <@{REO_DEV_USER_ID}>'s fault"
         )
         return
 
     await interaction.response.send_message(
-        f"successfully did the thing to '{existing_player}' and now became the new thing you did at some point in time"
+        f"{get_vct_emoji('yay')} successfully did the thing to '{existing_player}' and now became the new thing you did at some point in time"
     )
     # print active users
 
