@@ -11,7 +11,7 @@ from datetime import datetime
 
 from db.db_instance import db
 from db.queries import db_logic
-from utils.emojis import get_vct_emoji
+from utils.emojis import get_vct_emoji, format_local
 from utils.matching import find_best_event_match
 from utils.bracket_id import get_bracket_id
 from services.points_for_event import points_from_event
@@ -19,6 +19,7 @@ from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
 from services.update import update_current_pickems, update_current_matches, update_current_votes, update_all
 from services.bracket_for_event import bracket_for_event
+from services.new_db_entry import add_new_player
 
 
 load_dotenv()
@@ -281,6 +282,36 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
 
     # Execute bracket generation with progress
     await execute_bracket_with_progress(interaction, match_ev_id, input_event, year, region)
+
+
+# /// ADD PLAYER
+@bot.tree.command(name="add_player", description="Add a new player to the database")
+@app_commands.describe(
+    name="The visaul name",
+    vlr_user="VLR username",
+    local="Choose a country",
+    icon_url="URL for your profile icon"
+)
+async def add_player(interaction: discord.Interaction, name: str, vlr_user: str, local: str, icon_url: str):
+    # Validate local
+    formatted_local = format_local(local)
+    if not formatted_local:
+        await interaction.response.send_message(
+            "have no idea where that local is buddy"
+        )
+        return
+
+    # Add new player to db
+    if not add_new_player(name, vlr_user, formatted_local, icon_url):
+        await interaction.response.send_message(
+            f"oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+        )
+        return
+
+    await interaction.response.send_message(
+        f"Successfully added new player to active db"
+    )
+    # print active users
 
 
 bot.run(DISCORD_BOT_TOKEN)

@@ -168,6 +168,14 @@ def get_vct_emoji(emoji_lookup: any) -> str:
 
     return "❓"
 
+def format_local(local: str) -> str | None:
+    try:
+        country = pycountry.countries.search_fuzzy(local)[0].name
+        return country
+    except (LookupError, AttributeError) as e:
+        print(f"Something went wrong when checking local: {e}")
+        return None
+
 def local_to_emoji(local: str) -> str:
     try:
         country = pycountry.countries.search_fuzzy(local)[0].alpha_2

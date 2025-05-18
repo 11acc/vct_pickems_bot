@@ -10,7 +10,7 @@ class Player():
         self.icon_url = icon_url
 
     def __repr__(self):
-        return f'{self.local} {self.name}'
+        return f'Player({self.local} {self.name})'
 
     def __eq__(self, other):
         if isinstance(other, Player):
