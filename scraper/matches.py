@@ -74,7 +74,16 @@ def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
             # Obtain time of match
             extracted_time = a_tag_match.find("div", class_="match-item-time").get_text(strip=True)
             try:
-                time_obj = datetime.strptime(extracted_time, '%I:%M %p')
+                if extracted_time == "TBD":
+                    time_obj = datetime.strptime("11:03", "%H:%M")
+                else:
+                    try:
+                        time_obj = datetime.strptime(extracted_time, "%I:%M %p")
+                    except ValueError:
+                        try:
+                            time_obj = datetime.strptime(extracted_time, "%H:%M")
+                        except ValueError as e:
+                            raise ValueError(f"Unrecognized time format: [{extracted_time}]") from e
             except Exception as e:
                 print(f"Failed to extract time [{extracted_time}] from match: {e}")
                 continue
