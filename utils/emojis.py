@@ -58,7 +58,7 @@ VCT_EMOJIS = {
     , "ns": "<:ns:1337074958840369233>"
     , "bme": "<:bme:1337074947583119414>"
 
-    , "vct_logo": "<:vct_logo:1333491883007021086>"
+    , "vct_regular": "<:vct_logo:1333491883007021086>"
     , "vct_champs": "<:vct_champs:1332393272378921000>"
     , "vct_americas": "<:vct_americas:1332393264526921808>"
     , "vct_china": "<:vct_china:1332393256004354068>"
@@ -89,8 +89,8 @@ VCT_EMOJIS = {
     , "chillin": "<:chillin:1373693234039230594>"
     , "yay": "<:yay:1373694783880433705>"
     , "bruh": "<:bruh:1373695720023920751>"
-    , "madge_time": "<:madge_time:1373696077278216303>"
-    , "celebrate": "<:celebrate:1373696719786868950>"
+    , "madge_time": "<a:celebrate:1373699305604644955>"
+    , "celebrate": "<a:celebrate:1373699305604644955>"
 }
 ALIASES = {
     'Team Vitality': 'vit'

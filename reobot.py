@@ -14,12 +14,13 @@ from db.queries import db_logic
 from utils.emojis import get_vct_emoji, format_local
 from utils.matching import find_best_event_match
 from utils.bracket_id import get_bracket_id
+from utils.event_assigner import star_tier_category
 from services.points_for_event import points_from_event
 from services.leaderboard import star_leaderboard
 from services.who_voted_who import who_voted_who
 from services.update import update_current_pickems, update_current_matches, update_current_votes, update_all
 from services.bracket_for_event import bracket_for_event
-from services.db_entries import add_new_player, update_player
+from services.db_entries import add_new_player, update_player, add_new_star
 
 
 load_dotenv()
@@ -31,6 +32,7 @@ BOT_EMBED_POINTS_COLOUR = discord.Colour.from_rgb(48,92,222)
 BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(234,232,111)
 BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(242,240,239)
 BOT_EMBED_BRACKET_COLOUR = discord.Colour.from_rgb(207,159,255)
+BOT_EMBED_E_WIN_COLOUR = discord.Colour.from_rgb(108,188,140)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
@@ -72,7 +74,7 @@ async def points(interaction: discord.Interaction, event: str, year: int):
         return
 
     # Set the header and obtain the appropriate user information
-    header = f"{get_vct_emoji('logo')} VCT {year} Pickem' [ {event.capitalize()} ] Leaderboard"
+    header = f"{get_vct_emoji('regular')} VCT {year} Pickem' [ {event.capitalize()} ] Leaderboard"
     event_points = points_from_event(input_event)
     if not event_points:
         await interaction.response.send_message(
@@ -96,7 +98,7 @@ async def points(interaction: discord.Interaction, event: str, year: int):
     await interaction.response.send_message(embed=embed)
 
 
-# /// POINTS
+# /// LEADERBOARD
 @bot.tree.command(name="leaderboard", description="Global Pickem leaderboard")
 async def leaderboard(interaction: discord.Interaction) -> None:
     # Set the header and obtain the appropriate user information
@@ -356,6 +358,66 @@ async def update_player_command(interaction: discord.Interaction, existing_playe
         f"{get_vct_emoji('yay')} successfully did the thing to '{existing_player}' and now became the new thing you did at some point in time"
     )
     # print active users
+
+
+# /// EVENT WINNER
+@bot.tree.command(name="event_winner", description="Finalise event winner")
+@app_commands.describe(
+    event_name="Event in question",
+    year="The number of spinny things thing",
+    player_name="Winner player name"
+)
+async def event_winner(interaction: discord.Interaction, event_name: str, year: int, player_name: str):
+    # Check if the event is valid
+    input_event = find_best_event_match(event_name, year)
+    if not input_event:
+        await interaction.response.send_message(
+            f"{get_vct_emoji('chillin')} massive whiff on that event selection brosky, no event with that name and year combo"
+        )
+        return
+    match_ev_id = db.get_event_id_from_name(input_event)
+
+    # Check if event has already been won
+    if not db.check_event_star(match_ev_id):
+        await interaction.response.send_message(
+            f"{get_vct_emoji('bruh')} event's already won... awkward"
+        )
+        return
+
+    # Validate player
+    player_id = db.get_player_id_from_name(player_name)
+    if not player_id:
+        await interaction.response.send_message(
+            f"{get_vct_emoji('chillin')} massive whiff on that player name, doesn't exist"
+        )
+        return
+
+    # Add new star to db
+    if not add_new_star(player_id, match_ev_id):
+        await interaction.response.send_message(
+            f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+        )
+        return
+
+    # Check for event star tier
+    star_tier = star_tier_category(match_ev_id)
+    # Gif location
+    BASE_DIR = os.path.dirname(__file__)
+    gif_file = f"congrats_{star_tier}.gif"
+    gif_path = os.path.join(BASE_DIR, "assets", "congrats_gifs", gif_file)
+    file = discord.File(gif_path, filename=gif_file)
+
+    header = f"{get_vct_emoji('celebrate')} Congratulations **{player_name.capitalize()}**!!"
+    description = f"You won {get_vct_emoji(f"vct_{star_tier}")} VCT {star_tier.capitalize()} {event_name.capitalize()}, here is your glorified star png"
+    embed = discord.Embed(
+        colour=BOT_EMBED_E_WIN_COLOUR,
+        description=description,
+        title=header
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+    embed.set_image(url=f"attachment://{gif_file}")
+
+    await interaction.response.send_message(embed=embed, file=file)
 
 
 bot.run(DISCORD_BOT_TOKEN)

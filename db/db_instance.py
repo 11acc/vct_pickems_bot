@@ -142,7 +142,8 @@ class DBInstance():
 
     def get_player_id_from_name(self, name: str) -> int | None:
         query = "SELECT player_id FROM players WHERE name=?"
-        ply_id = self.fetch_one(query, (name,))
+        normal_name = name.capitalize()
+        ply_id = self.fetch_one(query, (normal_name,))
         if not ply_id:
             print(f"No player with name: {name}")
             return None
@@ -261,6 +262,22 @@ class DBInstance():
         if not sql_team:
             return None
         return sql_team[0]
+
+    def check_event_star(self, event_id: int) -> bool:
+        query = "SELECT s_player_id FROM stars WHERE s_event_id=?"
+        sql_star = db.fetch_one(query, (event_id,))
+        if not sql_star:
+            return True
+        print(f"Event already has a winner, player with id: {sql_star}")
+        return False
+
+    def get_event_kind(self, event_id: int) -> str | None:
+        query = "SELECT kind FROM events WHERE event_id=?"
+        sql_ev = db.fetch_one(query, (event_id,))
+        if not sql_ev:
+            print(f"No kind for event with id: {event_id}")
+            return None
+        return sql_ev[0]
 
     # /// Update specific row properties
     def update_match_winner(self, match_id: int, winner_id: int) -> None:
