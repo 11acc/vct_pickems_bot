@@ -139,8 +139,8 @@ class Query_DB():
         query = "SELECT s_player_id, s_event_id, category, COUNT(*) AS star_count FROM stars WHERE s_player_id=? GROUP BY s_player_id, category ORDER BY category ASC"
         sql_stars = self.db.fetch_all(query, (player_id,))
         if not sql_stars:
-            print(f"No star sets found")
-            return None
+            # print(f"No star sets found")
+            return None, None
 
         star_category_count = {}
         star_event_objs = []

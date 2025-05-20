@@ -32,6 +32,8 @@ def format_event_points(PlayerPointsFromEvent: list) -> str | None:
 
 # Formats star category counts into the appropriate vct emojis
 def arrange_star_emojis(player_star_counts: dict) -> str:
+    if not player_star_counts:
+        return ''
     emojis_formatted = []
     for category, count in player_star_counts.items():
         emojis_formatted.append(get_vct_emoji(f"{category}_{count}"))
@@ -140,3 +142,20 @@ def format_upcoming_match_votes(UpcomingMatches: list) -> str | None:
         formatted_matches.append("")
 
     return "\n".join(formatted_matches).strip()
+
+
+
+# Formatting for the status command, similar to leaderboard
+def format_status_players(all_player_ids: list, len_longest_name: int, PlayerStarCategoryCount: list) -> str | None:
+    status_formatted = [f"{get_vct_emoji("miku")} Players:"]
+    for player in PlayerStarCategoryCount:
+        buffer = len_longest_name - len(player.name)
+        status_formatted.append(
+            f"- {local_to_emoji(player.local)} "
+            f"`"
+            f"{player.name}"
+            f"{" "*buffer}"
+            f"`"
+            f"  {arrange_star_emojis(PlayerStarCategoryCount[player])}"
+        )
+    return "\n".join(status_formatted)

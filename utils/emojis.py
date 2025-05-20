@@ -80,7 +80,6 @@ VCT_EMOJIS = {
     , "champs_sparkle_3": "<a:champs_sparkle_3_6:1342202595640610997>"
 
     , "who": "<a:who:1349559640836407458>"
-    , "miku": "<a:miku_leek:1342190731313287238>"
     , "miku_loading": "<a:miku_loading:1349844506241138819>"
     , "miku_what": "<a:miku_what:1349845458901794867>"
     , "miku_yay": "<a:miku_yay:1349846113053704204>"
@@ -91,6 +90,8 @@ VCT_EMOJIS = {
     , "bruh": "<:bruh:1373695720023920751>"
     , "madge_time": "<a:celebrate:1373699305604644955>"
     , "celebrate": "<a:celebrate:1373699305604644955>"
+    , "kjcatdance": "<a:kjcatdance:1374478677747695737>"
+    , "miku": "<:miku:1374478707460280452>"
 }
 ALIASES = {
     'Team Vitality': 'vit'
@@ -141,6 +142,9 @@ ALIASES = {
     , 'KOI': 'mkoi'
     , 'Gentle Mates': 'm8'
     , 'Apeks': 'apk'
+    , 'VCT Champions Tour': 'vct_regular'
+    , 'VCT Masters': 'vct_masters'
+    , 'VCT Champions': 'vct_champs'
 }
 
 

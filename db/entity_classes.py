@@ -48,9 +48,10 @@ class Event():
         self.year = year
         self.ongoing = ongoing
         self.bracket_type = bracket_type
+        self.full_name = f'VCT {self.year} : {self.kind} {self.loc}'
 
     def __repr__(self) -> str:
-        return f'VCT {self.year} : {self.kind} {self.loc}'
+        return self.full_name
 
     @property
     def kind_tier(self) -> int:

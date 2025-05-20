@@ -21,6 +21,7 @@ from services.who_voted_who import who_voted_who
 from services.update import update_current_pickems, update_current_matches, update_current_votes, update_all
 from services.bracket_for_event import bracket_for_event
 from services.db_entries import add_new_player, update_player, add_new_star
+from services.status import pickem_status
 
 
 load_dotenv()
@@ -33,6 +34,7 @@ BOT_EMBED_LEADERBOARD_COLOUR = discord.Colour.from_rgb(234,232,111)
 BOT_EMBED_WVW_COLOUR = discord.Colour.from_rgb(242,240,239)
 BOT_EMBED_BRACKET_COLOUR = discord.Colour.from_rgb(207,159,255)
 BOT_EMBED_E_WIN_COLOUR = discord.Colour.from_rgb(108,188,140)
+BOT_EMBED_STATUS_COLOUR = discord.Colour.from_rgb(52,73,94)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # Discord connection and bot command setup
@@ -358,6 +360,26 @@ async def update_player_command(interaction: discord.Interaction, existing_playe
         f"{get_vct_emoji('yay')} successfully did the thing to '{existing_player}' and now became the new thing you did at some point in time"
     )
     # print active users
+
+
+# /// STATUS
+@bot.tree.command(name="status", description="What event is happening? Who is playing?")
+async def status(interaction: discord.Interaction) -> None:
+    ongoing_title, status_players = pickem_status()
+    if not status_players:
+        await interaction.response.send_message(
+            f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+        )
+        return
+
+    embed = discord.Embed(
+        colour=BOT_EMBED_STATUS_COLOUR
+        , description=status_players
+        , title=ongoing_title
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+
+    await interaction.response.send_message(embed=embed)
 
 
 # /// EVENT WINNER

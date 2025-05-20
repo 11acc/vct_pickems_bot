@@ -123,6 +123,14 @@ class DBInstance():
             return None
         return [p_id for (p_id,) in sql_stars]
 
+    def get_all_player_ids(self) -> list[int] | None:
+        query = "SELECT player_id FROM players"
+        sql_ply = self.fetch_all(query)
+        if not sql_ply:
+            print(f"No player_ids found")
+            return None
+        return [p_id for (p_id,) in sql_ply]
+
     # /// Specific fetch queries
     def get_event_id_from_name(self, matched_name: str) -> int | None:
         query = "SELECT event_id FROM events WHERE loc=?"
