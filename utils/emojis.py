@@ -145,6 +145,9 @@ ALIASES = {
     , 'VCT Champions Tour': 'vct_regular'
     , 'VCT Masters': 'vct_masters'
     , 'VCT Champions': 'vct_champs'
+    , 'Bangkok': 'vct_masters'
+    , 'Toronto': 'vct_masters'
+    , 'Paris': 'vct_champs'
 }
 
 

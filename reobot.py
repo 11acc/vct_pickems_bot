@@ -2,7 +2,7 @@
 # :purpose: Main script to run discord bot
 
 import os
-import io
+import random
 from dotenv import load_dotenv
 import discord
 from discord import app_commands
@@ -37,6 +37,28 @@ BOT_EMBED_E_WIN_COLOUR = discord.Colour.from_rgb(108,188,140)
 BOT_EMBED_STATUS_COLOUR = discord.Colour.from_rgb(52,73,94)
 BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
+# /// AUTO RESPONSE CONFIG
+TARGET_USER_ID = 229174776634015744
+CUSTOM_RESPONSE_MESSAGES = [
+    "NAHHHH stfu bro you got COOKED 😭😭😭",
+    "heretics fans in shambles rn 💀 this you? 🤡",
+    "get absolutely rolled kiddo 💀 imagine believing in heretics LMAOOO couldn't be me fr fr",
+    "hold this L, you'll need both hands 🤲💀",
+    "caught in 4k lacking, career over 💀📸",
+    "heretics fans in witness protection rn 😭😭",
+    "that take aged like milk, rotten and stinky 😷🥛",
+    "bro said 'trust me' and fumbled harder than ever 💀💀",
+    "witnessing a live collapse, send help 🚑😭",
+]
+REACTION_EMOJIS = [
+    # Regular Unicode emojis
+    "💀", "😭", "🤡",
+    # Static custom emojis
+    "cooked_rice", "cooked_stake", "matt40", "shut",
+    # Animated custom emojis  
+    "crying", "laugh_sphere", "lmao_pepe", "loop_lmao", "u_mad", "bruh"
+]
+
 # Discord connection and bot command setup
 intents = discord.Intents.default()
 intents.message_content = True
@@ -58,6 +80,43 @@ async def on_ready():
 async def on_disconnect():
     print(f"🐙 {bot.user} shutting down...")
     db.close()
+
+# /// AUTO RESPONSE
+@bot.event
+async def on_message(message):
+    # Don't respond to the bot's own messages
+    if message.author == bot.user:
+        return
+
+    # Check if the message is from the target user
+    if message.author.id == TARGET_USER_ID:
+        try:
+            # Send random custom response message
+            random_message = random.choice(CUSTOM_RESPONSE_MESSAGES)
+            await message.channel.send(random_message)
+
+            # Add 4-5 random reactions to the user's message
+            num_reactions = random.randint(4, 5)
+            selected_emojis = random.sample(REACTION_EMOJIS, min(num_reactions, len(REACTION_EMOJIS)))
+
+            for emoji_name in selected_emojis:
+                # Check if it's a regular Unicode emoji or custom emoji
+                if emoji_name in ["💀", "😭", "🤡", "🔥"]:
+                    # Regular Unicode emoji
+                    await message.add_reaction(emoji_name)
+                else:
+                    # Custom server emoji
+                    emoji = discord.utils.get(message.guild.emojis, name=emoji_name)
+                    if emoji:
+                        await message.add_reaction(emoji)
+                    else:
+                        print(f"Custom emoji '{emoji_name}' not found in server")
+
+        except discord.HTTPException as e:
+            print(f"Failed to respond to {message.author}: {e}")
+
+    # Process commands (important to keep this)
+    await bot.process_commands(message)
 
 
 # /// POINTS
@@ -380,6 +439,19 @@ async def status(interaction: discord.Interaction) -> None:
     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
 
     await interaction.response.send_message(embed=embed)
+
+
+# /// AUTO RESPONSE
+@bot.tree.command(name="dev_msgtarget", description="Set the user to auto-respond to (only me mf don't try)")
+@app_commands.describe(user="The user to target for auto-responses")
+async def set_target_user(interaction: discord.Interaction, user: discord.Member):
+    if interaction.user.id != REO_DEV_USER_ID:
+        await interaction.response.send_message("You don't have permission to use this command.", ephemeral=True)
+        return
+
+    global TARGET_USER_ID
+    TARGET_USER_ID = user.id
+    await interaction.response.send_message(f"Target user set to {user.mention}", ephemeral=True)
 
 
 # /// EVENT WINNER
