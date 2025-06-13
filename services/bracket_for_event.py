@@ -10,9 +10,12 @@ from utils.bracket_id import get_bracket_id
 
 
 def bracket_for_event(event_id: int, year: int, region: str = None) -> str | None:
+    # Get event bracket format
+    bracket_format = db.get_bracket_type_from_event_id(event_id)
+
     # Generate bracket
     bracket_data = generate_bracket_config(event_id, region, year)
-    bracket_html = generate_bracket_html(bracket_data)
+    bracket_html = generate_bracket_html(bracket_format, bracket_data)
     if not bracket_html:
         return None
 

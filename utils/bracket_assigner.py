@@ -16,7 +16,7 @@ PLAYOFF_CONFIGS = {
         "Lower Final":         "412",
     },
     "8d00": {
-        "Upper Quarterfinals": ["111", "121", "131", "141"],
+        "Upper Quarterfinals": ["121", "111", "131", "141"],
         "Upper Semifinals":    ["211", "221"],
         "Upper Final":         "311",
         "Grand Final":         "411",
