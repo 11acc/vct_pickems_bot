@@ -39,6 +39,7 @@ BOT_AUTHOR_URL = "https://x.com/marthastewart/status/463333915739316224?mx=2"
 
 # /// AUTO RESPONSE CONFIG
 TARGET_USER_ID = 229174776634015744
+AUTO_RESPONSE_ENABLED = False
 CUSTOM_RESPONSE_MESSAGES = [
     "NAHHHH stfu bro you got COOKED 😭😭😭",
     "heretics fans in shambles rn 💀 this you? 🤡",
@@ -51,13 +52,15 @@ CUSTOM_RESPONSE_MESSAGES = [
     "witnessing a live collapse, send help 🚑😭",
 ]
 REACTION_EMOJIS = [
-    # Regular Unicode emojis
+    # Regular Unicode emojisph
     "💀", "😭", "🤡",
     # Static custom emojis
     "cooked_rice", "cooked_stake", "matt40", "shut",
     # Animated custom emojis  
     "crying", "laugh_sphere", "lmao_pepe", "loop_lmao", "u_mad", "bruh"
 ]
+# Message pool for non-repeating messages
+available_messages = CUSTOM_RESPONSE_MESSAGES.copy()
 
 # Discord connection and bot command setup
 intents = discord.Intents.default()
@@ -88,11 +91,19 @@ async def on_message(message):
     if message.author == bot.user:
         return
 
-    # Check if the message is from the target user
-    if message.author.id == TARGET_USER_ID:
+    # Check if the message is from the target user and auto response is enabled
+    if message.author.id == TARGET_USER_ID and AUTO_RESPONSE_ENABLED:
         try:
-            # Send random custom response message
-            random_message = random.choice(CUSTOM_RESPONSE_MESSAGES)
+            global available_messages
+
+            # If we've used all messages, refill the pool
+            if not available_messages:
+                available_messages = CUSTOM_RESPONSE_MESSAGES.copy()
+
+            # Pick a random message from available ones and remove it
+            random_message = random.choice(available_messages)
+            available_messages.remove(random_message)
+
             await message.channel.send(random_message)
 
             # Add 4-5 random reactions to the user's message
@@ -101,7 +112,7 @@ async def on_message(message):
 
             for emoji_name in selected_emojis:
                 # Check if it's a regular Unicode emoji or custom emoji
-                if emoji_name in ["💀", "😭", "🤡", "🔥"]:
+                if emoji_name in ["💀", "😭", "🤡"]:
                     # Regular Unicode emoji
                     await message.add_reaction(emoji_name)
                 else:
@@ -446,12 +457,28 @@ async def status(interaction: discord.Interaction) -> None:
 @app_commands.describe(user="The user to target for auto-responses")
 async def set_target_user(interaction: discord.Interaction, user: discord.Member):
     if interaction.user.id != REO_DEV_USER_ID:
-        await interaction.response.send_message("You don't have permission to use this command.", ephemeral=True)
+        await interaction.response.send_message("stop trying lil bro, you can't use this")
         return
 
     global TARGET_USER_ID
     TARGET_USER_ID = user.id
     await interaction.response.send_message(f"Target user set to {user.mention}", ephemeral=True)
+
+@bot.tree.command(name="dev_msgstop", description="Toggle auto response service on/off (only me mf don't try)")
+async def toggle_auto_response(interaction: discord.Interaction):
+    if interaction.user.id != REO_DEV_USER_ID:
+        await interaction.response.send_message("stop trying lil bro, you can't use this")
+        return
+
+    global AUTO_RESPONSE_ENABLED, available_messages
+    AUTO_RESPONSE_ENABLED = not AUTO_RESPONSE_ENABLED
+
+    # Reset message pool when toggling
+    available_messages = CUSTOM_RESPONSE_MESSAGES.copy()
+
+    status = "enabled" if AUTO_RESPONSE_ENABLED else "disabled"
+    await interaction.response.send_message(f"Auto response service is now **{status}**")
+
 
 
 # /// EVENT WINNER
