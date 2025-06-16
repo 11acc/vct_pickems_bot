@@ -1,0 +1,838 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <style>
+            *, *:before, *:after {
+    box-sizing: inherit;
+}
+
+html, body, div, span, applet, object, iframe, h1, h2, h3, h4, h5, h6, p, blockquote, pre, a, abbr, acronym, address, big, cite, code, del, dfn, em, img, ins, kbd, q, s, samp, small, strike, strong, sub, sup, tt, var, center, dl, dt, dd, ol, ul, li, fieldset, form, label, legend, table, caption, tbody, tfoot, thead, tr, th, td, article, aside, canvas, details, embed, figure, figcaption, footer, header, hgroup, menu, nav, output, ruby, section, summary, time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+    text-decoration: none;
+}
+
+div {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+img {
+    border: 0;
+}
+
+input {
+    line-height: normal;
+}
+
+button, input, optgroup, select, textarea {
+    color: inherit;
+    font: inherit;
+    margin: 0;
+}
+
+html,
+body {
+    display: block;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    /* background: none;
+    color: #333; */
+    background: #40474f;
+    color: #d4d4d4;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    box-sizing: border-box;
+}
+
+body {
+    line-height: 1;
+    margin: 0;
+}
+
+.wrapper {
+    width: auto;
+    min-width: 320px;
+    position: relative;
+    min-height: calc(100vh - 55px - 44px - 1px);
+}
+
+.col-container {
+    /* display: flex; */
+    flex-wrap: wrap;
+}
+.col {
+    flex-basis: 0;
+    flex-grow: 1;
+    min-width: 0;
+}
+
+.event-container {
+    position: relative;
+    display: flex;
+}
+@media (max-width: 1080px) {
+    .event-container {
+        display: block;
+    }
+}
+.event-content {
+    min-width: 0;
+    /* flex: 0 0 794px; */
+}
+
+.wf-card {
+    overflow: hidden;
+    position: relative;
+    border: 0 !important;
+    display: block;
+}
+
+.event-bracket-wrapper {
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    overflow: hidden;
+}
+.event-brackets-container {
+    padding: 20px;
+    /* overflow-x: auto; */
+}
+.bracket-container {
+    display: flex;
+    padding: 10px 0;
+}
+.bracket-col {
+    margin-right: 56px;
+}
+
+/* /// LABELS , SPACING */
+.bracket-col-label {
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    /* color: #444; */
+    color: #d4d4d4;
+}
+.bracket-row {
+    position: relative;
+}
+.bracket-item.mod-empty {
+    border: 2px solid transparent;
+    height: 70px;
+}
+.bracket-item {
+    right: 0;
+    font-size: 11px;
+    font-weight: 400;
+    display: block;
+    margin-bottom: 31px;
+    position: relative;
+    /* border: 2px solid #aaa; */
+    border: 2px solid #acadaf;
+    color: #d4d4d4;
+    border-radius: 3px;
+    z-index: 1;
+}
+.bracket-item.mod-last {
+    margin-bottom: 0 !important;
+}
+
+/* /// BRACKET */
+.bracket-container.mod-compact .bracket-col {
+    margin-right: 23px;
+}
+.bracket-container.mod-compact .bracket-col {
+    margin-right: 23px;
+}
+/* /// // UPPER BRACKET */
+.bracket-container.mod-upper .bracket-col.mod-2 {
+    padding-top: 50px;
+}
+.bracket-container.mod-upper .bracket-col.mod-2 .bracket-item {
+    margin-bottom: 132px;
+}
+.bracket-container.mod-upper .bracket-col.mod-3 {
+    padding-top: 150px;
+}
+.bracket-container.mod-upper .bracket-col.mod-3 .bracket-item {
+    margin-bottom: 334px;
+}
+/* /// // LOWER BRACKET */
+.bracket-container.mod-lower .bracket-col.mod-1 {
+    padding-top: 49px;
+}
+.bracket-container.mod-lower .bracket-col.mod-2 {
+    padding-top: 0;
+}
+.bracket-container.mod-lower .bracket-col.mod-2 .bracket-item {
+    margin-bottom: 47px;  /* 32px */
+}
+.bracket-container.mod-lower .bracket-col.mod-3 {
+    padding-top: 59px;  /* 50px */
+}
+.bracket-container.mod-lower .bracket-col.mod-3 .bracket-item {
+    margin-bottom: 132px;
+}
+.bracket-container.mod-lower .bracket-col.mod-4 {
+    padding-top: 10px;
+}
+.bracket-container.mod-lower .bracket-col.mod-4 .bracket-item {
+    margin-bottom: 133px;
+}
+
+/* /// BRACKET ITEM WITHIN */
+.bracket-item-team {
+    display: flex;
+    justify-content: space-between;
+    width: 185px;
+    border-top: 1px solid #ccc;
+    border-color: #929496;
+}
+.bracket-item-team.mod-first {
+    border-bottom: 1px solid #ccc;
+    border-top: 0;
+}
+.bracket-item.mod-pickem .bracket-item-team.mod-winner {
+    background: none;
+    font-weight: 400;
+}
+/* /// // TEAM STUFF */
+.bracket-item-team-name {
+    height: 32px;
+    display: flex;
+    align-items: center;
+}
+.bracket-item-team-score {
+    flex: 0 0 32px;
+    height: 32px;
+    justify-content: center;
+    border-left: 1px solid #ccc;
+    border-color: #929496;
+    align-items: center;
+    display: flex;
+}
+.bracket-item-team.mod-winner .bracket-item-team-score {
+    background: #cf9fff;  /* 9966cc */
+    border-left: 1px solid #aaa;
+}
+.bracket-item img {
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    image-rendering: -webkit-optimize-contrast;
+}
+.bracket-item-team-name span {
+    width: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 5px 0;
+}
+.bracket-item-team-votes {
+    min-width: 55px;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    align-items: center;
+}
+.bracket-item-team-votes img {
+    position: absolute;
+    margin: 0;
+}
+/* Fanned-out stacking effect for icons (horizontal overlap) */
+.bracket-item-team-votes img:nth-child(1) { right: 0; z-index: 1; }
+.bracket-item-team-votes img:nth-child(2) { right: 13px; z-index: 2; }
+.bracket-item-team-votes img:nth-child(3) { right: 26px; z-index: 3; }
+.bracket-item-team-votes img:nth-child(4) { right: 39px; z-index: 4; }
+.bracket-item-team-votes img:nth-child(5) { right: 52px; z-index: 5; }
+/* /// // STATUS */
+.bracket-item-status {
+    width: 100%;
+    display: flex;
+    position: absolute;
+    left: 0;
+    font-size: 10px;
+}
+.bracket-item-status-icons {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    position: relative;
+    padding-top: 3px;
+}
+.bracket-item-status-icons .vote-row {
+    height: 15px;
+    display: flex;
+    align-items: center;
+    gap: 1px;
+    position: relative;
+}
+.bracket-item-status-icons .vote-icons {
+    min-width: 50px;
+}
+.bracket-item-status-icons img {
+    width: 15px;
+    height: 15px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
+}
+.bracket-item-status-icons .vote-text {
+    display: flex;
+    align-items: center;
+    flex-grow: 1; /* Take remaining space */
+    gap: 3px;
+}
+.bracket-item-status-icons .vote-text img.vote-span-team-icon {
+    position: relative;
+}
+.bracket-item-status-icons img:nth-child(1) { left: 0; z-index: 1; }
+.bracket-item-status-icons img:nth-child(2) { left: 8px; z-index: 2; }
+.bracket-item-status-icons img:nth-child(3) { left: 16px; z-index: 3; }
+.bracket-item-status-icons img:nth-child(4) { left: 24px; z-index: 4; }
+.bracket-item-status-icons img:nth-child(5) { left: 32px; z-index: 5; }
+
+/* /// LINES */
+.bracket-item-line {
+    position: absolute;
+    width: 30px;
+    height: 31px;
+    right: -30px;
+    top: 32px;
+    border: 2px solid #aaa;
+    border-color: #acadaf;
+    border-left: 0;
+    border-bottom: 0;
+    border-radius: 0 3px 0 0;
+}
+.bracket-item-line:after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    height: 4px;
+    right: -30px;
+    width: 30px;
+    border: 2px solid #aaa;
+    border-color: #acadaf;
+    border-top: 0;
+    border-right: 0;
+    border-radius: 0 0 0 3px;
+}
+.bracket-container.mod-compact .bracket-item-line {
+    width: 13px;
+    right: -13px;
+}
+.bracket-container.mod-compact .bracket-item-line:after {
+    right: -15px;
+    width: 15px;
+}
+.bracket-item-line.mod-up {
+    border-top: 0;
+    border-bottom: 2px solid #aaa;
+    border-color: #acadaf;
+    top: 3px;
+    border-radius: 0 0 3px 0;
+}
+.bracket-item-line.mod-up:after {
+    top: -4px;
+    border-top: 2px solid #aaa;
+    border-color: #acadaf;
+    border-bottom: 0;
+    border-radius: 3px 0 0 0;
+}
+.bracket-container.mod-upper .bracket-col.mod-2 .bracket-item-line {
+    height: 83px;
+}
+.bracket-container.mod-upper .bracket-col.mod-2 .bracket-item-line.mod-up {
+    top: -49px;
+}
+/* Changes in css for 8d00 playoff bracket format */
+
+.bracket-container.mod-lower .bracket-col.mod-1 .bracket-row.mod-2 {
+    padding-top: 21px;
+}
+
+.bracket-container.mod-lower .bracket-col.mod-2 .bracket-row.mod-2 {
+    padding-top: 5px;
+}
+
+.bracket-container.mod-lower .bracket-col.mod-3 {
+    padding-top: 61px;
+}
+
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="col-container">
+                <div class="event-container">
+                    <div class="event-content">
+                        <div class="wf-card mod-bracket">
+                            <div class="event-bracket-wrapper">
+                                <div class="event-brackets-container mod-locked">
+    <div class="bracket-container mod-upper mod-compact">
+        <div class="bracket-col mod-1">
+            <div class="bracket-col-label">
+                Upper Quarterfinals
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="XLG vs. SEN" 
+                      data-curr-id="111" data-next-id="211" data-next-pos="0" 
+                      data-next-id2="112" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/671742f863b9b.png">
+                            <span>XLG</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/g5bgc0.png"><img src="https://files.catbox.moe/lp4ej3.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-winner" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62875027c8e06.png">
+                            <span>SEN</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/j9jymz.png"><img src="https://files.catbox.moe/wuqttv.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"></div>
+                    </div>
+                    <div class="bracket-item-line mod-down"></div>
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem " title="G2 vs. PRX" 
+                      data-curr-id="121" data-next-id="221" data-next-pos="1" 
+                      data-next-id2="122" data-next-pos2="1">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/633822848a741.png">
+                            <span>G2</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/j9jymz.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-winner" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62bbeba74d5cb.png">
+                            <span>PRX</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/g5bgc0.png"><img src="https://files.catbox.moe/lp4ej3.png"><img src="https://files.catbox.moe/wuqttv.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"></div>
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-3">
+                <span class="bracket-item mod-pickem " title="RRQ vs. WOL" 
+                      data-curr-id="131" data-next-id="221" data-next-pos="0" 
+                      data-next-id2="122" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/629f17f51e7a3.png">
+                            <span>RRQ</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/lp4ej3.png"><img src="https://files.catbox.moe/j9jymz.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-winner" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/651d33f8e6a1f.png">
+                            <span>WOL</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/g5bgc0.png"><img src="https://files.catbox.moe/wuqttv.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"></div>
+                    </div>
+                    <div class="bracket-item-line mod-down"></div>
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-4">
+                <span class="bracket-item mod-pickem mod-last" title="FNC vs. GEN" 
+                      data-curr-id="141" data-next-id="221" data-next-pos="1" 
+                      data-next-id2="122" data-next-pos2="1">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a40cc2b5e29.png">
+                            <span>FNC</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/g5bgc0.png"><img src="https://files.catbox.moe/wuqttv.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-winner" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/654cc858ea9f5.png">
+                            <span>GEN</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/lp4ej3.png"><img src="https://files.catbox.moe/j9jymz.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"></div>
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-2">
+            <div class="bracket-col-label">
+                Upper Semifinals
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="SEN vs. PRX" 
+                      data-curr-id="211" data-next-id="311" data-next-pos="0" 
+                      data-next-id2="222" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62875027c8e06.png">
+                            <span>SEN</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/wuqttv.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62bbeba74d5cb.png">
+                            <span>PRX</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/lp4ej3.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/j9jymz.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/633822848a741.png" class="vote-span-team-icon" />  </span></div><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/g5bgc0.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/671742f863b9b.png" class="vote-span-team-icon" />  </span></div></div>
+                    </div>
+                    <div class="bracket-item-line mod-down"></div>
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title="WOL vs. GEN" 
+                      data-curr-id="221" data-next-id="311" data-next-pos="1" 
+                      data-next-id2="212" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first mod-winner" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/651d33f8e6a1f.png">
+                            <span>WOL</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/g5bgc0.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/654cc858ea9f5.png">
+                            <span>GEN</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/j9jymz.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/lp4ej3.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/629f17f51e7a3.png" class="vote-span-team-icon" />  </span></div><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/wuqttv.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/62a40cc2b5e29.png" class="vote-span-team-icon" />  </span></div></div>
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-3">
+            <div class="bracket-col-label">
+                Upper Final
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title="TBD vs. WOL" 
+                      data-curr-id="311" data-next-id="411" data-next-pos="0" 
+                      data-next-id2="412" data-next-pos2="0">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/651d33f8e6a1f.png">
+                            <span>WOL</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            
+                    </div>
+                    
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-3">
+            <div class="bracket-col-label">
+                Grand Final
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title="TBD vs. TBD" 
+                      data-curr-id="411" data-next-id="" data-next-pos="" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            
+                    </div>
+                    
+                </span>
+            </div>
+            </div></div><div class="bracket-container mod-lower">
+        <div class="bracket-col mod-1">
+            <div class="bracket-col-label">
+                Lower Round 1
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="XLG vs. G2"
+                      data-curr-id="112" data-next-id="212" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/671742f863b9b.png">
+                            <span>XLG</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-winner" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/633822848a741.png">
+                            <span>G2</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/g5bgc0.png"><img src="https://files.catbox.moe/wuqttv.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/lp4ej3.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/62875027c8e06.png" class="vote-span-team-icon" />  </span></div><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/j9jymz.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/62bbeba74d5cb.png" class="vote-span-team-icon" />  </span></div></div>
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title="RRQ vs. FNC"
+                      data-curr-id="122" data-next-id="222" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/629f17f51e7a3.png">
+                            <span>RRQ</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team  mod-winner" data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a40cc2b5e29.png">
+                            <span>FNC</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/j9jymz.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/lp4ej3.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/651d33f8e6a1f.png" class="vote-span-team-icon" />  </span></div><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/g5bgc0.png"><img src="https://files.catbox.moe/wuqttv.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/654cc858ea9f5.png" class="vote-span-team-icon" />  </span></div></div>
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-2">
+            <div class="bracket-col-label">
+                Lower Round 2
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem " title="GEN vs. G2"
+                      data-curr-id="212" data-next-id="312" data-next-pos="0" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/654cc858ea9f5.png">
+                            <span>GEN</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/0o2yo8.png"><img src="https://files.catbox.moe/g5bgc0.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/633822848a741.png">
+                            <span>G2</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            <div class="bracket-item-status-icons"><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/j9jymz.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/62875027c8e06.png" class="vote-span-team-icon" />  </span></div><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/lp4ej3.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/671742f863b9b.png" class="vote-span-team-icon" />  </span></div><div class="vote-row"><div class="vote-icons"><img src="https://files.catbox.moe/1rutm0.png"><img src="https://files.catbox.moe/wuqttv.png"></div><span class="vote-text">lmao imagine voting for <img src="https://owcdn.net/img/62bbeba74d5cb.png" class="vote-span-team-icon" />  </span></div></div>
+                    </div>
+                    <div class="bracket-item-line mod-down"></div>
+                </span>
+            </div>
+            
+            <div class="bracket-row mod-2">
+                <span class="bracket-item mod-pickem mod-last" title="TBD vs. FNC"
+                      data-curr-id="222" data-next-id="312" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://owcdn.net/img/62a40cc2b5e29.png">
+                            <span>FNC</span>
+                        </div>
+                        <div class="bracket-item-team-votes"><img src="https://files.catbox.moe/g5bgc0.png"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-3">
+            <div class="bracket-col-label">
+                Lower Round 3
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title="TBD vs. TBD"
+                      data-curr-id="312" data-next-id="412" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            
+                    </div>
+                    <div class="bracket-item-line mod-up"></div>
+                </span>
+            </div>
+            </div>
+        <div class="bracket-col mod-4">
+            <div class="bracket-col-label">
+                Lower Final
+            </div>
+        
+            <div class="bracket-row mod-1">
+                <span class="bracket-item mod-pickem mod-last" title="TBD vs. TBD"
+                      data-curr-id="412" data-next-id="411" data-next-pos="1" 
+                      data-next-id2="" data-next-pos2="">
+                    <div class="bracket-item-team mod-first" data-curr-pos="0">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-team " data-curr-pos="1">
+                        <div class="bracket-item-team-name">
+                            <img src="https://www.vlr.gg/img/vlr/tmp/vlr.png">
+                            <span>TBD</span>
+                        </div>
+                        <div class="bracket-item-team-votes"></div>
+                        <div class="bracket-item-team-score">
+                        </div>
+                    </div>
+                    <div class="bracket-item-status">
+                            
+                    </div>
+                    
+                </span>
+            </div>
+            </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+    </html>
+    

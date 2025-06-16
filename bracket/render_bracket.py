@@ -15,7 +15,7 @@ def render_bracket(html_path: str, imgs_dir: str, unique_id: str) -> None:
     driver.get(f'file://{html_path}')
 
     # Set the window size to capture the full page (adjust width if needed)
-    driver.set_window_size(975, 825)  # w / h
+    driver.set_window_size(975, 850)  # w / h
 
     # Take a screenshot and save it
     driver.save_screenshot(f'{imgs_dir}/{unique_id}.png')

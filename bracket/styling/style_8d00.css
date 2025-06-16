@@ -1,6 +1,14 @@
 
 /* Changes in css for 8d00 playoff bracket format */
 
-.bracket-container.mod-lower .bracket-col.mod-1 {
-    padding-top: 65px;
+.bracket-container.mod-lower .bracket-col.mod-1 .bracket-row.mod-2 {
+    padding-top: 21px;
+}
+
+.bracket-container.mod-lower .bracket-col.mod-2 .bracket-row.mod-2 {
+    padding-top: 5px;
+}
+
+.bracket-container.mod-lower .bracket-col.mod-3 {
+    padding-top: 61px;
 }

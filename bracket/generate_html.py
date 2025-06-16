@@ -360,7 +360,9 @@ def get_line_mod(match_idx: int, round_name: str, bracket_type: str) -> str:
         else:  # Upper Final, Grand Final
             return ""
     else:  # lower
-        if round_name in ["Lower Round 1", "Lower Round 2"]:
+        if round_name == "Lower Round 1":
+            return "mod-up"
+        elif round_name == "Lower Round 2":
             return "mod-down" if match_idx == 0 else "mod-up"
         elif round_name == "Lower Round 3":
             return "mod-up"
