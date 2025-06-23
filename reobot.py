@@ -482,63 +482,67 @@ async def toggle_auto_response(interaction: discord.Interaction):
 
 
 # /// EVENT WINNER
-# @bot.tree.command(name="event_winner", description="Finalise event winner")
-# @app_commands.describe(
-#     event_name="Event in question",
-#     year="The number of spinny things thing",
-#     player_name="Winner player name"
-# )
-# async def event_winner(interaction: discord.Interaction, event_name: str, year: int, player_name: str):
-#     # Check if the event is valid
-#     input_event = find_best_event_match(event_name, year)
-#     if not input_event:
-#         await interaction.response.send_message(
-#             f"{get_vct_emoji('chillin')} massive whiff on that event selection brosky, no event with that name and year combo"
-#         )
-#         return
-#     match_ev_id = db.get_event_id_from_name(input_event)
+@bot.tree.command(name="dev_event_winner", description="Finalise event winner")
+@app_commands.describe(
+    event_name="Event in question",
+    year="The number of spinny things thing",
+    player_name="Winner player name"
+)
+async def event_winner(interaction: discord.Interaction, event_name: str, year: int, player_name: str):
+    if interaction.user.id != REO_DEV_USER_ID:
+        await interaction.response.send_message("stop trying lil bro, you can't use this")
+        return
 
-#     # Check if event has already been won
-#     if not db.check_event_star(match_ev_id):
-#         await interaction.response.send_message(
-#             f"{get_vct_emoji('bruh')} event's already won... awkward"
-#         )
-#         return
+    # Check if the event is valid
+    input_event = find_best_event_match(event_name, year)
+    if not input_event:
+        await interaction.response.send_message(
+            f"{get_vct_emoji('chillin')} massive whiff on that event selection brosky, no event with that name and year combo"
+        )
+        return
+    match_ev_id = db.get_event_id_from_name(input_event)
 
-#     # Validate player
-#     player_id = db.get_player_id_from_name(player_name)
-#     if not player_id:
-#         await interaction.response.send_message(
-#             f"{get_vct_emoji('chillin')} massive whiff on that player name, doesn't exist"
-#         )
-#         return
+    # Check if event has already been won
+    if not db.check_event_star(match_ev_id):
+        await interaction.response.send_message(
+            f"{get_vct_emoji('bruh')} event's already won... awkward"
+        )
+        return
 
-#     # Add new star to db
-#     if not add_new_star(player_id, match_ev_id):
-#         await interaction.response.send_message(
-#             f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
-#         )
-#         return
+    # Validate player
+    player_id = db.get_player_id_from_name(player_name)
+    if not player_id:
+        await interaction.response.send_message(
+            f"{get_vct_emoji('chillin')} massive whiff on that player name, doesn't exist"
+        )
+        return
 
-#     # Check for event star tier
-#     star_tier = star_tier_category(match_ev_id)
-#     # Gif location
-#     BASE_DIR = os.path.dirname(__file__)
-#     gif_file = f"congrats_{star_tier}.gif"
-#     gif_path = os.path.join(BASE_DIR, "assets", "congrats_gifs", gif_file)
-#     file = discord.File(gif_path, filename=gif_file)
+    # Add new star to db
+    if not add_new_star(player_id, match_ev_id):
+        await interaction.response.send_message(
+            f"{get_vct_emoji('miku_what')} oi <@{REO_DEV_USER_ID}> you fucked somthing up you stupid ass"
+        )
+        return
 
-#     header = f"{get_vct_emoji('celebrate')} Congratulations **{player_name.capitalize()}**!!"
-#     description = f"You won {get_vct_emoji(f"vct_{star_tier}")} VCT {star_tier.capitalize()} {event_name.capitalize()}, here is your glorified star png"
-#     embed = discord.Embed(
-#         colour=BOT_EMBED_E_WIN_COLOUR,
-#         description=description,
-#         title=header
-#     )
-#     embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
-#     embed.set_image(url=f"attachment://{gif_file}")
+    # Check for event star tier
+    star_tier = star_tier_category(match_ev_id)
+    # Gif location
+    BASE_DIR = os.path.dirname(__file__)
+    gif_file = f"congrats_{star_tier}.gif"
+    gif_path = os.path.join(BASE_DIR, "assets", "congrats_gifs", gif_file)
+    file = discord.File(gif_path, filename=gif_file)
 
-#     await interaction.response.send_message(embed=embed, file=file)
+    header = f"{get_vct_emoji('celebrate')} Congratulations **{player_name.capitalize()}**!!"
+    description = f"You won {get_vct_emoji(f"vct_{star_tier}")} VCT {star_tier.capitalize()} {event_name.capitalize()}, here is your glorified star png"
+    embed = discord.Embed(
+        colour=BOT_EMBED_E_WIN_COLOUR,
+        description=description,
+        title=header
+    )
+    embed.set_author(name=BOT_NAME, url=BOT_AUTHOR_URL)
+    embed.set_image(url=f"attachment://{gif_file}")
+
+    await interaction.response.send_message(embed=embed, file=file)
 
 
 bot.run(DISCORD_BOT_TOKEN)
