@@ -26,7 +26,7 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
         player_local = player_stats[2]
         player_vlr_id = str(player_stats[3].split("id: ")[1])
         try:
-            player_points = int(player_stats[0].split(" points")[0])
+            player_points = int(player_stats[0].split(" pts")[0])
         except ValueError:
             print(f"Invalid points format: {player_stats[0]}")
             continue
