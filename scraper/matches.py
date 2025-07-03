@@ -19,7 +19,15 @@ def convert_time(input_time: str) -> str:
     return standard_time.strftime('%H:%M:%S')
 
 def scrape_vlr_matches(event_id: int, region: str, url: str) -> None:
+    if url == "":
+        print(f"Empty url, no matches for event_id: {event_id}, region: {region}, skipping")
+        return None
+
     response = request_response(url)
+    if response is None:
+        print(f"[scrape_vlr_matches] There was an error with input url: {url}")
+        return None
+
     soup = BeautifulSoup(response.content, "html.parser")
 
     for date_tag in soup.find_all("div", class_="wf-label mod-large"):

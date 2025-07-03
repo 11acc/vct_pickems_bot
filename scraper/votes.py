@@ -149,9 +149,15 @@ def scrape_vlr_subseries_votes(soup, player_id: int, event_id: int) -> None:
                 print(f"New votes recorded: {NewVote}")
 
 def scrape_vlr_votes(player_id: int, event_id: int, region: str, url: str) -> None:
+    if url == "":
+        print(f"Empty url, no votes for for player_id: {player_id}, event_id: {event_id}, region: {region}, skipping")
+        return None
+
     response = request_response(url)
     if response is None:
+        print(f"[scrape_vlr_votes] There was an error with input url: {url}")
         return None
+
     soup = BeautifulSoup(response.content, "html.parser")
 
     # Scrape bracket (playoffs)

@@ -136,7 +136,11 @@ async def on_message(message):
     event="Event name (Kickoff, Bangkok, Stage1, etc.)",
     year="The number thing we keep track of every earth spin"
 )
-async def points(interaction: discord.Interaction, event: str, year: int):
+async def points(interaction: discord.Interaction, event: str, year: int = None):
+    # Validate year
+    if not year:
+        year = datetime.now().year
+
     # Check if the input is valid
     input_event = find_best_event_match(event, year)
     if not input_event:
@@ -144,9 +148,11 @@ async def points(interaction: discord.Interaction, event: str, year: int):
             f"{get_vct_emoji('chillin')} massive whiff on that event selection brosky, no event with that name and year combo"
         )
         return
+    match_ev_id = db.get_event_id_from_name(input_event)
 
     # Set the header and obtain the appropriate user information
-    header = f"{get_vct_emoji('vct_masters')} VCT {year} Pickem' [ {event.capitalize()} ] Leaderboard"
+    star_tier = star_tier_category(match_ev_id)
+    header = f"{get_vct_emoji(f"vct_{star_tier}")} VCT {year} Pickem' [ {event.capitalize()} ] Leaderboard"
     event_points = points_from_event(input_event)
     if not event_points:
         await interaction.response.send_message(
@@ -198,7 +204,7 @@ async def leaderboard(interaction: discord.Interaction) -> None:
     region="Region for the matches (China, Americas, Emea, Pacific)",
     skip_amount="Number of days to skip into the future"
 )
-async def wvw(interaction: discord.Interaction, region: str = None, skip_amount: int = 0):
+async def wvw(interaction: discord.Interaction, region: str = None, skip_amount: int = 0) -> None:
     # Validate region if provided
     if region:
         region = region.capitalize()
@@ -233,7 +239,7 @@ update_funcs = {
     , 'votes': update_current_votes
     , 'all': update_all
 }
-async def execute_with_progress(interaction: discord.Interaction, update_function):
+async def execute_with_progress(interaction: discord.Interaction, update_function) -> None:
     # Send the initial progress message
     # Using interaction.response.send_message to immediately respond
     await interaction.response.send_message(f"{get_vct_emoji('miku_loading')} refreshing...")
@@ -260,7 +266,7 @@ async def execute_with_progress(interaction: discord.Interaction, update_functio
 @app_commands.describe(
     update_func="Which dataset to refresh: 'pickems', 'matches', 'votes', or 'all' of them",
 )
-async def refresh(interaction: discord.Interaction, update_func: str):
+async def refresh(interaction: discord.Interaction, update_func: str) -> None:
     if update_func not in update_funcs:
         await interaction.response.send_message(
             "nice try jackass, update something sensible pls"
@@ -272,7 +278,7 @@ async def refresh(interaction: discord.Interaction, update_func: str):
 
 
 # /// BRACKET PREP
-async def execute_bracket_with_progress(interaction: discord.Interaction, match_ev_id: int, input_event: str, year: int, region: str = None):
+async def execute_bracket_with_progress(interaction: discord.Interaction, match_ev_id: int, input_event: str, year: int, region: str = None) -> None:
     # Send the initial progress message
     await interaction.response.send_message(f"{get_vct_emoji('miku_loading')} generating bracket...")
 
@@ -324,7 +330,7 @@ async def execute_bracket_with_progress(interaction: discord.Interaction, match_
     region="Region for the matches (China, Americas, Emea, Pacific)",
     year="The number thing we keep track of every earth spin"
 )
-async def bracket(interaction: discord.Interaction, event: str, region: str = None, year: int = None):
+async def bracket(interaction: discord.Interaction, event: str, region: str = None, year: int = None) -> None:
     # Validate event input
     input_event = find_best_event_match(event)
     if not input_event:
@@ -366,7 +372,7 @@ async def bracket(interaction: discord.Interaction, event: str, region: str = No
     local="Choose a country",
     icon_url="URL for your profile icon"
 )
-async def add_player(interaction: discord.Interaction, name: str, vlr_user: str, local: str, icon_url: str):
+async def add_player(interaction: discord.Interaction, name: str, vlr_user: str, local: str, icon_url: str) -> None:
     # Validate local
     formatted_local = format_local(local)
     if not formatted_local:
@@ -396,7 +402,7 @@ async def add_player(interaction: discord.Interaction, name: str, vlr_user: str,
     local="A country",
     icon_url="URL for a profile icon"
 )
-async def update_player_command(interaction: discord.Interaction, existing_player: str, new_name: str = None, local: str = None, icon_url: str = None):
+async def update_player_command(interaction: discord.Interaction, existing_player: str, new_name: str = None, local: str = None, icon_url: str = None) -> None:
     # Really?
     if not new_name and not local and not icon_url:
         await interaction.response.send_message(
@@ -455,7 +461,7 @@ async def status(interaction: discord.Interaction) -> None:
 # /// AUTO RESPONSE
 @bot.tree.command(name="dev_msgtarget", description="Set the user to auto-respond to (only me mf don't try)")
 @app_commands.describe(user="The user to target for auto-responses")
-async def set_target_user(interaction: discord.Interaction, user: discord.Member):
+async def set_target_user(interaction: discord.Interaction, user: discord.Member) -> None:
     if interaction.user.id != REO_DEV_USER_ID:
         await interaction.response.send_message("stop trying lil bro, you can't use this")
         return
@@ -465,7 +471,7 @@ async def set_target_user(interaction: discord.Interaction, user: discord.Member
     await interaction.response.send_message(f"Target user set to {user.mention}", ephemeral=True)
 
 @bot.tree.command(name="dev_msgstop", description="Toggle auto response service on/off (only me mf don't try)")
-async def toggle_auto_response(interaction: discord.Interaction):
+async def toggle_auto_response(interaction: discord.Interaction) -> None:
     if interaction.user.id != REO_DEV_USER_ID:
         await interaction.response.send_message("stop trying lil bro, you can't use this")
         return
@@ -480,7 +486,6 @@ async def toggle_auto_response(interaction: discord.Interaction):
     await interaction.response.send_message(f"Auto response service is now **{status}**")
 
 
-
 # /// EVENT WINNER
 @bot.tree.command(name="dev_event_winner", description="Finalise event winner")
 @app_commands.describe(
@@ -488,7 +493,7 @@ async def toggle_auto_response(interaction: discord.Interaction):
     year="The number of spinny things thing",
     player_name="Winner player name"
 )
-async def event_winner(interaction: discord.Interaction, event_name: str, year: int, player_name: str):
+async def event_winner(interaction: discord.Interaction, event_name: str, year: int, player_name: str) -> None:
     if interaction.user.id != REO_DEV_USER_ID:
         await interaction.response.send_message("stop trying lil bro, you can't use this")
         return

@@ -15,6 +15,10 @@ def scrape_vlr_event_pickem(event_id: int, region: str, url: str) -> None:
         return None
 
     response = request_response(url)
+    if response is None:
+        print(f"[scrape_vlr_pickems] There was an error with input url: {url}")
+        return None
+
     soup = BeautifulSoup(response.content, 'html.parser')
 
     # Loop through each player row
