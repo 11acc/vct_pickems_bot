@@ -99,6 +99,10 @@ class BreakdownPts():
         self.vlr_handle = vlr_handle
         self.region = region
 
+    def __repr__(self) -> str:
+        return f'BDPts({self.bd_nr_points} for {self.vlr_handle} in {self.region})'
+
+
 class Star():
     def __init__(self, star_id: int, s_player_id: int, s_event_id: int, category: str) -> None:
         self.star_id = star_id

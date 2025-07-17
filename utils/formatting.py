@@ -1,29 +1,48 @@
 
 # :: Methods to format ??
 
+from collections import defaultdict
+
 from .emojis import local_to_emoji, get_vct_emoji
 
 
 # Format all player points for input event for the discord embed
 def format_event_points(PlayerPointsFromEvent: list) -> str | None:
-    points_formatted = []
-    len_longest_name = max(len(p.player.name) for p in PlayerPointsFromEvent)  # for buffering
+    REGION_ORDER = ["China", "Pacific", "Emea", "Americas"]
+
+    # Find max name length and max points length per region in one pass
+    len_longest_name = 0
+    max_points_len_per_region = defaultdict(int)  # Region -> max length of points
     for point_set in PlayerPointsFromEvent:
-        # Breakdown of points if regional event
-        breakdown_txt = (
-            f" ( {' '.join(f'{get_vct_emoji(bd.region)} `{bd.bd_nr_points}`' for bd in point_set.breakdown)} ) "
-            if len(point_set.breakdown) > 1
-            else ""
-        )
-        # Calculate space buffer for each player
+        len_longest_name = max(len_longest_name, len(point_set.player.name))
+        if len(point_set.breakdown) > 1:
+            for bd in point_set.breakdown:
+                points_str_len = len(str(bd.bd_nr_points))
+                max_points_len_per_region[bd.region] = max(max_points_len_per_region[bd.region], points_str_len)
+
+    # Format output
+    points_formatted = []
+    for point_set in PlayerPointsFromEvent:
+        # Format breakdown with aligned points
+        if len(point_set.breakdown) > 1:
+            # Dict for quick lookup of points by region
+            breakdown_dict = {bd.region: bd for bd in point_set.breakdown}
+            # Build breakdown parts by the specified region order
+            breakdown_parts = [
+                f"{get_vct_emoji(region)} `{breakdown_dict[region].bd_nr_points:>{max_points_len_per_region[region]}}`"
+                for region in REGION_ORDER
+                if region in breakdown_dict
+            ]
+            breakdown_txt = f" ( {' '.join(breakdown_parts)} ) "
+        else:
+            breakdown_txt = ""
+
+        # Calculate space buffer for player name
         buffer = len_longest_name - len(point_set.player.name) + 3
+
         points_formatted.append(
             f"- {local_to_emoji(point_set.player.local)} "
-            f"`"
-            f"{point_set.player.name}"
-            f"{" "*buffer}"
-            f"{point_set.nr_points} points"
-            f"`"
+            f"`{point_set.player.name}{' ' * buffer}{point_set.nr_points} points`"
             f"{breakdown_txt}"
         )
     return points_formatted
