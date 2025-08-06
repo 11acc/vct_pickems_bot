@@ -7,6 +7,7 @@ from db.db_instance import db
 PLAYOFF_CONFIGS = {
     "8d22": {
         "Upper Round 1":       ["111", "121"],
+        "Upper Quarterfinals": ["111", "121"],
         "Upper Semifinals":    ["211", "221"],
         "Upper Final":         "311",
         "Grand Final":         "411",
@@ -40,12 +41,12 @@ def compute_playoff_bracket_id(event_id: int, match_region: str, match_bracket: 
     # 2) Lookup that config
     cfg = PLAYOFF_CONFIGS.get(bracket_type)
     if not cfg:
-        # print(f"computing brackt id FAIL > no config: {cfg}")
+        print(f"computing brackt id FAIL > no config: {cfg}")
         return None
 
     kind_map = cfg.get(match_kind)
     if kind_map is None:
-        # print(f"computing brackt id FAIL > no config kind mapped: {match_kind}")
+        print(f"computing brackt id FAIL > no config kind mapped: {match_kind}")
         return None
 
     # 3) If it's a single id, return it
