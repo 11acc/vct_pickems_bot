@@ -58,7 +58,8 @@ def scrape_vlr_bracket_votes(soup, player_id: int, event_id: int, region: str) -
 
         # In the pickem-bracket-container all matches are from the Playoffs bracket
         match_bracket = "Playoffs"
-        # match_kind = "Upper Quarterfinals"  # "Upper Round 1"  # fuck u vlr why don't you have this text on the bracket
+        # match_kind = "Upper Quarterfinals"  # fuck u vlr why don't you have this text on the bracket
+        # match_kind = "Upper Round 1"  # fuck u vlr why don't you have this text on the bracket
 
         # Extract the playoff bracket id from the span’s data attribute
         playoff_bracket_id = match_span.get("data-curr-id")

@@ -26,6 +26,13 @@ PLAYOFF_CONFIGS = {
         "Lower Round 3":       "312",
         "Lower Final":         "412",
     },
+    "4d00c": {
+        "Opening":             ["111", "121"],
+        "Winner's":            "211",
+        "Qualified":           ["q211", "q212"],
+        "Elimination":         "112",
+        "Decider":             "212",
+    },
     # add more event-level bracket_type entries here...
 }
 

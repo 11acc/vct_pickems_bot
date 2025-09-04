@@ -1,0 +1,112 @@
+{
+    "_id": "",
+    "upper": [
+        {
+            "round": "Opening",
+            "matches": [
+                {
+                    "playoff_bracket_id": "111",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                },
+                {
+                    "playoff_bracket_id": "121",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Winner's",
+            "matches": [
+                {
+                    "playoff_bracket_id": "211",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Qualified",
+            "matches": [
+                {
+                    "playoff_bracket_id": "q211",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        }
+    ],
+    "lower": [
+        {
+            "round": "Elimination",
+            "matches": [
+                {
+                    "playoff_bracket_id": "112",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Decider",
+            "matches": [
+                {
+                    "playoff_bracket_id": "212",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+                    "winner": "",
+                    
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        },
+        {
+            "round": "Qualified",
+            "matches": [
+                {
+                    "playoff_bracket_id": "q212",
+                    "team1": {"team_id": 0, "name": "", "logo_url": ""},
+                    "team2": {"team_id": 0, "name": "", "logo_url": ""},
+
+                    "tbd_check": false,
+                    "votes_team1": [],
+                    "votes_team2": [],
+                    "votes_other": []
+                }
+            ]
+        }
+    ]
+}
