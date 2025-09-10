@@ -10,90 +10,112 @@ from db.entity_classes import Vote
 
 
 def scrape_vlr_bracket_votes(soup, player_id: int, event_id: int, region: str) -> None:
-    # Find all match spans. Each match is represented by a <span> with class "bracket-item" and "mod-pickem"
-    for match_span in soup.find_all("span", class_=lambda x: x and "bracket-item" in x and "mod-pickem" in x):
-        skip_match = False  # Flag in case of existing match in db or TBD matches
-        team_ids = []
-        chosen_team_id = None
+    # Find all bracket containers
+    for container in soup.find_all("div", class_="pickem-bracket-container"):
+        # Extract the title from h2 inside the container
+        h2 = container.find("h2", class_=lambda x: x and "wf-title" in x and "mod-med" in x)
+        title = h2.get_text(strip=True) if h2 else None
 
-        # Get the two teams; they are in divs with class "bracket-item-team"
-        team_divs = match_span.find_all("div", class_="bracket-item-team")
-        for team_div in team_divs:
-            team_name_elem = team_div.find("div", class_="bracket-item-team-name")
-            team_name = team_name_elem.find("span").get_text(strip=True) if team_name_elem else ""
-            if team_name is None:
-                print("No text detected, skipping")
+        # Determine match_bracket and group
+        match_bracket = "Playoffs"  # Default
+        group = None
+        if title and "Group" in title:
+            match_bracket = "Group Stage"
+            group = title.split()[-1]  # e.g., 'A' from "Group A"
+        # If title == "PICK'EM" or None, remains "Playoffs"
+
+        # Find all match spans within this container
+        for match_span in container.select("span.bracket-item.mod-pickem"):
+            skip_match = False  # Flag in case of existing match in db or TBD matches
+            team_ids = []
+            chosen_team_id = None
+
+            # Get the two teams; they are in divs with class "bracket-item-team"
+            team_divs = match_span.find_all("div", class_="bracket-item-team")
+
+            # Skip if not exactly two teams
+            if len(team_divs) != 2:
+                print("Not a match (wrong number of teams), skipping")
+                continue
+
+            for team_div in team_divs:
+                team_name_elem = team_div.find("div", class_="bracket-item-team-name")
+                team_name = team_name_elem.find("span").get_text(strip=True) if team_name_elem else ""
+                if team_name is None:
+                    print("No text detected, skipping")
+                    skip_match = True
+                    break
+
+                team_id = db.get_team_id_from_name(team_name)
+                if team_id is None:
+                    print("No team detected, skipping")
+                    skip_match = True
+                    break
+
+                # Determine the chosen team for this match
+                if "mod-selected" in team_div.get("class", []):
+                    chosen_team_id = team_id
+
+                team_ids.append(team_id)
+
+            # Check if we got a chosen team id
+            if not chosen_team_id:
+                print(f"No winner selected, no votes, exiting")
                 skip_match = True
                 break
 
-            team_id = db.get_team_id_from_name(team_name)
-            if team_id is None:
-                print("No team detected, skipping")
-                skip_match = True
-                break
+            # If no detected team, skip a_tag_match
+            if skip_match:
+                continue
 
-            # Determine the chosen team for this match
-            if "mod-selected" in team_div.get("class", []):
-                chosen_team_id = team_id
+            # Get the bracket "kind" from the parent column label.
+            col_div = match_span.find_parent("div", class_=lambda x: x and "bracket-col" in x)
+            match_kind = ""
+            if col_div:
+                label_div = col_div.find("div", class_="bracket-col-label")
+                if label_div:
+                    match_kind = label_div.get_text(strip=True)
 
-            team_ids.append(team_id)
+            # Append group letter in parentheses if applicable (for consistency with VLR formatting)
+            if group:
+                match_kind = f"{match_kind} ({group})".strip()
 
-        # Check if we got a chosen team id
-        if not chosen_team_id:
-            print(f"No winner selected, no votes, exiting")
-            skip_match = True
-            break
+            # Extract the playoff bracket id from the span’s data attribute
+            playoff_bracket_id = match_span.get("data-curr-id")
+            if not playoff_bracket_id:
+                print("No data-curr-id found, skipping")
+                continue
 
-        # If no detected team, skip a_tag_match
-        if skip_match:
-            continue
+            # Identify match id from match info
+            identified_match_id = db_logic.match_id_from_params(
+                m_event_id = event_id
+                , region = region
+                , bracket = match_bracket
+                , kind = match_kind
+                , playoff_bracket_id = playoff_bracket_id
+            )
+            if not identified_match_id:
+                print(f"Failed to identify match from extracted match information -> playoff_bracket_id, match_kind: {playoff_bracket_id}, {match_kind}")
+                continue
 
-        # Get the bracket "kind" from the parent column label.
-        col_div = match_span.find_parent("div", class_=lambda x: x and "bracket-col" in x)
-        match_kind = ""
-        if col_div:
-            label_div = col_div.find("div", class_="bracket-col-label")
-            if label_div:
-                match_kind = label_div.get_text(strip=True)
+            # Construct Vote obj
+            NewVote = Vote(None, identified_match_id, chosen_team_id, player_id)
 
-        # In the pickem-bracket-container all matches are from the Playoffs bracket
-        match_bracket = "Playoffs"
-        # match_kind = "Upper Quarterfinals"  # fuck u vlr why don't you have this text on the bracket
-        # match_kind = "Upper Round 1"  # fuck u vlr why don't you have this text on the bracket
+            # Check if vote already exists
+            existing_vote_id = db.get_vote_id_without_voted_team(NewVote)
+            voted_team_id = db.get_team_id_from_vote(existing_vote_id)
+            if existing_vote_id:
+                # If the team choice has changed, update the vote in the DB
+                if voted_team_id != chosen_team_id:
+                    db.update_vote_choice(existing_vote_id, chosen_team_id)
+                    print(f"Vote id: {existing_vote_id}, updating choice: {existing_vote_id} -> ({chosen_team_id}")
+            else:
+                # Vote doesn't exist, insert it.
+                db.add_entry("votes", NewVote)
+                print(f"New votes recorded: {NewVote}")
 
-        # Extract the playoff bracket id from the span’s data attribute
-        playoff_bracket_id = match_span.get("data-curr-id")
-        if not playoff_bracket_id:
-            print("No data-curr-id found, skipping")
-            continue
 
-        # Identify match id from match info
-        identified_match_id = db_logic.match_id_from_params(
-            m_event_id = event_id
-            , region = region
-            , bracket = match_bracket
-            , kind = match_kind
-            , playoff_bracket_id = playoff_bracket_id
-        )
-        if not identified_match_id:
-            # print(f"Failed to identify match from extracted match information - playoff_bracket_id, match_kind: {playoff_bracket_id}, {match_kind}")
-            continue
 
-        # Construct Vote obj
-        NewVote = Vote(None, identified_match_id, chosen_team_id, player_id)
-
-        # Check if vote already exists
-        existing_vote_id = db.get_vote_id_without_voted_team(NewVote)
-        voted_team_id = db.get_team_id_from_vote(existing_vote_id)
-        if existing_vote_id:
-            # If the team choice has changed, update the vote in the DB
-            if voted_team_id != chosen_team_id:
-                db.update_vote_choice(existing_vote_id, chosen_team_id)
-                print(f"Vote id: {existing_vote_id}, updating choice: {existing_vote_id} -> ({chosen_team_id}")
-        else:
-            # Vote doesn't exist, insert it.
-            db.add_entry("votes", NewVote)
-            print(f"New votes recorded: {NewVote}")
 
 def scrape_vlr_subseries_votes(soup, player_id: int, event_id: int) -> None:
     for container in soup.find_all("div", class_="pickem-subseries-container"):
@@ -148,6 +170,9 @@ def scrape_vlr_subseries_votes(soup, player_id: int, event_id: int) -> None:
                 # Vote doesn't exist, insert it.
                 db.add_entry("votes", NewVote)
                 print(f"New votes recorded: {NewVote}")
+
+
+
 
 def scrape_vlr_votes(player_id: int, event_id: int, region: str, url: str) -> None:
     if url == "":
